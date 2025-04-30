@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Limelight } from 'next/font/google';
 import './globals.css';
+import Link from 'next/link';
+import clsx from 'clsx';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -10,6 +12,10 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+const limeLight = Limelight({
+  weight: '400',
 });
 
 export const metadata: Metadata = {
@@ -27,7 +33,37 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="flex flex-col">
+          <nav className="md:px-36 bg-base-100">
+            <div className="navbar">
+              <div className="navbar-start">
+                <a
+                  className={clsx(
+                    'link link-hover text-2xl font-bold',
+                    limeLight.className
+                  )}
+                >
+                  WriteFlow
+                </a>
+              </div>
+              <div className="flex navbar-end">
+                <ul className="flex gap-2 items-center px-1">
+                  <li>
+                    <Link href="/auth/sign-in">
+                      <button className="btn btn-link">Sign in</button>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/auth/sign-in">
+                      <button className="btn btn-primary">Get started</button>
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div>{children}</div>
+        </div>
       </body>
     </html>
   );
