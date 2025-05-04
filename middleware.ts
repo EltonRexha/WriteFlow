@@ -13,3 +13,7 @@ export async function middleware(req: NextRequest) {
     return guestMiddleware(req);
   }
 }
+
+export const config = {
+  matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
+};
