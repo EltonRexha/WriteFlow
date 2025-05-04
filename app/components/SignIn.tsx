@@ -81,7 +81,7 @@ const SignIn = () => {
         onSubmit={handleSubmit(onSubmit)}
         noValidate={true}
       >
-        <div className="flex flex-col items-center space-y-4 mb-2">
+        <div className="flex flex-col items-center space-y-4 mb-2 ">
           <label className="input validator">
             <svg
               className="h-[1em] opacity-50"
@@ -171,7 +171,7 @@ const SignIn = () => {
 
       <p className="mt-6 text-center text-sm text-base-content">
         Don&apos;t have an account?{' '}
-        <Link href="/sign-up" className="link">
+        <Link href="/auth/sign-up" className="link">
           Sign up
         </Link>
       </p>
