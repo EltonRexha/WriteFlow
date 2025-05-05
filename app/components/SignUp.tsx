@@ -12,7 +12,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useRouter } from 'next/navigation';
 
 const schema = z.object({
   password: z
@@ -27,11 +26,13 @@ const schema = z.object({
       'Password must contain at least one special character'
     ),
   email: z.string().email(),
+  firstName: z.string().min(3).max(10),
+  lastName: z.string().min(3).max(10),
 });
 
 type FormData = z.infer<typeof schema>;
 
-const SignIn = () => {
+const SignUp = () => {
   const {
     register,
     handleSubmit,
@@ -39,10 +40,6 @@ const SignIn = () => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
-
-  const router = useRouter();
-
-  const [invalidCredentials, setInvalidCredentials] = useState(false);
 
   const [providers, setProviders] = useState<Record<
     LiteralUnion<BuiltInProviderType, string>,
@@ -59,19 +56,7 @@ const SignIn = () => {
   }, []);
 
   async function onSubmit(data: FormData) {
-    setInvalidCredentials(false);
-    const res = await signIn('credentials', {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
-
-    if (res?.error) {
-      setInvalidCredentials(true);
-      return;
-    }
-
-    router.push('/home');
+    
   }
 
   return (
@@ -82,6 +67,23 @@ const SignIn = () => {
         noValidate={true}
       >
         <div className="flex flex-col items-center space-y-4 mb-2 ">
+          <div className="flex space-x-2 w-80">
+            <label className="input validator">
+              <input
+                placeholder="First Name"
+                required
+                {...register('firstName')}
+              />
+            </label>
+            <label className="input validator">
+              <input
+                placeholder="Last Name"
+                required
+                {...register('lastName')}
+              />
+            </label>
+          </div>
+
           <label className="input validator">
             <svg
               className="h-[1em] opacity-50"
@@ -104,11 +106,9 @@ const SignIn = () => {
               placeholder="mail@site.com"
               required
               {...register('email')}
-              onChange={() => {
-                setInvalidCredentials(false);
-              }}
             />
           </label>
+
           <label className="input validator">
             <svg
               className="h-[1em] opacity-50"
@@ -130,11 +130,9 @@ const SignIn = () => {
               placeholder="Password"
               title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
               {...register('password')}
-              onChange={() => {
-                setInvalidCredentials(false);
-              }}
             />
           </label>
+
           <div
             id="errors"
             className="flex flex-col space-y-2 text-sm text-accent"
@@ -144,11 +142,10 @@ const SignIn = () => {
 
               return <p key={item}>{errorMessage}</p>;
             })}
-            {invalidCredentials && <p>Invalid credentials</p>}
           </div>
         </div>
         <button className="btn btn-primary btn-soft w-full mb-2">
-          Sign In
+          Sign Up
         </button>
       </form>
 
@@ -170,13 +167,13 @@ const SignIn = () => {
         })}
 
       <p className="mt-6 text-center text-sm text-base-content">
-        Don&apos;t have an account?{' '}
-        <Link href="/auth/sign-up" className="link">
-          Sign up
+        already have an account?{' '}
+        <Link href="/auth/sign-in" className="link">
+          Sign In
         </Link>
       </p>
     </>
   );
 };
 
-export default SignIn;
+export default SignUp;
