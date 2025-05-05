@@ -1,16 +1,10 @@
 import { Limelight } from 'next/font/google';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { Metadata } from 'next';
 
 const limeLight = Limelight({
   weight: '400',
 });
-
-export const metadata: Metadata = {
-  title: 'Home',
-  description: 'WriteFlow a place to share',
-};
 
 export default function GuestLayout({
   children,
