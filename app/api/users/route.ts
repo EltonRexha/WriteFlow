@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { userSchema } from '@/schemas/userSchema';
+import { UserSchema } from '@/schemas/userSchema';
 import bcrypt from 'bcrypt';
 import prisma from '@/prisma/client';
 
 export async function POST(request: Request) {
   const jsonBody = await request.json();
-  const body = userSchema.safeParse(jsonBody);
+  const body = UserSchema.safeParse(jsonBody);
 
   if (!body.success) {
     return NextResponse.json(body.error, { status: 400 });
@@ -38,8 +38,13 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json({
-    message: 'User successfully created',
-    email: createdUser.email,
-  });
+  return NextResponse.json(
+    {
+      message: 'User successfully created',
+      email: createdUser.email,
+    },
+    {
+      status: 201,
+    }
+  );
 }

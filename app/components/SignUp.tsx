@@ -1,6 +1,8 @@
 'use client';
 
+import { createUser } from '@/services/api/user';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { BuiltInProviderType } from 'next-auth/providers/index';
 import {
   ClientSafeProvider,
@@ -9,6 +11,7 @@ import {
   signIn,
 } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -27,7 +30,7 @@ const schema = z.object({
     ),
   email: z.string().email(),
   firstName: z.string().min(3).max(10),
-  lastName: z.string().min(3).max(10),
+  lastName: z.string().min(3).max(10).optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -39,6 +42,20 @@ const SignUp = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+  });
+
+  const router = useRouter();
+
+  const createUserMutation = useMutation({
+    mutationFn: (data: FormData) =>
+      createUser({
+        email: data.email,
+        name: data.firstName + (data.lastName ? ' ' : '') + data.lastName,
+        password: data.password,
+      }),
+    onSuccess: () => {
+      router.push('/auth/sign-in');
+    }
   });
 
   const [providers, setProviders] = useState<Record<
@@ -56,7 +73,7 @@ const SignUp = () => {
   }, []);
 
   async function onSubmit(data: FormData) {
-    
+    createUserMutation.mutate(data);
   }
 
   return (
@@ -77,7 +94,7 @@ const SignUp = () => {
             </label>
             <label className="input validator">
               <input
-                placeholder="Last Name"
+                placeholder="Last Name (Optional)"
                 required
                 {...register('lastName')}
               />
