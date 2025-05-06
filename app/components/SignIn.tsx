@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
+import { useToast } from './ToastProvider';
 
 const schema = z.object({
   password: z
@@ -44,6 +45,8 @@ const SignIn = () => {
 
   const [invalidCredentials, setInvalidCredentials] = useState(false);
 
+  const { addToast } = useToast();
+
   const [providers, setProviders] = useState<Record<
     LiteralUnion<BuiltInProviderType, string>,
     ClientSafeProvider
@@ -71,6 +74,7 @@ const SignIn = () => {
       return;
     }
 
+    addToast('Successfully signed in');
     router.push('/home');
   }
 

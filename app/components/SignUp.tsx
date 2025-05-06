@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useToast } from './ToastProvider';
 
 const schema = z.object({
   password: z
@@ -47,6 +48,8 @@ const SignUp = () => {
   const email = watch('email');
   const password = watch('password');
 
+  const { addToast } = useToast();
+
   const createUserMutation = useMutation({
     mutationFn: (data: FormData) =>
       createUser({
@@ -59,6 +62,9 @@ const SignUp = () => {
         email,
         password,
       });
+    },
+    onError: () => {
+      addToast('Something wrong happened', 'error');
     },
   });
 
@@ -88,7 +94,7 @@ const SignUp = () => {
         noValidate={true}
       >
         <div className="flex flex-col items-center space-y-4 mb-2 ">
-          <div className="flex space-x-2 w-80">
+          <div className="flex-col sm:flex-row space-y-2 sm:space-y-0 flex sm:space-x-2 sm:w-80 w-full items-center justify-center">
             <label className="input validator">
               <input
                 placeholder="First Name"
@@ -96,6 +102,7 @@ const SignUp = () => {
                 {...register('firstName')}
               />
             </label>
+
             <label className="input validator">
               <input
                 placeholder="Last Name (Optional)"
