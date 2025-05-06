@@ -11,7 +11,6 @@ import {
   signIn,
 } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -40,11 +39,13 @@ const SignUp = () => {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const router = useRouter();
+  const email = watch('email');
+  const password = watch('password');
 
   const createUserMutation = useMutation({
     mutationFn: (data: FormData) =>
@@ -54,8 +55,11 @@ const SignUp = () => {
         password: data.password,
       }),
     onSuccess: () => {
-      router.push('/auth/sign-in');
-    }
+      signIn('credentials', {
+        email,
+        password,
+      });
+    },
   });
 
   const [providers, setProviders] = useState<Record<
