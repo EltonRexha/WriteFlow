@@ -1,7 +1,7 @@
 import { Limelight } from 'next/font/google';
 import Link from 'next/link';
 import clsx from 'clsx';
-import SignOutBtn from '../components/ui/SignOutBtn';
+import Avatar from '../components/Avatar';
 
 const limeLight = Limelight({
   weight: '400',
@@ -30,12 +30,12 @@ export default function UserLayout({
           <div className="flex ml-auto sm:navbar-end">
             <ul className="flex sm:gap-2 items-center px-1">
               <li>
-                <SignOutBtn/>
-              </li>
-              <li>
                 <Link href="/auth/sign-up">
                   <button className="btn btn-primary">Create</button>
                 </Link>
+              </li>
+              <li>
+                <Avatar />
               </li>
             </ul>
           </div>
