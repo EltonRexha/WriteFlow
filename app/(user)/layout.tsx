@@ -28,7 +28,7 @@ export default function UserLayout({
             </Link>
           </div>
           <div className="flex ml-auto sm:navbar-end">
-            <ul className="flex sm:gap-2 items-center px-1">
+            <ul className="flex gap-2 items-center px-1">
               <li>
                 <Link href="/auth/sign-up">
                   <button className="btn btn-primary">Create</button>
