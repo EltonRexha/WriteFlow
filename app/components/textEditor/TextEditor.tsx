@@ -4,7 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import MenuBar from './MenuBar';
+import MenuBar from './_components/MenuBar';
 import Image from '@tiptap/extension-image';
 import { isMacOs } from 'react-device-detect';
 import { all, createLowlight } from 'lowlight';
@@ -16,7 +16,7 @@ const TextEditor = () => {
     editorProps: {
       attributes: {
         class:
-          'lg:px-32 px-10 lg:py-4 py-10 focus:outline-none focus:ring-0 min-h-screen',
+          'lg:px-32 px-10 lg:py-4 py-10 focus:outline-none focus:ring-0 min-h-[90vh]',
       },
     },
     extensions: [
