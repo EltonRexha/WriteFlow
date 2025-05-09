@@ -1,7 +1,7 @@
 import { Limelight } from 'next/font/google';
 import Link from 'next/link';
 import clsx from 'clsx';
-import Avatar from '../components/Avatar';
+import Avatar from '@/app/components/Avatar';
 
 const limeLight = Limelight({
   weight: '400',
@@ -30,8 +30,8 @@ export default function UserLayout({
           <div className="flex ml-auto sm:navbar-end">
             <ul className="flex gap-2 items-center px-1">
               <li>
-                <Link href="/auth/sign-up">
-                  <button className="btn btn-primary">Create</button>
+                <Link href="/blog/new">
+                  <button className="btn btn-primary">Publish</button>
                 </Link>
               </li>
               <li>
