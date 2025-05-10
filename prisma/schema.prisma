@@ -53,6 +53,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Draft         Draft[]
 
   @@map("users")
 }
@@ -64,4 +65,28 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model BlogContent {
+  id        String   @id @default(uuid())
+  content   Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  Draft     Draft[]
+
+  @@map("blog_content")
+}
+
+model Draft {
+  id          String      @id @default(uuid())
+  name        String
+  author      User        @relation(fields: [userId], references: [id])
+  blogContent BlogContent @relation(fields: [blogContentId], references: [id])
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  userId        String   @map("user_id")
+  blogContentId String @map("blog_content_id")
+
+  @@map("draft")
 }
