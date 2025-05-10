@@ -2,8 +2,8 @@ import { Limelight } from 'next/font/google';
 import Link from 'next/link';
 import clsx from 'clsx';
 import Avatar from '@/app/components/Avatar';
-import { Save } from 'lucide-react';
 import Navbar from '@/app/components/Navbar';
+import SaveDraftBtn from '@/app/components/SaveDraftBtn';
 
 const limeLight = Limelight({
   weight: '400',
@@ -32,10 +32,7 @@ export default function UserLayout({
           <ul className="flex gap-2 items-center px-1">
             <li>
               <Link href="/blog/new">
-                <button className="btn btn-sm btn-secondary btn-ghost">
-                  <Save className="join-item" height={15} width={15} />
-                  Save
-                </button>
+                <SaveDraftBtn/>
               </Link>
             </li>
             <li>

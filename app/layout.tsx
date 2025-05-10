@@ -30,11 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <ReactQuery>
-            <ToastProvider>{children}</ToastProvider>
-          </ReactQuery>
-        </AuthProvider>
+          <AuthProvider>
+            <ReactQuery>
+              <ToastProvider>{children}</ToastProvider>
+            </ReactQuery>
+          </AuthProvider>
       </body>
     </html>
   );

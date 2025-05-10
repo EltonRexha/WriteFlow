@@ -9,10 +9,11 @@ import MenuBar from './_components/MenuBar';
 import Image from '@tiptap/extension-image';
 import { isMacOs } from 'react-device-detect';
 import { all, createLowlight } from 'lowlight';
+const INITIAL_CONTENT = 'Example Text';
 
 const lowlight = createLowlight(all);
 
-const TextEditor = () => {
+const TextEditor = ({ onUpdate }: { onUpdate: (content: string) => void }) => {
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -48,7 +49,15 @@ const TextEditor = () => {
       }),
       Highlight,
     ],
-    content: 'Example Text',
+    onUpdate: ({ editor }) => {
+      const content = JSON.stringify(editor.getJSON());
+      onUpdate(content);
+    },
+    onCreate: ({ editor }) => {
+      const content = JSON.stringify(editor.getJSON());
+      onUpdate(content);
+    },
+    content: INITIAL_CONTENT,
   });
 
   return (

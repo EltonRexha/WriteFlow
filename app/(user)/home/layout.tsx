@@ -33,7 +33,7 @@ export default function UserLayout({
             <li>
               <Link href="/blog/new">
                 <button className="btn btn-sm btn-primary btn-soft">
-                  <Pen height={15} width={15}/>
+                  <Pen height={15} width={15} />
                   Create
                 </button>
               </Link>
@@ -45,6 +45,7 @@ export default function UserLayout({
         </div>
       </Navbar>
       <div>{children}</div>
+     
     </div>
   );
 }
