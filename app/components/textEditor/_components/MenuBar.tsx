@@ -14,6 +14,9 @@ import {
   Menu,
   X,
   Upload,
+  TextQuote,
+  Minus,
+  Highlighter,
 } from 'lucide-react';
 import { isMobile } from 'react-device-detect';
 import AnimatedMenu from './AnimatedMenu';
@@ -147,6 +150,14 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           >
             <Strikethrough height={15} />
           </button>
+          <button
+            onClick={() => editor.chain().focus().toggleHighlight().run()}
+            className={`btn btn-sm join-item ${
+              editor.isActive('highlight') ? 'btn-primary' : ''
+            }`}
+          >
+            <Highlighter height={15}/>
+          </button>
         </div>
 
         <div className="join">
@@ -165,6 +176,22 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             }`}
           >
             <ListOrdered height={15} />
+          </button>
+          <button
+            className={`btn btn-sm join-item ${
+              editor.isActive('blockquote') ? 'btn-primary' : ''
+            }`}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          >
+            <TextQuote height={15} />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            className={`btn btn-sm join-item ${
+              editor.isActive('horizontal') ? 'btn-primary' : ''
+            }`}
+          >
+            <Minus height={15} />
           </button>
         </div>
 

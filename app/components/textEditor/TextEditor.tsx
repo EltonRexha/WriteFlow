@@ -4,6 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import Highlight from '@tiptap/extension-highlight';
 import MenuBar from './_components/MenuBar';
 import Image from '@tiptap/extension-image';
 import { isMacOs } from 'react-device-detect';
@@ -45,6 +46,7 @@ const TextEditor = () => {
           class: 'm-auto',
         },
       }),
+      Highlight,
     ],
     content: 'Example Text',
   });
