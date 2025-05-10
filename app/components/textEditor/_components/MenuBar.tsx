@@ -13,9 +13,11 @@ import {
   Code,
   Menu,
   X,
+  Upload,
 } from 'lucide-react';
 import { isMobile } from 'react-device-detect';
 import AnimatedMenu from './AnimatedMenu';
+import { CldUploadWidget, CloudinaryUploadWidgetInfo } from 'next-cloudinary';
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -165,6 +167,22 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             <ListOrdered height={15} />
           </button>
         </div>
+
+        <CldUploadWidget
+          uploadPreset="blog_images"
+          onSuccess={(result) => {
+            const info = result?.info as CloudinaryUploadWidgetInfo;
+            const url = info.secure_url;
+            console.log(url);
+            editor.chain().focus().setImage({ src: url }).run();
+          }}
+        >
+          {({ open }) => (
+            <button className="btn btn-sm" onClick={() => open()}>
+              <Upload height={15} />
+            </button>
+          )}
+        </CldUploadWidget>
 
         {!isMobile && (
           <div className="join">
