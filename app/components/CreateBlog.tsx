@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import TextEditor from './textEditor/TextEditor';
-import SaveDraftDialog from './SaveDraftDialog';
+import CreateDraftDialog from './CreateDraftDialog';
+import CreateBlogDialog from './CreateBlogDialog';
 
 const CreateBlog = () => {
   const [blogContent, setBlogContent] = useState('');
@@ -13,7 +14,8 @@ const CreateBlog = () => {
   return (
     <>
       <TextEditor onUpdate={onUpdate} />
-      <SaveDraftDialog blogContent={blogContent} />
+      <CreateDraftDialog blogContent={blogContent} />
+      <CreateBlogDialog blogContent={blogContent} />
     </>
   );
 };

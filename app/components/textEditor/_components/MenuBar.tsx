@@ -200,7 +200,6 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onSuccess={(result) => {
             const info = result?.info as CloudinaryUploadWidgetInfo;
             const url = info.secure_url;
-            console.log(url);
             editor.chain().focus().setImage({ src: url }).run();
           }}
         >
