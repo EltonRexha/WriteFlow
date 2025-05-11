@@ -18,7 +18,7 @@ const TextEditor = ({ onUpdate }: { onUpdate: (content: string) => void }) => {
     editorProps: {
       attributes: {
         class:
-          'lg:px-32 px-10 lg:py-4 py-10 focus:outline-none focus:ring-0 min-h-[90vh]',
+          'max-w-[82ch] px-2 sm:px-5 m-auto lg:py-4 py-10 focus:outline-none focus:ring-0 min-h-[90vh] text-pretty',
       },
     },
     extensions: [

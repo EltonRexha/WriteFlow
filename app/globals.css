@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @plugin "daisyui" {
-  themes: forest --default;
+  themes: emerald --default, forest --prefersdark;
 }
 
 @layer components {

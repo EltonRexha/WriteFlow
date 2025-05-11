@@ -4,7 +4,7 @@ export const BlogSchema = z.object({
   title: z
     .string()
     .min(3, 'Title must be at least 3 characters long')
-    .max(25, 'Title must not exceed 25 characters')
+    .max(50, 'Title must not exceed 50 characters')
     .nonempty('Title is required'),
   categories: z
     .array(z.string(), { required_error: 'At least one category is required' })
@@ -17,7 +17,7 @@ export const BlogSchema = z.object({
   description: z
     .string()
     .min(10, 'Description must be at least 10 characters long')
-    .max(30, 'Description must not exceed 30 characters')
+    .max(200, 'Description must not exceed 200 characters')
     .nonempty('Description is required'),
   content: z
     .string()

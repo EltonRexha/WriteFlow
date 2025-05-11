@@ -61,3 +61,35 @@ export async function createBlog(
 
   return createdBlog.id;
 }
+
+export async function getBlog(id: string) {
+  return await prisma.blog.findFirst({
+    where: {
+      id,
+    },
+    select: {
+      Author: {
+        select: {
+          email: true,
+          image: true,
+          name: true,
+        },
+      },
+      BlogContent: {
+        select: {
+          content: true,
+        },
+      },
+      categories: {
+        select: {
+          name: true,
+        },
+      },
+      title: true,
+      description: true,
+      id: true,
+      imageUrl: true,
+      createdAt: true,
+    },
+  });
+}
