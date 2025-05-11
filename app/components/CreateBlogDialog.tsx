@@ -13,12 +13,16 @@ import {
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from 'next-cloudinary';
+import { createBlog } from '@/server-actions/blogs/action';
+import { isActionError } from '@/types/ActionError';
+import { useRouter } from 'next/navigation';
 
 type FormData = z.infer<typeof BlogSchema>;
 
 const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   const [categories, setCategories] = useState<{ name: string }[]>([]);
   const [showImage, setShowImg] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const {
@@ -52,11 +56,19 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
     fetchCategories();
   }, [addToast]);
 
+  const router = useRouter();
+
   const mounted = useMounted();
   if (!mounted) return null;
 
-  function onSubmit(data: FormData) {
-    console.log(data);
+  async function onSubmit(data: FormData) {
+    const response = await createBlog(data);
+
+    if (isActionError(response)) {
+      setError(response.error.message);
+    } else {
+      router.push('/home');
+    }
   }
 
   return (
@@ -80,7 +92,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
         >
           <div className="flex space-x-2">
             <div className="flex-1">
-              <div className="border-dashed border-neutral border-2 flex items-center justify-center aspect-square relative">
+              <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative">
                 {imgUrl && showImage ? (
                   <CldImage
                     src={imgUrl}
@@ -105,7 +117,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                   >
                     {({ open }) => (
                       <button
-                        className="btn btn-dash btn-neutral"
+                        className="btn btn-dash border-neutral-content"
                         onClick={() => {
                           open();
                           const btn = closeBtnRef.current;
@@ -121,7 +133,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                 )}
               </div>
               {!imgUrl && (
-                <p className="text-accent">{errors['imageUrl']?.message}</p>
+                <p className="text-error">{errors['imageUrl']?.message}</p>
               )}
             </div>
 
@@ -133,7 +145,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                   {...register('title')}
                   required
                 />
-                <p className="text-accent">{errors['title']?.message}</p>
+                <p className="text-error">{errors['title']?.message}</p>
               </div>
 
               <div>
@@ -143,12 +155,12 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                   {...register('description')}
                   required
                 />
-                <p className="text-accent">{errors['description']?.message}</p>
+                <p className="text-error">{errors['description']?.message}</p>
               </div>
 
               {categories && (
                 <div>
-                  <Select
+                  <Select<{ value: string; label: string }, true>
                     placeholder="Categories"
                     isMulti
                     menuPlacement="top"
@@ -161,13 +173,53 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                     )}
                     menuPosition={'fixed'}
                     styles={{
-                      menuPortal: (base) => ({
-                        ...base,
+                      control: (baseStyles) => ({
+                        ...baseStyles,
+                        backgroundColor: 'var(--fallback-b1,oklch(var(--b1)))',
+                        borderColor:
+                          'var(--fallback-border-color,oklch(var(--bc)/0.2))',
+                      }),
+                      menuList: (baseStyles) => ({
+                        ...baseStyles,
+                        backgroundColor: 'var(--fallback-b1,oklch(var(--b1)))',
+                        padding: 0,
+                      }),
+                      menuPortal: (baseStyles) => ({
+                        ...baseStyles,
                         zIndex: 9999,
                         position: 'absolute',
                       }),
+                      option: (baseStyles, { isFocused }) => ({
+                        ...baseStyles,
+                        backgroundColor: isFocused
+                          ? 'var(--fallback-b2,oklch(var(--b2)))'
+                          : 'var(--fallback-b1,oklch(var(--b1)))',
+                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                        cursor: 'pointer',
+                      }),
+                      multiValue: (baseStyles) => ({
+                        ...baseStyles,
+                        backgroundColor: 'var(--fallback-b2,oklch(var(--b2)))',
+                      }),
+                      multiValueLabel: (baseStyles) => ({
+                        ...baseStyles,
+                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                      }),
+                      multiValueRemove: (baseStyles) => ({
+                        ...baseStyles,
+                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                        ':hover': {
+                          backgroundColor:
+                            'var(--fallback-error,oklch(var(--er)))',
+                          color: 'white',
+                        },
+                      }),
+                      input: (baseStyles) => ({
+                        ...baseStyles,
+                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                      }),
                     }}
-                    className="text-base-content absolute z-50"
+                    className="text-base-content"
                     onChange={(values) => {
                       setValue(
                         'categories',
@@ -175,7 +227,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                       );
                     }}
                   />
-                  <p className="text-accent">{errors['categories']?.message}</p>
+                  <p className="text-error">{errors['categories']?.message}</p>
                 </div>
               )}
             </div>
@@ -183,6 +235,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
           <button className="btn btn-primary btn-soft block w-full">
             Publish
           </button>
+          {error && <p className="text-error my-2">{error}</p>}
         </form>
       </div>
     </dialog>
