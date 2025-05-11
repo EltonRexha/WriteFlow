@@ -90,7 +90,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
           noValidate
           className="space-y-2"
         >
-          <div className="flex space-x-2">
+          <div className="space-x-2 space-y-4 lg:flex lg:space-y-0">
             <div className="flex-1">
               <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative">
                 {imgUrl && showImage ? (
