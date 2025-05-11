@@ -2,7 +2,7 @@
 import { Save } from 'lucide-react';
 import React from 'react';
 
-const SaveDraftBtn = () => {
+const CreateDraftBtn = () => {
   return (
     <button
       className="btn btn-sm btn-secondary btn-ghost"
@@ -18,4 +18,4 @@ const SaveDraftBtn = () => {
   );
 };
 
-export default SaveDraftBtn;
+export default CreateDraftBtn;

@@ -3,7 +3,8 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import Avatar from '@/app/components/Avatar';
 import Navbar from '@/app/components/Navbar';
-import SaveDraftBtn from '@/app/components/SaveDraftBtn';
+import CreateDraftBtn from '@/app/components/ui/CreateDraftBtn';
+import CreateBlogBtn from '@/app/components/ui/CreateBlogBtn';
 
 const limeLight = Limelight({
   weight: '400',
@@ -31,16 +32,10 @@ export default function UserLayout({
         <div className="flex ml-auto sm:navbar-end">
           <ul className="flex gap-2 items-center px-1">
             <li>
-              <Link href="/blog/new">
-                <SaveDraftBtn/>
-              </Link>
+              <CreateDraftBtn />
             </li>
             <li>
-              <Link href="/blog/new">
-                <button className="btn btn-sm btn-soft btn-primary">
-                  Publish
-                </button>
-              </Link>
+              <CreateBlogBtn/>
             </li>
             <li>
               <Avatar />

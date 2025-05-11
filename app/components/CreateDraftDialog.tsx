@@ -3,15 +3,14 @@ import { DraftSchema } from '@/schemas/draftSchema';
 import { createDraft } from '@/server-actions/drafts/actions';
 import { isActionError } from '@/types/ActionError';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useToast } from './ToastProvider';
 import { useRouter } from 'next/navigation';
 
 type FormData = z.infer<typeof DraftSchema>;
 
-const SaveDraftDialog = ({ blogContent }: { blogContent: string }) => {
+const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
   const {
     register,
     handleSubmit,
@@ -21,14 +20,15 @@ const SaveDraftDialog = ({ blogContent }: { blogContent: string }) => {
     resolver: zodResolver(DraftSchema),
   });
 
-  const { addToast } = useToast();
+  const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
 
   async function onSubmit(data: FormData) {
     const response = await createDraft(data);
 
     if (isActionError(response)) {
-      addToast(response.error.message, 'error');
+      setError(response.error.message);
     } else {
       router.push('/home');
     }
@@ -50,6 +50,7 @@ const SaveDraftDialog = ({ blogContent }: { blogContent: string }) => {
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col space-y-4"
+          noValidate
         >
           <input
             className="input w-full"
@@ -70,10 +71,11 @@ const SaveDraftDialog = ({ blogContent }: { blogContent: string }) => {
 
             return <p key={item}>{errorMessage}</p>;
           })}
+          {error && <p>{error}</p>}
         </div>
       </div>
     </dialog>
   );
 };
 
-export default SaveDraftDialog;
+export default CreateDraftDialog;

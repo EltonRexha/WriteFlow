@@ -53,7 +53,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  Draft         Draft[]
+  Drafts        Draft[]
+  Blogs         Blog[]
 
   @@map("users")
 }
@@ -73,6 +74,7 @@ model BlogContent {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   Draft     Draft[]
+  Blog      Blog[]
 
   @@map("blog_content")
 }
@@ -86,7 +88,33 @@ model Draft {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
   userId        String   @map("user_id")
-  blogContentId String @map("blog_content_id")
+  blogContentId String   @map("blog_content_id")
 
+  @@unique([name, userId])
   @@map("draft")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  blogs     Blog[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Blog {
+  id            String      @id @default(uuid())
+  imageUrl      String      @map("img_url")
+  title         String
+  description   String
+  categories    Category[]
+  Author        User        @relation(fields: [userId], references: [id])
+  BlogContent   BlogContent @relation(fields: [blogContentId], references: [id])
+  userId        String      @map("user_id")
+  blogContentId String      @map("blog_content_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  @@unique([title, userId])
+  @@map("blog")
 }
