@@ -9,9 +9,7 @@ import { format } from 'date-fns';
 import BlogContent from '@/app/components/BlogContent';
 import ToggleLikeBlogBtn from '@/app/components/ui/ToggleLikeBlogBtn';
 import ToggleDislikeBlogBtn from '@/app/components/ui/ToggleDislikeBlogBtn';
-import { getComments } from '@/server-actions/comments/action';
-import BlogComment from '@/app/components/ui/BlogComment';
-import CreateBlogComment from '@/app/components/CreateBlogComment';
+import BlogComments from '@/app/components/BlogComments';
 
 const limeLight = Limelight({
   weight: '400',
@@ -20,7 +18,6 @@ const limeLight = Limelight({
 
 const page = async ({ params: { id } }: { params: { id: string } }) => {
   const blog = await getBlog(id);
-  const comments = await getComments(id);
 
   if (!blog.data) {
     return 'not found';
@@ -64,7 +61,7 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
               )}
             </div>
             <p className="text-primary ">{blog.data.Author.name}</p>
-            <button className="btn btn-secondary rounded-4xl btn-dash btn-sm">
+            <button className="hidden sm:block btn btn-secondary rounded-4xl btn-dash btn-sm">
               Follow
             </button>
             <Dot />
@@ -112,15 +109,7 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
-        <div id="commentSection" className="mt-10 space-y-5">
-          <h2 className="text-2xl font-bold">Replies ({comments.length})</h2>
-          <CreateBlogComment blogId={id} />
-          <div className="space-y-2">
-            {comments.map((data) => (
-              <BlogComment key={data.id} {...data} />
-            ))}
-          </div>
-        </div>
+        <BlogComments blogId={id} />
       </div>
     </div>
   );
