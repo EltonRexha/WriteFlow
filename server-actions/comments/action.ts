@@ -13,6 +13,7 @@ export async function getComments(blogId: string) {
       },
     },
     select: {
+      id: true,
       content: true,
       Author: {
         select: {

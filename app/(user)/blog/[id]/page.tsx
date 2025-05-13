@@ -7,8 +7,10 @@ import defaultProfile from '@/public/profile.svg';
 import { Dot } from 'lucide-react';
 import { format } from 'date-fns';
 import BlogContent from '@/app/components/BlogContent';
-import ToggleLikeBlogBtn from '@/app/components/ToggleLikeBlogBtn';
-import ToggleDislikeBlogBtn from '@/app/components/ToggleDislikeBlogBtn';
+import ToggleLikeBlogBtn from '@/app/components/ui/ToggleLikeBlogBtn';
+import ToggleDislikeBlogBtn from '@/app/components/ui/ToggleDislikeBlogBtn';
+import { getComments } from '@/server-actions/comments/action';
+import BlogComment from '@/app/components/ui/BlogComment';
 
 const limeLight = Limelight({
   weight: '400',
@@ -17,6 +19,7 @@ const limeLight = Limelight({
 
 const page = async ({ params: { id } }: { params: { id: string } }) => {
   const blog = await getBlog(id);
+  const comments = await getComments(id);
 
   if (!blog.data) {
     return 'not found';
@@ -79,28 +82,41 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
             className="w-full pt-4"
           />
         </div>
-        <div className="my-4">
-          {blog.data.BlogContent.content && (
-            <BlogContent content={blog.data.BlogContent.content as string} />
-          )}
-        </div>
         <div
-          id="likeSection"
-          className="border-base-content/70 border-t-[1px] pt-2"
+          id="mainSection"
+          className="border-base-content/70 border-b-[1px] "
         >
-          <div className="flex space-x-2 items-center">
-            <div className="flex items-center">
-              <ToggleLikeBlogBtn blogId={id} isLiked={!!blog.isLiked} />
-              <p className="text-sm text-base-content/70">
-                {blog.data._count.likedBy}
-              </p>
+          <div className="my-4">
+            {blog.data.BlogContent.content && (
+              <BlogContent content={blog.data.BlogContent.content as string} />
+            )}
+          </div>
+          <div id="likeSection" className="pt-2 mb-10">
+            <div className="flex space-x-2 items-center">
+              <div className="flex items-center">
+                <ToggleLikeBlogBtn blogId={id} isLiked={!!blog.isLiked} />
+                <p className="text-sm text-base-content/70">
+                  {blog.data._count.likedBy}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <ToggleDislikeBlogBtn
+                  blogId={id}
+                  isDisliked={!!blog.isDisliked}
+                />
+                <p className="text-sm text-base-content/70">
+                  {blog.data._count.dislikedBy}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center">
-              <ToggleDislikeBlogBtn blogId={id} isDisliked={!!blog.isDisliked} />
-              <p className="text-sm text-base-content/70">
-                {blog.data._count.dislikedBy}
-              </p>
-            </div>
+          </div>
+        </div>
+        <div id="commentSection" className="mt-10 space-y-5">
+          <h2 className="text-2xl font-bold">Replies ({comments.length})</h2>
+          <div className="space-y-2">
+            {comments.map((data) => (
+              <BlogComment key={data.id} {...data} />
+            ))}
           </div>
         </div>
       </div>
