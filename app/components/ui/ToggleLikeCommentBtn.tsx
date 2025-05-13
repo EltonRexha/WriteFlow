@@ -3,12 +3,19 @@ import { ThumbsUp } from 'lucide-react';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
+import { toggleLike } from '@/server-actions/comments/action';
 
-const ToggleLikeComment = ({ isLiked }: { isLiked: boolean }) => {
+const ToggleLikeComment = ({
+  isLiked,
+  commentId,
+}: {
+  isLiked: boolean;
+  commentId: string;
+}) => {
   const router = useRouter();
 
   const handleLike = async () => {
-    // await toggleLike(blogId);
+    await toggleLike(commentId);
     router.refresh();
   };
 

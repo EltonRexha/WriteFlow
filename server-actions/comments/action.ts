@@ -1,15 +1,60 @@
+'use server';
 import prisma from '@/prisma/client';
 import { BlogCommentSchema } from '@/schemas/blogCommentSchema';
+import { ActionError } from '@/types/ActionError';
 import { getServerSession } from 'next-auth';
 import { z } from 'zod';
 
 type BlogComment = z.infer<typeof BlogCommentSchema>;
 
 export async function getComments(blogId: string) {
-  const comments = await prisma.blogComment.findMany({
+  const session = await getServerSession();
+  const user = session?.user;
+
+  // Get user's comments first if user is logged in
+  const userComments = user?.email
+    ? await prisma.blogComment.findMany({
+        where: {
+          Blog: {
+            id: blogId,
+          },
+          Author: {
+            email: user.email,
+          },
+        },
+        select: {
+          id: true,
+          content: true,
+          Author: {
+            select: {
+              image: true,
+              name: true,
+              email: true,
+            },
+          },
+          createdAt: true,
+          _count: {
+            select: {
+              likedBy: true,
+              dislikedBy: true,
+            },
+          },
+        },
+      })
+    : [];
+
+  // Get other comments
+  const otherComments = await prisma.blogComment.findMany({
     where: {
       Blog: {
         id: blogId,
+      },
+      Author: {
+        email: user?.email
+          ? {
+              not: user.email,
+            }
+          : undefined,
       },
     },
     select: {
@@ -23,10 +68,48 @@ export async function getComments(blogId: string) {
         },
       },
       createdAt: true,
+      _count: {
+        select: {
+          likedBy: true,
+          dislikedBy: true,
+        },
+      },
+    },
+    orderBy: {
+      likedBy: {
+        _count: 'desc',
+      },
     },
   });
 
-  return comments;
+  const comments = [...userComments, ...otherComments];
+
+  if (!user || !user.email) {
+    return comments.map((comment) => ({
+      ...comment,
+      isLiked: false,
+      isDisliked: false,
+    }));
+  }
+
+  return await Promise.all(
+    comments.map(async (comment) => {
+      const isLiked = await commentIsLiked({
+        commentId: comment.id,
+        email: user.email as string,
+      });
+      const isDisliked = await commentIsDisliked({
+        commentId: comment.id,
+        email: user.email as string,
+      });
+
+      return {
+        ...comment,
+        isLiked,
+        isDisliked,
+      };
+    })
+  );
 }
 
 export async function createComment(data: BlogComment) {
@@ -62,4 +145,192 @@ export async function createComment(data: BlogComment) {
   });
 
   return blogComment.id;
+}
+
+export async function toggleLike(
+  commentId: string
+): Promise<ActionError | string> {
+  const session = await getServerSession();
+  const user = session?.user;
+
+  if (!user || !user.email) {
+    return { error: { message: 'please login to like comment', code: 401 } };
+  }
+
+  const isLiked = !!(await prisma.blogComment.findUnique({
+    where: {
+      id: commentId,
+      likedBy: {
+        some: {
+          email: user.email,
+        },
+      },
+    },
+  }));
+
+  if (!isLiked) {
+    await removeDislike({ commentId, email: user.email });
+    await addLike({ commentId, email: user.email });
+
+    return 'successfully liked comment';
+  }
+
+  await removeLike({ commentId, email: user.email });
+
+  return 'successfully removed like from comment';
+}
+
+export async function toggleDislike(
+  commentId: string
+): Promise<ActionError | string> {
+  const session = await getServerSession();
+  const user = session?.user;
+
+  if (!user || !user.email) {
+    return { error: { message: 'please login to dislike comment', code: 401 } };
+  }
+
+  const isDisliked = !!(await prisma.blogComment.findUnique({
+    where: {
+      id: commentId,
+      dislikedBy: {
+        some: {
+          email: user.email,
+        },
+      },
+    },
+  }));
+
+  if (!isDisliked) {
+    await removeLike({ commentId, email: user.email });
+    await addDislike({ commentId, email: user.email });
+
+    return 'successfully disliked comment';
+  }
+
+  await removeDislike({ commentId, email: user.email });
+
+  return 'successfully removed dislike from comment';
+}
+
+async function commentIsLiked({
+  commentId,
+  email,
+}: {
+  commentId: string;
+  email: string;
+}) {
+  return !!(await prisma.blogComment.findUnique({
+    where: {
+      id: commentId,
+      likedBy: {
+        some: {
+          email,
+        },
+      },
+    },
+  }));
+}
+
+async function commentIsDisliked({
+  commentId,
+  email,
+}: {
+  commentId: string;
+  email: string;
+}) {
+  return !!(await prisma.blogComment.findUnique({
+    where: {
+      id: commentId,
+      dislikedBy: {
+        some: {
+          email,
+        },
+      },
+    },
+  }));
+}
+
+async function removeLike({
+  commentId,
+  email,
+}: {
+  commentId: string;
+  email: string;
+}) {
+  return await prisma.blogComment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      likedBy: {
+        disconnect: {
+          email,
+        },
+      },
+    },
+  });
+}
+
+async function addLike({
+  commentId,
+  email,
+}: {
+  commentId: string;
+  email: string;
+}) {
+  return await prisma.blogComment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      likedBy: {
+        connect: {
+          email: email,
+        },
+      },
+    },
+  });
+}
+
+async function removeDislike({
+  commentId,
+  email,
+}: {
+  commentId: string;
+  email: string;
+}) {
+  return await prisma.blogComment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      dislikedBy: {
+        disconnect: {
+          email,
+        },
+      },
+    },
+  });
+}
+
+async function addDislike({
+  commentId,
+  email,
+}: {
+  commentId: string;
+  email: string;
+}) {
+  return await prisma.blogComment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      dislikedBy: {
+        connect: {
+          email: email,
+        },
+      },
+    },
+  });
 }

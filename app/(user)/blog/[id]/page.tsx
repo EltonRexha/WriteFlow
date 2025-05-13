@@ -11,6 +11,7 @@ import ToggleLikeBlogBtn from '@/app/components/ui/ToggleLikeBlogBtn';
 import ToggleDislikeBlogBtn from '@/app/components/ui/ToggleDislikeBlogBtn';
 import { getComments } from '@/server-actions/comments/action';
 import BlogComment from '@/app/components/ui/BlogComment';
+import CreateBlogComment from '@/app/components/CreateBlogComment';
 
 const limeLight = Limelight({
   weight: '400',
@@ -113,6 +114,7 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
         </div>
         <div id="commentSection" className="mt-10 space-y-5">
           <h2 className="text-2xl font-bold">Replies ({comments.length})</h2>
+          <CreateBlogComment blogId={id} />
           <div className="space-y-2">
             {comments.map((data) => (
               <BlogComment key={data.id} {...data} />

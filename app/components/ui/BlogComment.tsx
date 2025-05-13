@@ -4,23 +4,17 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import ToggleLikeComment from './ToggleLikeCommentBtn';
 import ToggleDislikeComment from './ToggleDislikeCommentBtn';
-
-interface Props {
-  id: string;
-  createdAt: Date;
-  Author: {
-    name: string | null;
-    email: string | null;
-    image: string | null;
-  };
-  content: string;
-}
+import { getComments } from '@/server-actions/comments/action';
 
 const BlogComment = ({
+  id,
   content,
   Author: { image, name: authorName },
   createdAt,
-}: Props) => {
+  _count,
+  isLiked,
+  isDisliked,
+}: Awaited<ReturnType<typeof getComments>>[number]) => {
   return (
     <div className="space-y-4 p-2">
       <div className="flex items-center space-x-2 mt-4">
@@ -53,12 +47,12 @@ const BlogComment = ({
       </div>
       <div className="flex space-x-2 items-center">
         <div className="flex items-center">
-          <ToggleLikeComment isLiked={false} />
-          <p className="text-sm text-base-content/70">3</p>
+          <ToggleLikeComment isLiked={isLiked} commentId={id} />
+          <p className="text-sm text-base-content/70">{_count.likedBy}</p>
         </div>
         <div className="flex items-center">
-          <ToggleDislikeComment isDisliked={false} />
-          <p className="text-sm text-base-content/70">2</p>
+          <ToggleDislikeComment isDisliked={isDisliked} commentId={id} />
+          <p className="text-sm text-base-content/70">{_count.dislikedBy}</p>
         </div>
       </div>
     </div>
