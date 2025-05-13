@@ -14,7 +14,7 @@ const BlogComment = ({
   _count,
   isLiked,
   isDisliked,
-}: Awaited<ReturnType<typeof getComments>>[number]) => {
+}: Awaited<ReturnType<typeof getComments>>['comments'][number]) => {
   return (
     <div className="space-y-4 p-2">
       <div className="flex items-center space-x-2 mt-4">

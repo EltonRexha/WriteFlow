@@ -17,7 +17,6 @@ const CreateBlogComment = ({ blogId }: { blogId: string }) => {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = useForm<FormData>({
     resolver: zodResolver(BlogCommentSchema),
   });
