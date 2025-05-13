@@ -1,7 +1,7 @@
 'use client';
 import { createComment } from '@/server-actions/comments/action';
 import { isActionError } from '@/types/ActionError';
-import { useToast } from './ToastProvider';
+import { useToast } from '../../../../components/ToastProvider';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';

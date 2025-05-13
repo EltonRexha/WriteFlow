@@ -1,4 +1,4 @@
-import CreateBlog from '@/app/components/CreateBlog';
+import CreateBlog from '@/app/(user)/blog/new/_components/CreateBlog';
 import React from 'react';
 
 const page = () => {

@@ -3,8 +3,8 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import Avatar from '@/app/components/Avatar';
 import Navbar from '@/app/components/Navbar';
-import CreateDraftBtn from '@/app/components/ui/CreateDraftBtn';
-import CreateBlogBtn from '@/app/components/ui/CreateBlogBtn';
+import CreateDraftBtn from '@/app/(user)/blog/new/_components/CreateDraftBtn';
+import CreateBlogBtn from '@/app/(user)/blog/new/_components/CreateBlogBtn';
 
 const limeLight = Limelight({
   weight: '400',

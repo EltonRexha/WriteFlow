@@ -7,7 +7,7 @@ import { z } from 'zod';
 import Select from 'react-select';
 import { useMounted } from '@/hooks/useMounted';
 import { getCategories } from '@/server-actions/categories/action';
-import { useToast } from './ToastProvider';
+import { useToast } from '../../../../components/ToastProvider';
 import {
   CldImage,
   CldUploadWidget,

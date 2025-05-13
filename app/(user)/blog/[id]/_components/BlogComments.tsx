@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import CreateBlogComment from './CreateBlogComment';
-import BlogComment from './ui/BlogComment';
+import BlogComment from './BlogComment';
 import { getComments, getUserComments } from '@/server-actions/comments/action';
 
 type CommentsFn = Awaited<ReturnType<typeof getComments>>;
