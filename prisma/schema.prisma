@@ -45,16 +45,21 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  Drafts        Draft[]
-  Blogs         Blog[]
+  id              String        @id @default(cuid())
+  name            String?
+  email           String?       @unique
+  password        String?
+  emailVerified   DateTime?     @map("email_verified")
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  Drafts          Draft[]
+  Blogs           Blog[]
+  BlogComment     BlogComment[]
+  likes           Blog[]        @relation("liked")
+  dislikes        Blog[]        @relation("disliked")
+  likedComment    BlogComment[] @relation("likedComment")
+  dislikedComment BlogComment[] @relation("dislikedComment")
 
   @@map("users")
 }
@@ -76,7 +81,7 @@ model BlogContent {
   Draft     Draft[]
   Blog      Blog[]
 
-  @@map("blog_content")
+  @@map("blog_contents")
 }
 
 model Draft {
@@ -91,7 +96,7 @@ model Draft {
   blogContentId String   @map("blog_content_id")
 
   @@unique([name, userId])
-  @@map("draft")
+  @@map("drafts")
 }
 
 model Category {
@@ -103,18 +108,36 @@ model Category {
 }
 
 model Blog {
-  id            String      @id @default(uuid())
-  imageUrl      String      @map("img_url")
+  id            String        @id @default(uuid())
+  imageUrl      String        @map("img_url")
   title         String
   description   String
   categories    Category[]
-  Author        User        @relation(fields: [userId], references: [id])
-  BlogContent   BlogContent @relation(fields: [blogContentId], references: [id])
-  userId        String      @map("user_id")
-  blogContentId String      @map("blog_content_id")
-  createdAt     DateTime    @default(now()) @map("created_at")
-  updatedAt     DateTime    @updatedAt @map("updated_at")
+  Author        User          @relation(fields: [userId], references: [id])
+  BlogContent   BlogContent   @relation(fields: [blogContentId], references: [id])
+  likedBy       User[]        @relation("liked")
+  dislikedBy    User[]        @relation("disliked")
+  userId        String        @map("user_id")
+  blogContentId String        @map("blog_content_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  BlogComment   BlogComment[]
 
   @@unique([title, userId])
-  @@map("blog")
+  @@map("blogs")
+}
+
+model BlogComment {
+  id         String   @id @default(uuid())
+  Author     User     @relation(fields: [userId], references: [id])
+  Blog       Blog     @relation(fields: [blogId], references: [id])
+  content    String
+  likedBy    User[]   @relation("likedComment")
+  dislikedBy User[]   @relation("dislikedComment")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  userId     String   @map("user_id")
+  blogId     String   @map("blog_id")
+
+  @@map("blog_comments")
 }

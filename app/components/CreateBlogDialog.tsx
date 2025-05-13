@@ -67,7 +67,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
     if (isActionError(response)) {
       setError(response.error.message);
     } else {
-      router.push('/home');
+      router.push(`/blog/${response}`);
     }
   }
 
