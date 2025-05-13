@@ -7,6 +7,8 @@ import defaultProfile from '@/public/profile.svg';
 import { Dot } from 'lucide-react';
 import { format } from 'date-fns';
 import BlogContent from '@/app/components/BlogContent';
+import ToggleLikeBlogBtn from '@/app/components/ToggleLikeBlogBtn';
+import ToggleDislikeBlogBtn from '@/app/components/ToggleDislikeBlogBtn';
 
 const limeLight = Limelight({
   weight: '400',
@@ -16,10 +18,11 @@ const limeLight = Limelight({
 const page = async ({ params: { id } }: { params: { id: string } }) => {
   const blog = await getBlog(id);
 
-  if (!blog) {
-    return null;
+  if (!blog.data) {
+    return 'not found';
   }
-  const authorImage = blog.Author.image;
+
+  const authorImage = blog.data.Author.image;
 
   return (
     <div className="pt-4">
@@ -31,10 +34,10 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
               limeLight.className
             )}
           >
-            {blog?.title}
+            {blog.data.title}
           </h1>
           <p className="text-xl text-base-content/70 pt-2 font-medium">
-            {blog?.description}
+            {blog.data.description}
           </p>
           <div className="flex items-center space-x-2 mt-4">
             <div className="w-8 aspect-square relative cursor-pointer ">
@@ -56,18 +59,18 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
                 />
               )}
             </div>
-            <p className="text-primary ">{blog.Author.name}</p>
+            <p className="text-primary ">{blog.data.Author.name}</p>
             <button className="btn btn-secondary rounded-4xl btn-dash btn-sm">
               Follow
             </button>
             <Dot />
             <p className="text-base-content/60 text-sm">
-              {format(blog.createdAt, 'PPP')}
+              {format(blog.data.createdAt, 'PPP')}
             </p>
           </div>
 
           <Image
-            src={blog.imageUrl}
+            src={blog.data.imageUrl}
             alt=""
             width={0}
             height={0}
@@ -77,9 +80,28 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
           />
         </div>
         <div className="my-4">
-          {blog.BlogContent.content && (
-            <BlogContent content={blog.BlogContent.content as string} />
+          {blog.data.BlogContent.content && (
+            <BlogContent content={blog.data.BlogContent.content as string} />
           )}
+        </div>
+        <div
+          id="likeSection"
+          className="border-base-content/70 border-t-[1px] pt-2"
+        >
+          <div className="flex space-x-2 items-center">
+            <div className="flex items-center">
+              <ToggleLikeBlogBtn blogId={id} isLiked={!!blog.isLiked} />
+              <p className="text-sm text-base-content/70">
+                {blog.data._count.likedBy}
+              </p>
+            </div>
+            <div className="flex items-center">
+              <ToggleDislikeBlogBtn blogId={id} isDisliked={!!blog.isDisliked} />
+              <p className="text-sm text-base-content/70">
+                {blog.data._count.dislikedBy}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
