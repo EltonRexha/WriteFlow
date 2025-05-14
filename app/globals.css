@@ -4,6 +4,17 @@
   themes: emerald --default, forest --prefersdark;
 }
 
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
 @layer components {
   .tiptap :first-child {
     @apply mt-0;

@@ -101,7 +101,7 @@ model Draft {
 
 model Category {
   id        String   @id @default(uuid())
-  name      String
+  name      String   @unique
   blogs     Blog[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -112,7 +112,7 @@ model Blog {
   imageUrl      String        @map("img_url")
   title         String
   description   String
-  categories    Category[]
+  Categories    Category[]
   Author        User          @relation(fields: [userId], references: [id])
   BlogContent   BlogContent   @relation(fields: [blogContentId], references: [id])
   likedBy       User[]        @relation("liked")

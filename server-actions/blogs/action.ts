@@ -41,6 +41,24 @@ export async function createBlog(
     };
   }
 
+  // Find categories case-insensitively
+  const categories = await Promise.all(
+    blogData.categories.map(async (name) => {
+      const category = await prisma.category.findFirst({
+        where: {
+          name: {
+            equals: name,
+            mode: 'insensitive',
+          },
+        },
+      });
+      if (!category) {
+        throw new Error(`Category ${name} not found`);
+      }
+      return { id: category.id };
+    })
+  );
+
   const createdBlog = await prisma.blog.create({
     data: {
       title: blogData.title,
@@ -55,6 +73,9 @@ export async function createBlog(
         create: {
           content: blogData.content,
         },
+      },
+      Categories: {
+        connect: categories,
       },
     },
   });
@@ -83,7 +104,7 @@ export async function getBlog(id: string) {
           content: true,
         },
       },
-      categories: {
+      Categories: {
         select: {
           name: true,
         },

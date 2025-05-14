@@ -6,10 +6,10 @@ import Image from 'next/image';
 import defaultProfile from '@/public/profile.svg';
 import { Dot } from 'lucide-react';
 import { format } from 'date-fns';
-import BlogContent from '@/app/(user)/blog/[id]/_components/BlogContent';
-import ToggleLikeBlogBtn from '@/app/(user)/blog/[id]/_components/ToggleLikeBlogBtn';
-import ToggleDislikeBlogBtn from '@/app/(user)/blog/[id]/_components/ToggleDislikeBlogBtn';
-import BlogComments from '@/app/(user)/blog/[id]/_components/BlogComments';
+import BlogContent from './_components/BlogContent';
+import ToggleLikeBlogBtn from './_components/ToggleLikeBlogBtn';
+import ToggleDislikeBlogBtn from './_components/ToggleDislikeBlogBtn';
+import BlogComments from './_components/BlogComments';
 
 const limeLight = Limelight({
   weight: '400',

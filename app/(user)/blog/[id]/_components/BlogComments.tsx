@@ -18,7 +18,6 @@ const BlogComments = ({ blogId }: { blogId: string }) => {
         const newBlogComments = await getComments(blogId, page);
         if (page === 1) {
           const userComments = await getUserComments(blogId);
-          console.log(userComments);
           setBlogComments(() => {
             if (!userComments.comments) return newBlogComments;
             return {
