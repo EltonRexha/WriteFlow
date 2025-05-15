@@ -29,8 +29,8 @@ const BlogPreviewCard = ({
             </div>
           </div>
           <span className="text-sm">{Author.name}</span>
-          <span className="text-base-content/60">·</span>
-          <time className="text-sm text-base-content/60">
+          <span className="hidden sm:block text-base-content/60">·</span>
+          <time className="hidden sm:block text-sm text-base-content/60">
             {format(new Date(createdAt), 'MMM d')}
           </time>
         </div>
