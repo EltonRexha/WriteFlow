@@ -15,8 +15,8 @@ const BlogSkeleton = () => {
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-2">
           <div className="skeleton w-6 h-6 rounded-full"></div>
-          <div className="skeleton h-4 w-24"></div>
-          <div className="skeleton h-4 w-16"></div>
+          <div className="skeleton h-4 w-24 hidden sm:block "></div>
+          <div className="skeleton h-4 w-16 hidden sm:block "></div>
         </div>
 
         <div className="space-y-2">

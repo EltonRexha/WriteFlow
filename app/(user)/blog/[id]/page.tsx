@@ -110,7 +110,7 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
               <div className="flex items-center space-x-2 ml-auto">
                 <Eye/>
                 <p className="text-sm text-base-content/70">
-                  {blog.data._count.ViewedBy}
+                  {blog.data._count.viewedBy}
                 </p>
               </div>
             </div>
