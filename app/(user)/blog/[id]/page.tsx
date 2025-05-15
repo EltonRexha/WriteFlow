@@ -1,10 +1,10 @@
-import { getBlog } from '@/server-actions/blogs/action';
+import { addView, getBlog } from '@/server-actions/blogs/action';
 import clsx from 'clsx';
 import { Limelight } from 'next/font/google';
 import React from 'react';
 import Image from 'next/image';
 import defaultProfile from '@/public/profile.svg';
-import { Dot } from 'lucide-react';
+import { Dot, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import BlogContent from './_components/BlogContent';
 import ToggleLikeBlogBtn from './_components/ToggleLikeBlogBtn';
@@ -24,6 +24,7 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
   }
 
   const authorImage = blog.data.Author.image;
+  addView(id);
 
   return (
     <div className="pt-4">
@@ -104,6 +105,12 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
                 />
                 <p className="text-sm text-base-content/70">
                   {blog.data._count.dislikedBy}
+                </p>
+              </div>
+              <div className="flex items-center space-x-2 ml-auto">
+                <Eye/>
+                <p className="text-sm text-base-content/70">
+                  {blog.data._count.ViewedBy}
                 </p>
               </div>
             </div>

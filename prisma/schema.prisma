@@ -55,11 +55,14 @@ model User {
   sessions        Session[]
   Drafts          Draft[]
   Blogs           Blog[]
+  Follows         User[]        @relation("follow")
+  FollowedBy      User[]        @relation("follow")
   BlogComment     BlogComment[]
   likes           Blog[]        @relation("liked")
   dislikes        Blog[]        @relation("disliked")
   likedComment    BlogComment[] @relation("likedComment")
   dislikedComment BlogComment[] @relation("dislikedComment")
+  ViewedBlogs     Blog[]        @relation("viewed")
 
   @@map("users")
 }
@@ -122,6 +125,7 @@ model Blog {
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
   BlogComment   BlogComment[]
+  viewedBy      User[]        @relation("viewed")
 
   @@unique([title, userId])
   @@map("blogs")
