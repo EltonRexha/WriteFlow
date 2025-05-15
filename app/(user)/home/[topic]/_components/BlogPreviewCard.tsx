@@ -2,11 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { getBlogsByTopic } from '@/server-actions/recommendation/action';
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
-
-type BlogsResponse = Awaited<ReturnType<typeof getBlogsByTopic>>;
-type Blog = BlogsResponse['blogs'][number];
+import { DisplayBlog } from '@/server-actions/recommendation/action';
 
 const BlogPreviewCard = ({
   id,
@@ -16,7 +13,7 @@ const BlogPreviewCard = ({
   Author,
   createdAt,
   _count,
-}: Blog) => {
+}: DisplayBlog) => {
   return (
     <article className="flex gap-6 py-6 cursor-pointer border-b border-base-content/10 group">
       <div className="flex-1">
@@ -49,7 +46,7 @@ const BlogPreviewCard = ({
 
         <div className="flex items-center text-base-content/60 text-sm">
           <div className="flex items-center gap-1">
-            <ThumbsUp height={15}/>
+            <ThumbsUp height={15} />
             {_count.likedBy}
           </div>
           <span className="mx-2">·</span>

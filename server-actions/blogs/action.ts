@@ -118,6 +118,7 @@ export async function getBlog(id: string) {
         select: {
           likedBy: true,
           dislikedBy: true,
+          viewedBy: true,
         },
       },
     },
@@ -313,4 +314,28 @@ async function addDislike({
       },
     },
   });
+}
+
+export async function addView(blogId: string): Promise<ActionError | string> {
+  const session = await getServerSession();
+  const user = session?.user;
+
+  if (!user || !user.email) {
+    return { error: { message: 'please login to view blog', code: 401 } };
+  }
+
+  const blog = await prisma.blog.update({
+    where: {
+      id: blogId,
+    },
+    data: {
+      viewedBy: {
+        connect: {
+          email: user.email,
+        },
+      },
+    },
+  });
+
+  return blog.id;
 }

@@ -1,10 +1,13 @@
 'use client';
-import { getBlogsByTopic } from '@/server-actions/recommendation/action';
+import {
+  DisplayBlog,
+  followingBlogs,
+  forYouBlogs,
+  getBlogsByTopic,
+} from '@/server-actions/recommendation/action';
 import React, { useEffect, useState } from 'react';
 import BlogPreviewCard from './BlogPreviewCard';
-
-type BlogsResponse = Awaited<ReturnType<typeof getBlogsByTopic>>;
-type Blog = BlogsResponse['blogs'][number];
+import { isActionError } from '@/types/ActionError';
 
 const BlogSkeleton = () => {
   return (
@@ -35,7 +38,7 @@ const BlogSkeleton = () => {
 
 const BlogsByTopic = ({ topic }: { topic: string }) => {
   const [page, setPage] = useState(1);
-  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [blogs, setBlogs] = useState<DisplayBlog[]>([]);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,7 +52,19 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
     async function getBlogs() {
       setIsLoading(true);
       try {
-        const response = await getBlogsByTopic(topic, page);
+        let response;
+        if (topic.toLocaleLowerCase() === 'for-you') {
+          response = await forYouBlogs(page);
+        } else if (topic.toLocaleLowerCase() === 'following') {
+          response = await followingBlogs(page);
+        } else {
+          response = await getBlogsByTopic(topic, page);
+        }
+
+        if (isActionError(response)) {
+          return;
+        }
+
         if (page === 1) {
           setBlogs(response.blogs);
         } else {
