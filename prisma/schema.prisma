@@ -51,6 +51,8 @@ model User {
   password        String?
   emailVerified   DateTime?     @map("email_verified")
   image           String?
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
   accounts        Account[]
   sessions        Session[]
   Drafts          Draft[]
