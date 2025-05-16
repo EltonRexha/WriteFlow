@@ -10,6 +10,8 @@ import BlogContent from './_components/BlogContent';
 import ToggleLikeBlogBtn from './_components/ToggleLikeBlogBtn';
 import ToggleDislikeBlogBtn from './_components/ToggleDislikeBlogBtn';
 import BlogComments from './_components/BlogComments';
+import FollowBtn from '@/app/components/ui/FollowBtn';
+import { getUser } from '@/server-actions/user/action';
 
 const limeLight = Limelight({
   weight: '400',
@@ -22,6 +24,8 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
   if (!blog.data) {
     return 'not found';
   }
+
+  const user = await getUser({ email: blog.data.Author.email as string });
 
   const authorImage = blog.data.Author.image;
   addView(id);
@@ -62,9 +66,7 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
               )}
             </div>
             <p className="text-primary ">{blog.data.Author.name}</p>
-            <button className="hidden sm:block btn btn-secondary rounded-4xl btn-dash btn-sm">
-              Follow
-            </button>
+            <FollowBtn userId={user!.id} />
             <Dot />
             <p className="text-base-content/60 text-sm">
               {format(blog.data.createdAt, 'PPP')}
@@ -108,7 +110,7 @@ const page = async ({ params: { id } }: { params: { id: string } }) => {
                 </p>
               </div>
               <div className="flex items-center space-x-2 ml-auto">
-                <Eye/>
+                <Eye />
                 <p className="text-sm text-base-content/70">
                   {blog.data._count.viewedBy}
                 </p>

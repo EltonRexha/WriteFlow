@@ -7,6 +7,9 @@ import { Limelight } from 'next/font/google';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 import UserBlogsList from './_components/UserBlogsList';
+import FollowBtn from '@/app/components/ui/FollowBtn';
+import { followed } from '@/server-actions/user/action';
+import { isActionError } from '@/types/ActionError';
 
 const limeLight = Limelight({
   weight: '400',
@@ -21,6 +24,11 @@ interface Props {
 
 const page = async ({ params: { id } }: Props) => {
   const user = await getUser(id);
+  const userFollowed = await followed({ id });
+
+  if (isActionError(userFollowed)) {
+    return 'Something went wrong';
+  }
 
   if (!user) return <div>User not found</div>;
 
@@ -48,9 +56,7 @@ const page = async ({ params: { id } }: Props) => {
               {user._count.FollowedBy} followers · {user._count.Follows}{' '}
               following
             </div>
-            <button className="btn btn-primary rounded-full btn-sm">
-              Follow
-            </button>
+            <FollowBtn userId={id} />
           </div>
         </div>
       </div>
