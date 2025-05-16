@@ -1,14 +1,15 @@
 'use client';
 import {
-  DisplayBlog,
-  followingBlogs,
-  forYouBlogs,
-  getBlogsByTopic,
-} from '@/server-actions/recommendation/action';
+  UserBlogsPagination,
+  getUserBlogs,
+} from '@/server-actions/blogs/action';
 import React, { useEffect, useState } from 'react';
-import BlogPreviewCard from './BlogPreviewCard';
 import { isActionError } from '@/types/ActionError';
+import BlogPreviewCard from '../../../home/[topic]/_components/BlogPreviewCard';
+import { User } from '@/app/generated/prisma';
+import { getUser } from '@/server-actions/user/action';
 
+// Re-using BlogSkeleton from BlogsByTopic
 const BlogSkeleton = () => {
   return (
     <article className="flex gap-6 py-6 border-b border-base-content/10">
@@ -36,30 +37,22 @@ const BlogSkeleton = () => {
   );
 };
 
-const BlogsByTopic = ({ topic }: { topic: string }) => {
+interface Props {
+  userEmail: string;
+}
+
+const UserBlogsList = ({ userEmail }: Props) => {
   const [page, setPage] = useState(1);
-  const [blogs, setBlogs] = useState<DisplayBlog[]>([]);
+  const [blogs, setBlogs] = useState<UserBlogsPagination['blogs']>([]);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    setBlogs([]);
-    setPage(1);
-    setHasNextPage(true);
-  }, [topic]);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     async function getBlogs() {
       setIsLoading(true);
       try {
-        let response;
-        if (topic.toLocaleLowerCase() === 'for-you') {
-          response = await forYouBlogs(page);
-        } else if (topic.toLocaleLowerCase() === 'following') {
-          response = await followingBlogs(page);
-        } else {
-          response = await getBlogsByTopic(topic, page);
-        }
+        const response = await getUserBlogs(userEmail, page);
 
         if (isActionError(response)) {
           return;
@@ -72,14 +65,24 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
         }
         setHasNextPage(response.pagination.hasNextPage);
       } catch (error) {
-        console.error('Error fetching blogs:', error);
+        console.error('Error fetching user blogs:', error);
       } finally {
         setIsLoading(false);
       }
     }
 
     getBlogs();
-  }, [page, topic]);
+  }, [page, userEmail]);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const user = await getUser({ email: userEmail });
+
+      setUser(user);
+    }
+
+    fetchUser();
+  }, [userEmail]);
 
   if (isLoading && blogs.length === 0) {
     return (
@@ -92,14 +95,17 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 py-2">
       <div className="space-y-6">
-        {blogs.length > 0 ? (
-          blogs.map((data) => <BlogPreviewCard key={data.id} {...data} />)
-        ) : (
-          <h2 className="mx-auto w-max py-10 text-3xl font-semibold">Nothing to show</h2>
-        )}
-        {isLoading && (
+        {user &&
+          blogs.map((blog) => (
+            <BlogPreviewCard
+              key={blog.id}
+              {...blog}
+              Author={{ name: user.name!, image: user.image }}
+            />
+          ))}
+        {(isLoading || !user) && (
           <>
             <BlogSkeleton />
             <BlogSkeleton />
@@ -116,7 +122,7 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
             {isLoading ? (
               <span className="loading loading-spinner"></span>
             ) : (
-              'View More'
+              'Load More'
             )}
           </button>
         </div>
@@ -125,4 +131,4 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
   );
 };
 
-export default BlogsByTopic;
+export default UserBlogsList;

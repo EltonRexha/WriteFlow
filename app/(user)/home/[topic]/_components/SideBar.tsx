@@ -86,18 +86,20 @@ const SideBar = async () => {
                 />
               </div>
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-base-content group-hover:text-primary">
-                {writer.name}
-              </h3>
-              <p className="text-sm text-base-content/70">
-                {writer._count.Blogs} blogs · {writer._count.FollowedBy}{' '}
-                followers
-              </p>
-              <div className="text-xs text-base-content/60 line-clamp-1">
-                Most popular: {writer.Blogs[0]?.title}
+            <Link href={`/user/${writer.id}`}>
+              <div className="flex-1">
+                <h3 className="font-semibold text-base-content group-hover:text-primary">
+                  {writer.name}
+                </h3>
+                <p className="text-sm text-base-content/70">
+                  {writer._count.Blogs} blogs · {writer._count.FollowedBy}{' '}
+                  followers
+                </p>
+                <div className="text-xs text-base-content/60 line-clamp-1">
+                  Most popular: {writer.Blogs[0]?.title}
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
         ))}
       </div>

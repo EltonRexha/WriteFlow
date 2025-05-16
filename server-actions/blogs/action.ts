@@ -339,3 +339,90 @@ export async function addView(blogId: string): Promise<ActionError | string> {
 
   return blog.id;
 }
+
+export interface UserBlogsPagination {
+  blogs: {
+    id: string;
+    title: string;
+    description: string;
+    imageUrl: string;
+    createdAt: Date;
+    _count: {
+      likedBy: number;
+      dislikedBy: number;
+      viewedBy: number;
+    };
+  }[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}
+
+export async function getUserBlogs(
+  userEmail: string,
+  page: number = 1
+): Promise<ActionError | UserBlogsPagination> {
+  const session = await getServerSession();
+  const user = session?.user;
+
+  if (!user || !user.email) {
+    return {
+      error: { message: 'please login to view user blogs', code: 401 },
+    };
+  }
+
+  const BLOGS_PER_PAGE = 10;
+  const skip = (page - 1) * BLOGS_PER_PAGE;
+
+  const blogs = await prisma.blog.findMany({
+    where: {
+      Author: {
+        email: userEmail,
+      },
+    },
+    orderBy: [
+      {
+        createdAt: 'desc',
+      },
+    ],
+    take: BLOGS_PER_PAGE,
+    skip,
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      imageUrl: true,
+      createdAt: true,
+      _count: {
+        select: {
+          likedBy: true,
+          dislikedBy: true,
+          viewedBy: true,
+        },
+      },
+    },
+  });
+
+  const totalBlogs = await prisma.blog.count({
+    where: {
+      Author: {
+        email: userEmail,
+      },
+    },
+  });
+
+  const totalPages = Math.ceil(totalBlogs / BLOGS_PER_PAGE);
+
+  return {
+    blogs,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
+}
