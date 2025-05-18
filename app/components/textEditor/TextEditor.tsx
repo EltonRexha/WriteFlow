@@ -1,6 +1,11 @@
 'use client';
 
-import { useEditor, EditorContent, Extensions, mergeAttributes } from '@tiptap/react';
+import {
+  useEditor,
+  EditorContent,
+  Extensions,
+  mergeAttributes,
+} from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
@@ -10,8 +15,12 @@ import Image from '@tiptap/extension-image';
 import { isMacOs } from 'react-device-detect';
 import { all, createLowlight } from 'lowlight';
 import hljs from 'highlight.js';
-const INITIAL_CONTENT = 'Example Text';
+import { useDebounce } from '@uidotdev/usehooks';
+import { useEffect, useState } from 'react';
 
+const INITIAL_CONTENT = 'Example Text';
+//Every 5 seconds change the conte
+const ONCHANGE_DEBOUNCE_DELAY = 5000;
 const lowlight = createLowlight(all);
 
 export const TipTapExtensions: Extensions = [
@@ -69,6 +78,10 @@ export const TipTapExtensions: Extensions = [
 ];
 
 const TextEditor = ({ onUpdate }: { onUpdate: (content: string) => void }) => {
+  const [content, setContent] = useState(INITIAL_CONTENT);
+
+  const debouncedEditorContent = useDebounce(content, ONCHANGE_DEBOUNCE_DELAY);
+
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -78,8 +91,10 @@ const TextEditor = ({ onUpdate }: { onUpdate: (content: string) => void }) => {
     },
     extensions: TipTapExtensions,
     onUpdate: ({ editor }) => {
-      const content = JSON.stringify(editor.getJSON());
-      onUpdate(content);
+      if (debouncedEditorContent) {
+        const content = JSON.stringify(editor.getJSON());
+        setContent(content);
+      }
     },
     onCreate: ({ editor }) => {
       const content = JSON.stringify(editor.getJSON());
@@ -87,6 +102,10 @@ const TextEditor = ({ onUpdate }: { onUpdate: (content: string) => void }) => {
     },
     content: INITIAL_CONTENT,
   });
+
+  useEffect(() => {
+    onUpdate(debouncedEditorContent);
+  }, [debouncedEditorContent, onUpdate]);
 
   return (
     <>
