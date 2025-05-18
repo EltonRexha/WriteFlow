@@ -1,11 +1,7 @@
 'use client';
 import React from 'react';
 import { generateHTML } from '@tiptap/core';
-import StarterKit from '@tiptap/starter-kit';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import TextAlign from '@tiptap/extension-text-align';
-import Highlight from '@tiptap/extension-highlight';
-import ImageExt from '@tiptap/extension-image';
+import { TipTapExtensions } from '@/app/components/textEditor/TextEditor';
 import { useMounted } from '@/hooks/useMounted';
 
 const BlogContent = ({ content }: { content: string }) => {
@@ -13,13 +9,8 @@ const BlogContent = ({ content }: { content: string }) => {
   if (!mounted) {
     return <Skeleton />;
   }
-  const html = generateHTML(JSON.parse(content), [
-    StarterKit,
-    CodeBlockLowlight,
-    TextAlign,
-    ImageExt,
-    Highlight,
-  ]);
+
+  const html = generateHTML(JSON.parse(content), TipTapExtensions);
 
   return <div dangerouslySetInnerHTML={{ __html: html }} className="tiptap" />;
 };

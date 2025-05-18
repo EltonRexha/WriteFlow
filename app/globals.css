@@ -55,17 +55,25 @@
   .tiptap h3 {
     @apply text-[1.6rem];
   }
-
   .tiptap code {
-    @apply bg-[var(--purple-light)] rounded-[0.4rem] text-[var(--black)] text-[0.85rem] px-[0.3em] py-[0.25em];
+    @apply bg-base-300 rounded-[0.4rem] text-base-content text-[0.85rem] px-[0.3em] py-[0.25em] font-mono;
   }
 
   .tiptap pre {
-    @apply bg-[var(--black)] rounded-lg text-[var(--white)] font-['JetBrainsMono',_monospace] my-6 px-4 py-3;
+    @apply bg-[#1e1e1e] rounded-lg text-[#d4d4d4] font-mono my-6 px-6 py-4;
   }
 
   .tiptap pre code {
-    @apply bg-transparent text-inherit text-[0.8rem] p-0;
+    @apply bg-transparent text-inherit text-[0.9rem] p-0;
+  }
+
+  /* Style for code blocks in the editor */
+  .ProseMirror pre {
+    @apply bg-[#1e1e1e] rounded-lg text-[#d4d4d4] font-mono my-6 px-6 py-4;
+  }
+
+  .ProseMirror pre code {
+    @apply bg-transparent text-inherit text-[0.9rem] p-0;
   }
 
   .tiptap mark {
@@ -89,24 +97,23 @@
 
     code {
       @apply bg-transparent text-inherit text-[0.8rem] p-0;
-    }
-
-    /* Code styling - These can't use @apply since they're specific color values */
+    } /* VS Code-like syntax highlighting */
     .hljs-comment,
     .hljs-quote {
-      color: #616161;
+      color: #6a9955;
     }
 
     .hljs-variable,
     .hljs-template-variable,
     .hljs-attribute,
     .hljs-tag,
+    .hljs-name,
     .hljs-regexp,
     .hljs-link,
     .hljs-name,
     .hljs-selector-id,
     .hljs-selector-class {
-      color: #f98181;
+      color: #569cd6;
     }
 
     .hljs-number,
@@ -116,23 +123,23 @@
     .hljs-literal,
     .hljs-type,
     .hljs-params {
-      color: #fbbc88;
+      color: #4ec9b0;
     }
 
     .hljs-string,
     .hljs-symbol,
     .hljs-bullet {
-      color: #b9f18d;
+      color: #ce9178;
     }
 
     .hljs-title,
     .hljs-section {
-      color: #faf594;
+      color: #dcdcaa;
     }
 
     .hljs-keyword,
     .hljs-selector-tag {
-      color: #70cff8;
+      color: #c586c0;
     }
 
     .hljs-emphasis {
