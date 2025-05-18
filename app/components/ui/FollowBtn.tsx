@@ -7,16 +7,20 @@ import {
 import { isActionError } from '@/types/ActionError';
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../ToastProvider';
+import useClientUser from '@/hooks/useClientUser';
 
-const FollowBtn = ({ userId }: { userId: string }) => {
+const FollowBtn = ({ userId }: { userId?: string | null }) => {
   const [isFollowed, setIsFollowed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-
   const { addToast } = useToast();
+  const loggedUser = useClientUser();
 
   useEffect(() => {
     async function fetchIsFollowed() {
+      if (!userId) {
+        return;
+      }
       const isFollowed = await followed({ id: userId });
       if (isActionError(isFollowed)) {
         addToast('something went wrong', 'error');
@@ -29,11 +33,15 @@ const FollowBtn = ({ userId }: { userId: string }) => {
     fetchIsFollowed();
   }, [setIsFollowed, addToast, userId]);
 
+  if (!loggedUser || !userId || loggedUser.id === userId) {
+    return null;
+  }
+
   const handleToggleFollow = async () => {
     setIsProcessing(true);
     if (isFollowed) {
       const res = await unfollowUser({ id: userId });
-      if(isActionError(res)){
+      if (isActionError(res)) {
         addToast('Something went wrong un-following user', 'error');
         setIsLoading(false);
         return;
@@ -49,7 +57,6 @@ const FollowBtn = ({ userId }: { userId: string }) => {
       setIsFollowed(true);
     }
     setIsProcessing(false);
-
   };
 
   return (

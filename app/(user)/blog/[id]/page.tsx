@@ -12,7 +12,8 @@ import ToggleDislikeBlogBtn from './_components/ToggleDislikeBlogBtn';
 import BlogComments from './_components/BlogComments';
 import FollowBtn from '@/app/components/ui/FollowBtn';
 import { getUser } from '@/server-actions/user/action';
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
+import Link from 'next/link';
 
 const limeLight = Limelight({
   weight: '400',
@@ -49,27 +50,32 @@ const page = async ({ params }: { params: { id: string } }) => {
             {blog.data.description}
           </p>
           <div className="flex items-center space-x-2 mt-4">
-            <div className="w-8 aspect-square relative cursor-pointer ">
-              {!authorImage ? (
-                <Image
-                  src={defaultProfile}
-                  alt="user picture"
-                  fill
-                  quality={50}
-                  className="rounded-full"
-                />
-              ) : (
-                <Image
-                  src={authorImage}
-                  alt="user picture"
-                  fill
-                  quality={50}
-                  className="rounded-full"
-                />
-              )}
-            </div>
-            <p className="text-primary ">{blog.data.Author.name}</p>
-            <FollowBtn userId={user!.id} />
+            <Link href={`/user/${user?.id}`}>
+              <div className="w-8 aspect-square relative cursor-pointer ">
+                {!authorImage ? (
+                  <Image
+                    src={defaultProfile}
+                    alt="user picture"
+                    fill
+                    quality={50}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <Image
+                    src={authorImage}
+                    alt="user picture"
+                    fill
+                    quality={50}
+                    className="rounded-full"
+                  />
+                )}
+              </div>
+            </Link>
+            <Link href={`/user/${user?.id}`}>
+              <p className="text-primary link">{blog.data.Author.name}</p>
+            </Link>
+
+            <FollowBtn userId={user?.id} />
             <Dot />
             <p className="text-base-content/60 text-sm">
               {format(blog.data.createdAt, 'PPP')}
@@ -121,7 +127,7 @@ const page = async ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
-        <BlogComments blogId={id} renderId={renderId}/>
+        <BlogComments blogId={id} renderId={renderId} />
       </div>
     </div>
   );
