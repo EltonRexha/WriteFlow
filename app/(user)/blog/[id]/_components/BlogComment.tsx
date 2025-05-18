@@ -56,11 +56,24 @@ const BlogComment = ({
             isLiked={commentLikeStatus === 'liked'}
             commentId={id}
             onLike={() => {
-              if(commentLikeStatus === 'disliked'){
+              if (commentLikeStatus === 'disliked') {
                 _count.dislikedBy -= 1;
+                _count.likedBy += 1;
+                setCommentLikeStatus('liked');
+                return;
               }
-              setCommentLikeStatus('liked');
-              _count.likedBy += 1;
+
+              if (commentLikeStatus === 'liked') {
+                _count.likedBy -= 1;
+                setCommentLikeStatus('none');
+                return;
+              }
+
+              if (commentLikeStatus === 'none') {
+                _count.likedBy += 1;
+                setCommentLikeStatus('liked');
+                return;
+              }
             }}
           />
           <p className="text-sm text-base-content/70">{_count.likedBy}</p>
@@ -70,11 +83,24 @@ const BlogComment = ({
             isDisliked={commentLikeStatus === 'disliked'}
             commentId={id}
             onDislike={() => {
+              if (commentLikeStatus === 'disliked') {
+                _count.dislikedBy -= 1;
+                setCommentLikeStatus('none');
+                return;
+              }
+
               if (commentLikeStatus === 'liked') {
                 _count.likedBy -= 1;
+                _count.dislikedBy += 1;
+                setCommentLikeStatus('disliked');
+                return;
               }
-              setCommentLikeStatus('disliked');
-              _count.dislikedBy += 1;
+
+              if (commentLikeStatus === 'none') {
+                _count.dislikedBy += 1;
+                setCommentLikeStatus('disliked');
+                return;
+              }
             }}
           />
           <p className="text-sm text-base-content/70">{_count.dislikedBy}</p>
