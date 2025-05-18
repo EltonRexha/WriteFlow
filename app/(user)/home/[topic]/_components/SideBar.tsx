@@ -16,8 +16,6 @@ const SideBar = async () => {
     getPopularWriters(),
   ]);
 
-  console.log({ popularBlogs });
-
   return (
     <div className="w-96 p-10 border-l min-h-[90vh] fixed border-base-content/10 space-y-10">
       <div>

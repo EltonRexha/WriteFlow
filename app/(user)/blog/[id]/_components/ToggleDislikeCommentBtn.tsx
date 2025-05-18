@@ -1,22 +1,22 @@
 'use client';
 import { ThumbsDown } from 'lucide-react';
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { toggleDislike } from '@/server-actions/comments/action';
 
 const ToggleDislikeComment = ({
   isDisliked,
   commentId,
+  onDislike,
 }: {
   isDisliked: boolean;
   commentId: string;
+  onDislike: () => void;
 }) => {
-  const router = useRouter();
 
   const handleDislike = async () => {
     await toggleDislike(commentId);
-    router.refresh();
+    onDislike();
   };
 
   return (

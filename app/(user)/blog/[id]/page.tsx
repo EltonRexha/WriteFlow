@@ -12,6 +12,7 @@ import ToggleDislikeBlogBtn from './_components/ToggleDislikeBlogBtn';
 import BlogComments from './_components/BlogComments';
 import FollowBtn from '@/app/components/ui/FollowBtn';
 import { getUser } from '@/server-actions/user/action';
+import {v4 as uuid} from 'uuid';
 
 const limeLight = Limelight({
   weight: '400',
@@ -27,6 +28,7 @@ const page = async ({ params }: { params: { id: string } }) => {
   }
 
   const user = await getUser({ email: blog.data.Author.email as string });
+  const renderId = uuid();
 
   const authorImage = blog.data.Author.image;
   addView(id);
@@ -119,7 +121,7 @@ const page = async ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
-        <BlogComments blogId={id} />
+        <BlogComments blogId={id} renderId={renderId}/>
       </div>
     </div>
   );

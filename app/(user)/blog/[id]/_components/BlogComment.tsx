@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import defaultProfile from '@/public/profile.svg';
 import Image from 'next/image';
 import { format } from 'date-fns';
@@ -15,6 +16,10 @@ const BlogComment = ({
   isLiked,
   isDisliked,
 }: Awaited<ReturnType<typeof getComments>>['comments'][number]) => {
+  const [commentLikeStatus, setCommentLikeStatus] = useState<
+    'none' | 'liked' | 'disliked'
+  >(isLiked ? 'liked' : isDisliked ? 'disliked' : 'none');
+
   return (
     <div className="space-y-4 p-2">
       <div className="flex items-center space-x-2 mt-4">
@@ -47,11 +52,31 @@ const BlogComment = ({
       </div>
       <div className="flex space-x-2 items-center">
         <div className="flex items-center">
-          <ToggleLikeComment isLiked={isLiked} commentId={id} />
+          <ToggleLikeComment
+            isLiked={commentLikeStatus === 'liked'}
+            commentId={id}
+            onLike={() => {
+              if(commentLikeStatus === 'disliked'){
+                _count.dislikedBy -= 1;
+              }
+              setCommentLikeStatus('liked');
+              _count.likedBy += 1;
+            }}
+          />
           <p className="text-sm text-base-content/70">{_count.likedBy}</p>
         </div>
         <div className="flex items-center">
-          <ToggleDislikeComment isDisliked={isDisliked} commentId={id} />
+          <ToggleDislikeComment
+            isDisliked={commentLikeStatus === 'disliked'}
+            commentId={id}
+            onDislike={() => {
+              if (commentLikeStatus === 'liked') {
+                _count.likedBy -= 1;
+              }
+              setCommentLikeStatus('disliked');
+              _count.dislikedBy += 1;
+            }}
+          />
           <p className="text-sm text-base-content/70">{_count.dislikedBy}</p>
         </div>
       </div>
