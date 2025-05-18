@@ -26,12 +26,12 @@ const CreateBlogComment = ({ blogId }: { blogId: string }) => {
   useEffect(() => {
     setValue('blogId', blogId);
   }, [setValue, blogId]);
-
   async function onSubmit(data: FormData) {
     const response = await createComment(data);
 
     if (isActionError(response)) {
       addToast(response.error.message, 'error');
+      return;
     }
 
     router.refresh();

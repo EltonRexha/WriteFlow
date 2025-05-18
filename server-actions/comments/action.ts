@@ -157,9 +157,7 @@ export async function getUserComments(blogId: string) {
       },
     },
     orderBy: {
-      likedBy: {
-        _count: 'desc',
-      },
+      createdAt: 'desc',
     },
   });
 

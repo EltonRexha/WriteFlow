@@ -1,50 +1,60 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CreateBlogComment from './CreateBlogComment';
 import BlogComment from './BlogComment';
 import { getComments, getUserComments } from '@/server-actions/comments/action';
+import { useToast } from '@/app/components/ToastProvider';
 
 type CommentsFn = Awaited<ReturnType<typeof getComments>>;
 
-const BlogComments = ({ blogId }: { blogId: string }) => {
+const BlogComments = ({
+  blogId,
+  renderId,
+}: {
+  blogId: string;
+  renderId: string;
+}) => {
   const [blogComments, setBlogComments] = useState<CommentsFn>();
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const { addToast } = useToast();
+
+  const getBlogComments = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const newBlogComments = await getComments(blogId, page);
+      if (page === 1) {
+        const userComments = await getUserComments(blogId);
+        setBlogComments(() => {
+          if (!userComments.comments) return newBlogComments;
+          return {
+            comments: [...userComments.comments, ...newBlogComments.comments],
+            pagination: newBlogComments.pagination,
+          };
+        });
+      } else {
+        setBlogComments((prev) => {
+          if (!prev) return newBlogComments;
+          return {
+            comments: [...prev?.comments, ...newBlogComments.comments],
+            pagination: newBlogComments.pagination,
+          };
+        });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      addToast('Error fetching comments:', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [blogId, page, addToast]);
 
   useEffect(() => {
-    async function getBlogComments() {
-      setIsLoading(true);
-      try {
-        const newBlogComments = await getComments(blogId, page);
-        if (page === 1) {
-          const userComments = await getUserComments(blogId);
-          setBlogComments(() => {
-            if (!userComments.comments) return newBlogComments;
-            return {
-              comments: [...userComments.comments, ...newBlogComments.comments],
-              pagination: newBlogComments.pagination,
-            };
-          });
-        } else {
-          setBlogComments((prev) => {
-            if (!prev) return newBlogComments;
-            return {
-              comments: [...prev?.comments, ...newBlogComments.comments],
-              pagination: newBlogComments.pagination,
-            };
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
+    console.log('get comments');
     getBlogComments();
-  }, [page, blogId]);
+  }, [page, getBlogComments, renderId]);
 
-  if (isLoading && !blogComments) {
+  if (isLoading) {
     return <Skeleton />;
   }
 
@@ -55,9 +65,7 @@ const BlogComments = ({ blogId }: { blogId: string }) => {
           id="commentSection"
           className="flex flex-col mt-10 space-y-5 mb-10"
         >
-          <h2 className="text-2xl font-bold">
-            Replies ({blogComments.comments.length})
-          </h2>
+          <h2 className="text-2xl font-bold">Replies</h2>
           <CreateBlogComment blogId={blogId} />
           <div className="space-y-2">
             {blogComments.comments.map((data) => (
