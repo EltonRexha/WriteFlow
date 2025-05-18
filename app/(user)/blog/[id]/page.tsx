@@ -18,7 +18,8 @@ const limeLight = Limelight({
   subsets: ['latin'],
 });
 
-const page = async ({ params: { id } }: { params: { id: string } }) => {
+const page = async ({ params }: { params: { id: string } }) => {
+  const id = (await params).id;
   const blog = await getBlog(id);
 
   if (!blog.data) {
