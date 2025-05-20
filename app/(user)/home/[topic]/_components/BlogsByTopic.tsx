@@ -40,9 +40,12 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
   const [page, setPage] = useState(1);
   const [blogs, setBlogs] = useState<DisplayBlog[]>([]);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Initialize as true
+  const [isChangingTopic, setIsChangingTopic] = useState(false);
 
   useEffect(() => {
+    setIsChangingTopic(true); // Set topic change flag
+    setIsLoading(true);
     setBlogs([]);
     setPage(1);
     setHasNextPage(true);
@@ -50,38 +53,33 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
 
   useEffect(() => {
     async function getBlogs() {
-      setIsLoading(true);
-      try {
-        let response;
-        if (topic.toLocaleLowerCase() === 'for-you') {
-          response = await forYouBlogs(page);
-        } else if (topic.toLocaleLowerCase() === 'following') {
-          response = await followingBlogs(page);
-        } else {
-          response = await getBlogsByTopic(topic, page);
-        }
-
-        if (isActionError(response)) {
-          return;
-        }
-
-        if (page === 1) {
-          setBlogs(response.blogs);
-        } else {
-          setBlogs((prev) => [...prev, ...response.blogs]);
-        }
-        setHasNextPage(response.pagination.hasNextPage);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
-      } finally {
-        setIsLoading(false);
+      let response;
+      if (topic.toLocaleLowerCase() === 'for-you') {
+        response = await forYouBlogs(page);
+      } else if (topic.toLocaleLowerCase() === 'following') {
+        response = await followingBlogs(page);
+      } else {
+        response = await getBlogsByTopic(topic, page);
       }
+
+      if (isActionError(response)) {
+        return;
+      }
+
+      if (page === 1) {
+        setBlogs(response.blogs);
+      } else {
+        setBlogs((prev) => [...prev, ...response.blogs]);
+      }
+      setHasNextPage(response.pagination.hasNextPage);
+      setIsLoading(false);
+      setIsChangingTopic(false); // Reset topic change flag
     }
 
     getBlogs();
   }, [page, topic]);
 
-  if (isLoading && blogs.length === 0) {
+  if (isLoading && (blogs.length === 0 || isChangingTopic)) {
     return (
       <div className="space-y-6">
         <BlogSkeleton />
@@ -97,13 +95,9 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
         {blogs.length > 0 ? (
           blogs.map((data) => <BlogPreviewCard key={data.id} {...data} />)
         ) : (
-          <h2 className="mx-auto w-max py-10 text-3xl font-semibold">Nothing to show</h2>
-        )}
-        {isLoading && (
-          <>
-            <BlogSkeleton />
-            <BlogSkeleton />
-          </>
+          <h2 className="mx-auto w-max py-10 text-3xl font-semibold">
+            Nothing to show
+          </h2>
         )}
       </div>
       {hasNextPage && (
