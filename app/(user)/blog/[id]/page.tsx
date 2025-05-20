@@ -14,6 +14,7 @@ import FollowBtn from '@/app/components/ui/FollowBtn';
 import { getUser } from '@/server-actions/user/action';
 import { v4 as uuid } from 'uuid';
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
 
 const limeLight = Limelight({
   weight: '400',
@@ -23,17 +24,22 @@ const limeLight = Limelight({
 const page = async ({ params }: { params: { id: string } }) => {
   const id = (await params).id;
   const blog = await getBlog(id);
+  const session = await getServerSession();
+  const user = session?.user;
 
   if (!blog.data) {
     return 'not found';
   }
 
-  const user = await getUser({ email: blog.data.Author.email as string });
+  if (user) {
+    addView(id);
+  }
+
+  const author = await getUser({ email: blog.data.Author.email as string });
   const renderId = uuid();
 
   const authorImage = blog.data.Author.image;
-  addView(id);
-
+ 
   return (
     <div className="pt-4">
       <div id="mainContent" className="max-w-[82ch] px-2 m-auto text-pretty">
@@ -50,7 +56,7 @@ const page = async ({ params }: { params: { id: string } }) => {
             {blog.data.description}
           </p>
           <div className="flex items-center space-x-2 mt-4">
-            <Link href={`/user/${user?.id}`}>
+            <Link href={`/user/${author?.id}`}>
               <div className="w-8 aspect-square relative cursor-pointer ">
                 {!authorImage ? (
                   <Image
@@ -71,11 +77,11 @@ const page = async ({ params }: { params: { id: string } }) => {
                 )}
               </div>
             </Link>
-            <Link href={`/user/${user?.id}`}>
+            <Link href={`/user/${author?.id}`}>
               <p className="text-primary link">{blog.data.Author.name}</p>
             </Link>
 
-            <FollowBtn userId={user?.id} />
+            <FollowBtn userId={author?.id} />
             <Dot />
             <p className="text-base-content/60 text-sm">
               {format(blog.data.createdAt, 'PPP')}
@@ -94,38 +100,40 @@ const page = async ({ params }: { params: { id: string } }) => {
         </div>
         <div
           id="mainSection"
-          className="border-base-content/70 border-b-[1px] "
+          className=""
         >
           <div className="my-4">
             {blog.data.BlogContent.content && (
               <BlogContent content={blog.data.BlogContent.content as string} />
             )}
           </div>
-          <div id="likeSection" className="pt-2 mb-10">
-            <div className="flex space-x-2 items-center">
-              <div className="flex items-center">
-                <ToggleLikeBlogBtn blogId={id} isLiked={!!blog.isLiked} />
-                <p className="text-sm text-base-content/70">
-                  {blog.data._count.likedBy}
-                </p>
-              </div>
-              <div className="flex items-center">
-                <ToggleDislikeBlogBtn
-                  blogId={id}
-                  isDisliked={!!blog.isDisliked}
-                />
-                <p className="text-sm text-base-content/70">
-                  {blog.data._count.dislikedBy}
-                </p>
-              </div>
-              <div className="flex items-center space-x-2 ml-auto">
-                <Eye />
-                <p className="text-sm text-base-content/70">
-                  {blog.data._count.viewedBy}
-                </p>
+          {user && (
+            <div id="likeSection" className="pt-2 mb-10">
+              <div className="flex space-x-2 items-center">
+                <div className="flex items-center">
+                  <ToggleLikeBlogBtn blogId={id} isLiked={!!blog.isLiked} />
+                  <p className="text-sm text-base-content/70">
+                    {blog.data._count.likedBy}
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  <ToggleDislikeBlogBtn
+                    blogId={id}
+                    isDisliked={!!blog.isDisliked}
+                  />
+                  <p className="text-sm text-base-content/70">
+                    {blog.data._count.dislikedBy}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 ml-auto">
+                  <Eye />
+                  <p className="text-sm text-base-content/70">
+                    {blog.data._count.viewedBy}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
         <BlogComments blogId={id} renderId={renderId} />
       </div>
