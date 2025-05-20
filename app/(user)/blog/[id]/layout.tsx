@@ -4,16 +4,18 @@ import clsx from 'clsx';
 import Avatar from '@/app/components/Avatar';
 import Navbar from '@/app/components/Navbar';
 import { Pen } from 'lucide-react';
+import { getServerSession } from 'next-auth';
 
 const limeLight = Limelight({
   weight: '400',
 });
 
-export default function UserLayout({
+export default async function UserLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = (await getServerSession())?.user;
   return (
     <div className="flex flex-col">
       <Navbar>
@@ -30,22 +32,39 @@ export default function UserLayout({
         </div>
         <div className="flex ml-auto sm:navbar-end">
           <ul className="flex gap-2 items-center px-1">
-            <li>
-              <Link href="/blog/new">
-                <button className="btn btn-sm btn-primary btn-soft">
-                  <Pen height={15} width={15} />
-                  Create
-                </button>
-              </Link>
-            </li>
-            <li>
-              <Avatar />
-            </li>
+            {user ? (
+              <>
+                {' '}
+                <li>
+                  <Link href="/blog/new">
+                    <button className="btn btn-sm btn-primary btn-soft">
+                      <Pen height={15} width={15} />
+                      Create
+                    </button>
+                  </Link>
+                </li>
+                <li>
+                  <Avatar />
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link href="/auth/sign-in">
+                    <button className="btn btn-link text-sm">Sign in</button>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/auth/sign-up">
+                    <button className="btn btn-primary">Get started</button>
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </Navbar>
       <div>{children}</div>
-     
     </div>
   );
 }

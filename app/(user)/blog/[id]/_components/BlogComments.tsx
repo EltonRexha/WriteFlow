@@ -4,6 +4,7 @@ import CreateBlogComment from './CreateBlogComment';
 import BlogComment from './BlogComment';
 import { getComments, getUserComments } from '@/server-actions/comments/action';
 import { useToast } from '@/app/components/ToastProvider';
+import useClientUser from '@/hooks/useClientUser';
 
 type CommentsFn = Awaited<ReturnType<typeof getComments>>;
 
@@ -18,6 +19,7 @@ const BlogComments = ({
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const { addToast } = useToast();
+  const user = useClientUser();
 
   const getBlogComments = useCallback(async () => {
     setIsLoading(true);
@@ -60,13 +62,13 @@ const BlogComments = ({
 
   return (
     <>
-      {blogComments && (
+      {blogComments && (!!user || !!blogComments.comments.length) && (
         <div
           id="commentSection"
-          className="flex flex-col mt-10 space-y-5 mb-10"
+          className="flex flex-col mt-10 space-y-5 mb-10 border-base-content/70 border-t-[1px] pt-10"
         >
           <h2 className="text-2xl font-bold">Replies</h2>
-          <CreateBlogComment blogId={blogId} />
+          {user && <CreateBlogComment blogId={blogId} />}
           <div className="space-y-2">
             {blogComments.comments.map((data) => (
               <BlogComment key={data.id} {...data} />
