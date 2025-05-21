@@ -1,7 +1,7 @@
 import { Limelight } from 'next/font/google';
 import Link from 'next/link';
 import clsx from 'clsx';
-import Avatar from '@/app/components/Avatar';
+import Avatar from '../../components/Avatar';
 import Navbar from '@/app/components/Navbar';
 import { Pen } from 'lucide-react';
 
@@ -45,7 +45,6 @@ export default function UserLayout({
         </div>
       </Navbar>
       <div>{children}</div>
-     
     </div>
   );
 }

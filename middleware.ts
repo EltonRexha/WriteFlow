@@ -2,7 +2,7 @@ import { authMiddleware } from './middleware/authMiddleware';
 import type { NextRequest } from 'next/server';
 import { guestMiddleware } from './middleware/guestMiddleware';
 
-const protectedRoutes = ['/home', '/drafts', '/user'];
+const protectedRoutes = ['/home', '/drafts', '/user', '/dashboard'];
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;

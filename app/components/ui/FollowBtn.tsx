@@ -26,8 +26,8 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
         addToast('something went wrong', 'error');
         return;
       }
-      setIsFollowed(isFollowed);
       setIsLoading(false);
+      setIsFollowed(isFollowed);
     }
 
     fetchIsFollowed();
@@ -65,13 +65,7 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
       onClick={handleToggleFollow}
       disabled={isLoading || isProcessing}
     >
-      {isLoading ? (
-        <span className="loading loading-spinner loading-sm"></span>
-      ) : isFollowed ? (
-        'unfollow'
-      ) : (
-        'follow'
-      )}
+      {isFollowed ? 'unfollow' : 'follow'}
     </button>
   );
 };
