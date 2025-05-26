@@ -32,13 +32,13 @@ const AvatarMenu = () => {
           <p>Blogs</p>
         </AvatarMenuBtn>
       </Link>
-      <Link href="/drafts">
+      <Link href="/dashboard/drafts">
         <AvatarMenuBtn>
           <SquarePen height={20} />
           <p>Drafts</p>
         </AvatarMenuBtn>
       </Link>
-      <Link href="/stats">
+      <Link href="/dashboard/stats">
         <AvatarMenuBtn>
           <ChartNoAxesColumnIncreasing height={20} />
           <p>Stats</p>
