@@ -426,3 +426,27 @@ export async function getUserBlogs(
     },
   };
 }
+
+export async function autocompleteBlogsByTitle({ title }: { title: string }) {
+  const session = await getServerSession();
+  const user = session?.user;
+
+  if (!user || !user.email) {
+    return {
+      error: { message: 'please login to view your blogs', code: 401 },
+    };
+  }
+  const blogs = await prisma.blog.findMany({
+    where: {
+      title: {
+        contains: title,
+        mode: 'insensitive',
+      },
+      Author: {
+        email: user.email,
+      },
+    },
+  });
+
+  return blogs;
+}
