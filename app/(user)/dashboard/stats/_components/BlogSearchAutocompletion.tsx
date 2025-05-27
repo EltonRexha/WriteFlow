@@ -6,8 +6,10 @@ import React, { useEffect, useState } from 'react';
 
 const BlogSearchAutocompletion = React.memo(function BlogSearchAutocompletion({
   title,
+  setCurrentBlog,
 }: {
   title: string;
+  setCurrentBlog: ({ id, title }: { id: string; title: string }) => void;
 }) {
   const [blogs, setBlogs] = useState<
     {
@@ -48,8 +50,12 @@ const BlogSearchAutocompletion = React.memo(function BlogSearchAutocompletion({
         <div className="card w-full bg-base-100 shadow-xl">
           <div className="card-body p-2 max-h-[400px] overflow-y-auto">
             {blogs.map((blog) => (
-              <div
+              <button
                 key={blog.id}
+                onClick={() => {
+                  setCurrentBlog({ id: blog.id, title: blog.title });
+                  setBlogs([]);
+                }}
                 className="group hover:bg-base-200 p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-start gap-3"
               >
                 <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center opacity-70 group-hover:opacity-100">
@@ -78,7 +84,7 @@ const BlogSearchAutocompletion = React.memo(function BlogSearchAutocompletion({
                     </p>
                   )}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
