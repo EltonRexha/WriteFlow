@@ -1,12 +1,7 @@
-import React from 'react'
-import MenuBar from '../_components/MenuBar';
+import React from 'react';
 
 const page = () => {
-  return (
-    <div className="sm:px-12 lg:px-36">
-      <MenuBar />
-    </div>
-  );
-}
+  return <div></div>;
+};
 
-export default page
+export default page;

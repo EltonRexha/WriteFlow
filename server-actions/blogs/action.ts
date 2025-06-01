@@ -450,3 +450,42 @@ export async function autocompleteBlogsByTitle({ title }: { title: string }) {
 
   return blogs;
 }
+
+export async function deleteBlog({ blogId }: { blogId: string }) {
+  const session = await getServerSession();
+  const user = session?.user;
+
+  if (!user || !user.email) {
+    return {
+      error: { message: 'please login to delete your blog', code: 401 },
+    };
+  }
+
+  const blog = await prisma.blog.findUnique({
+    where: {
+      id: blogId,
+      Author: {
+        email: user.email,
+      },
+    },
+  });
+
+  if (!blog) {
+    if (!user || !user.email) {
+      return {
+        error: {
+          message: 'could not find this blog, or does not belong to you',
+          code: 400,
+        },
+      };
+    }
+  }
+
+  await prisma.blog.delete({
+    where: {
+      id: blogId,
+    },
+  });
+
+  return { message: 'successfully deleted blog', code: 204 };
+}

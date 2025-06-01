@@ -19,7 +19,7 @@ const SideBar = async () => {
   return (
     <div className="w-96 p-10 border-l min-h-[90vh] fixed border-base-content/10 space-y-10">
       <div>
-        {popularBlogs.length && (
+        {!!popularBlogs.length && (
           <>
             <h1
               className={clsx(
@@ -69,7 +69,7 @@ const SideBar = async () => {
       </div>
 
       <div>
-        {popularBlogs.length && (
+        {!!popularBlogs.length && (
           <>
             <h1
               className={clsx(
@@ -117,13 +117,16 @@ const SideBar = async () => {
   );
 };
 
-function getPopularBlogs(take: number = 3) {
+async function getPopularBlogs(take: number = 3, monthsBack: number = 0) {
   const monthStart = startOfMonth(startOfToday());
+  // Subtract months from the start date
+  const searchStart = new Date(monthStart);
+  searchStart.setMonth(searchStart.getMonth() - monthsBack);
 
-  return prisma.blog.findMany({
+  const blogs = await prisma.blog.findMany({
     where: {
       createdAt: {
-        gte: monthStart,
+        gte: searchStart,
       },
     },
     orderBy: [
@@ -143,17 +146,27 @@ function getPopularBlogs(take: number = 3) {
     },
     take,
   });
+
+  // If no blogs found and we haven't gone back more than 6 months, try with an additional month
+  if (blogs.length === 0 && monthsBack < 6) {
+    return getPopularBlogs(take, monthsBack + 1);
+  }
+
+  return blogs;
 }
 
-async function getPopularWriters(take: number = 3) {
+async function getPopularWriters(take: number = 3, monthsBack: number = 0) {
   const monthStart = startOfMonth(startOfToday());
+  // Subtract months from the start date
+  const searchStart = new Date(monthStart);
+  searchStart.setMonth(searchStart.getMonth() - monthsBack);
 
-  return prisma.user.findMany({
+  const writers = await prisma.user.findMany({
     where: {
       Blogs: {
         some: {
           createdAt: {
-            gte: monthStart,
+            gte: searchStart,
           },
         },
       },
@@ -163,7 +176,7 @@ async function getPopularWriters(take: number = 3) {
       Blogs: {
         where: {
           createdAt: {
-            gt: monthStart,
+            gte: searchStart,
           },
         },
         orderBy: [
@@ -178,7 +191,7 @@ async function getPopularWriters(take: number = 3) {
             },
           },
         ],
-        take: 2, // Get their top 2 blogs from this week
+        take: 2, // Get their top 2 blogs from this period
         include: {
           _count: {
             select: {
@@ -209,6 +222,13 @@ async function getPopularWriters(take: number = 3) {
     ],
     take,
   });
+
+  // If no writers found and we haven't gone back more than 6 months, try with an additional month
+  if (writers.length === 0 && monthsBack < 6) {
+    return getPopularWriters(take, monthsBack + 1);
+  }
+
+  return writers;
 }
 
 export default SideBar;

@@ -1,10 +1,18 @@
 import React from 'react';
-import MenuBar from '../_components/MenuBar';
+import BlogList from './_components/BlogList';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-const page = () => {
+const page = async () => {
+  const user = await getServerSession(authOptions);
+
+  if (!user?.user) {
+    return 'something went wrong';
+  }
+
   return (
-    <div className="sm:px-12 lg:px-36">
-      <MenuBar />
+    <div>
+      <BlogList user={user.user} />
     </div>
   );
 };

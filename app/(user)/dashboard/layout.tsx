@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import Avatar from '../../components/Avatar';
 import Navbar from '@/app/components/Navbar';
 import { Pen } from 'lucide-react';
+import MenuBar from './_components/MenuBar';
 
 const limeLight = Limelight({
   weight: '400',
@@ -44,7 +45,11 @@ export default function UserLayout({
           </ul>
         </div>
       </Navbar>
-      <div>{children}</div>
+      <div className="px-5 sm:px-12 lg:px-36 space-y-10">
+        <MenuBar />
+
+        {children}
+      </div>
     </div>
   );
 }
