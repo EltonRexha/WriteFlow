@@ -1,3 +1,4 @@
+'use server'
 import prisma from '@/prisma/client';
 import { ActionError } from '@/types/ActionError';
 import { getServerSession } from 'next-auth';
@@ -95,6 +96,38 @@ export async function getTotalCommentsStats(): Promise<
         likedBy: prev._count.likedBy + curr._count.likedBy,
       },
     };
+  });
+
+  return stats;
+}
+
+export async function getBlogStats({ blogId }: { blogId: string }) {
+  const session = await getServerSession();
+  const user = session?.user;
+
+  if (!user) {
+    return {
+      error: { message: 'please login to view your stats', code: 401 },
+    };
+  }
+
+  const stats = await prisma.blog.findUnique({
+    where: {
+      Author: {
+        email: user.email,
+      },
+      id: blogId,
+    },
+    select: {
+      _count: {
+        select: {
+          dislikedBy: true,
+          likedBy: true,
+          BlogComment: true,
+          viewedBy: true,
+        },
+      },
+    },
   });
 
   return stats;

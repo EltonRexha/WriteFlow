@@ -1,5 +1,4 @@
 import React from 'react';
-import MenuBar from '../_components/MenuBar';
 import { Eye, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { Limelight } from 'next/font/google';
 import clsx from 'clsx';
@@ -22,8 +21,7 @@ const page = async () => {
   }
 
   return (
-    <div className="px-5 sm:px-12 lg:px-36 space-y-10">
-      <MenuBar />
+    <div className="">
       <div className="space-y-8 [&_.stat]:border-0 [&_.stat]:min-w-full [&_.stat]:max-w-min [&_.stat]:bg-base-200 [&_.stat]:hover:bg-base-300 [&_.stat]:rounded-md  ">
         <div>
           <h1

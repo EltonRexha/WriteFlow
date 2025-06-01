@@ -1,28 +1,40 @@
 'use client';
-import React from 'react';
-import BlogStats from './BlogStats';
+import React, { useState } from 'react';
+
 import { useForm } from 'react-hook-form';
 import { useDebounce } from '@uidotdev/usehooks';
 import BlogSearchAutocompletion from './BlogSearchAutocompletion';
+import dynamic from 'next/dynamic';
+
+const BlogStats = dynamic(() => import('./BlogStats'), {
+  ssr: true,
+});
 
 const ONCHANGE_DEBOUNCE_DELAY = 500;
 
 interface FormInput {
   search: string;
-  blogId: string;
 }
 
 const SearchBlogStats = () => {
-  const { register, handleSubmit, watch } = useForm<FormInput>();
+  const { register, watch, setValue } = useForm<FormInput>();
+  const [currentBlog, setCurrentBlog] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
   const searchValue = watch('search');
   const search = useDebounce(searchValue, ONCHANGE_DEBOUNCE_DELAY);
-  async function onSubmit(data: FormInput) {}
+
+  function setCurrentBlogFn(blog: { id: string; title: string }) {
+    setValue('search', '');
+    setCurrentBlog(blog);
+  }
 
   return (
-    <div className="mt-5 ">
+    <div className="mt-5 space-y-10">
       <div className="space-y-2 text-base-content/80">
         <h1>Search blog</h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form>
           <label className="input">
             <svg
               className="h-[1em] opacity-50"
@@ -49,8 +61,13 @@ const SearchBlogStats = () => {
           </label>
         </form>
       </div>
-      <BlogSearchAutocompletion title={search} />
-      <BlogStats />
+      <BlogSearchAutocompletion
+        title={search}
+        setCurrentBlog={setCurrentBlogFn}
+      />
+      {currentBlog && (
+        <BlogStats blogId={currentBlog?.id} title={currentBlog?.title} />
+      )}
     </div>
   );
 };
