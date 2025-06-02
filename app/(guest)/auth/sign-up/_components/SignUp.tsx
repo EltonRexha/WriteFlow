@@ -1,6 +1,6 @@
 'use client';
 
-import { createUser } from '@/services/api/user';
+import { createUser } from '@/libs/api/user';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { BuiltInProviderType } from 'next-auth/providers/index';

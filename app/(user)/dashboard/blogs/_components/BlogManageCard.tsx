@@ -4,10 +4,9 @@ import { deleteBlog } from '@/server-actions/blogs/action';
 import { DisplayBlog } from '@/server-actions/recommendation/action';
 import { isActionError } from '@/types/ActionError';
 import { format } from 'date-fns';
-import { MoreVertical, ThumbsDown, ThumbsUp, Trash2 } from 'lucide-react';
+import { MoreVertical, ThumbsDown, ThumbsUp, Trash2, Edit } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import ManageBlogDialog from './ManageBlogDialog';
 
 const BlogManageCard = ({
   id,
@@ -19,8 +18,9 @@ const BlogManageCard = ({
   _count,
 }: DisplayBlog) => {
   const modalId = `delete-modal-${id}`;
+  const manageModalId = `edit-modal-${id}`;
+
   const { addToast } = useToast();
-  const router = useRouter();
 
   return (
     <>
@@ -64,18 +64,31 @@ const BlogManageCard = ({
           </div>
 
           <div className="flex gap-2">
-            <Link href={`/blog/${id}/edit`} className="btn btn-primary btn-sm">
-              Edit
-            </Link>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => {
+                const modalElement = document.getElementById(
+                  manageModalId
+                ) as HTMLDialogElement;
+                if (modalElement) {
+                  modalElement.showModal();
+                }
+              }}
+            >
+              <Edit className="h-4 w-4" />
+              Manage
+            </button>
           </div>
         </div>
 
         <div className="relative">
+          {' '}
           <div className="relative w-28 h-28 shrink-0">
             <Image
               src={imageUrl}
               alt={title}
               fill
+              sizes="(max-width: 768px) 112px, 112px"
               className="object-cover rounded-md"
             />
           </div>
@@ -133,7 +146,6 @@ const BlogManageCard = ({
                   }
 
                   addToast(deleteResponse.message, 'success');
-                  router.refresh();
                 }}
               >
                 Delete
@@ -145,6 +157,8 @@ const BlogManageCard = ({
           <button>close</button>
         </form>
       </dialog>
+
+      <ManageBlogDialog blogId={id} />
     </>
   );
 };
