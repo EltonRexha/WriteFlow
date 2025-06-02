@@ -1,12 +1,11 @@
-'use client';
-import { useToast } from '@/app/components/ToastProvider';
-import { deleteBlog } from '@/server-actions/blogs/action';
 import { DisplayBlog } from '@/server-actions/recommendation/action';
-import { isActionError } from '@/types/ActionError';
 import { format } from 'date-fns';
-import { MoreVertical, ThumbsDown, ThumbsUp, Trash2, Edit } from 'lucide-react';
+import { MoreVertical, ThumbsDown, ThumbsUp, Edit } from 'lucide-react';
 import Image from 'next/image';
 import ManageBlogDialog from './ManageBlogDialog';
+import DeleteBtn from './DeleteBtn';
+import ModalDeleteBtn from './ModalDeleteBtn';
+import ManageModalBtn from './ManageModalBtn';
 
 const BlogManageCard = ({
   id,
@@ -19,8 +18,6 @@ const BlogManageCard = ({
 }: DisplayBlog) => {
   const modalId = `delete-modal-${id}`;
   const manageModalId = `edit-modal-${id}`;
-
-  const { addToast } = useToast();
 
   return (
     <>
@@ -64,19 +61,9 @@ const BlogManageCard = ({
           </div>
 
           <div className="flex gap-2">
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => {
-                const modalElement = document.getElementById(
-                  manageModalId
-                ) as HTMLDialogElement;
-                if (modalElement) {
-                  modalElement.showModal();
-                }
-              }}
-            >
+            <button className="btn btn-primary btn-sm">
               <Edit className="h-4 w-4" />
-              Manage
+              Edit
             </button>
           </div>
         </div>
@@ -104,20 +91,10 @@ const BlogManageCard = ({
               className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <button
-                  className="text-error"
-                  onClick={() => {
-                    const modalElement = document.getElementById(
-                      modalId
-                    ) as HTMLDialogElement;
-                    if (modalElement) {
-                      modalElement.showModal();
-                    }
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete
-                </button>
+                <ModalDeleteBtn modalId={modalId} />
+              </li>
+              <li>
+                <ManageModalBtn manageModalId={manageModalId} />
               </li>
             </ul>
           </div>
@@ -135,21 +112,7 @@ const BlogManageCard = ({
           <div className="modal-action">
             <form method="dialog" className="flex gap-2">
               <button className="btn">Cancel</button>
-              <button
-                className="btn btn-error"
-                onClick={async () => {
-                  const deleteResponse = await deleteBlog({ blogId: id });
-
-                  if (isActionError(deleteResponse)) {
-                    addToast(deleteResponse.error.message, 'error');
-                    return;
-                  }
-
-                  addToast(deleteResponse.message, 'success');
-                }}
-              >
-                Delete
-              </button>
+              <DeleteBtn blogId={id} />
             </form>
           </div>
         </div>
