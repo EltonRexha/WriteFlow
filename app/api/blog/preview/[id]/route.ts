@@ -60,7 +60,7 @@ export async function PUT(req: Request) {
       title: data.title,
       description: data.description,
       Categories: {
-        connect: data.categories.map((category) => ({
+        set: data.categories.map((category) => ({
           name: category,
         })),
       },
