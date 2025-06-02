@@ -6,13 +6,16 @@ import {
   CloudinaryUploadWidgetInfo,
 } from 'next-cloudinary';
 import { useRouter } from 'next/navigation';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { getBlog } from '@/server-actions/blogs/action';
 import { EditBlogPreviewSchema } from '@/schemas/editBlogSchema';
 import { useMutation } from '@tanstack/react-query';
 import { updatePreview } from '@/libs/api/blog';
+import Select from 'react-select';
+import { getCategories } from '@/server-actions/categories/action';
+import { useToast } from '@/app/components/ToastProvider';
 
 type FormData = z.infer<typeof EditBlogPreviewSchema>;
 
@@ -25,6 +28,7 @@ const ManageBlogDialogForm = ({
 }) => {
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const modalId = `edit-modal-${blogId}`;
+  const [categories, setCategories] = useState<{ name: string }[]>([]);
 
   const {
     register,
@@ -42,6 +46,22 @@ const ManageBlogDialogForm = ({
       categories: blog.data?.Categories.map((category) => category.name),
     },
   });
+
+  const { addToast } = useToast();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_) {
+        addToast('Error fetching categories:', 'error');
+      }
+    };
+
+    fetchCategories();
+  }, [addToast]);
 
   const imgUrl = watch('imageUrl');
   const router = useRouter();
@@ -140,9 +160,84 @@ const ManageBlogDialogForm = ({
                 />
                 <p className="text-error">{errors['description']?.message}</p>
               </div>
+
+              {categories && (
+                <div>
+                  <Select<{ value: string; label: string }, true>
+                    placeholder="Categories"
+                    isMulti
+                    menuPlacement="top"
+                    options={categories.map(({ name }) => ({
+                      value: name,
+                      label: name,
+                    }))}
+                    menuPortalTarget={document.getElementById(modalId)}
+                    menuPosition={'fixed'}
+                    value={watch('categories').map((category) => ({
+                      label: category,
+                      value: category,
+                    }))}
+                    styles={{
+                      control: (baseStyles) => ({
+                        ...baseStyles,
+                        backgroundColor: 'var(--fallback-b1,oklch(var(--b1)))',
+                        borderColor:
+                          'var(--fallback-border-color,oklch(var(--bc)/0.2))',
+                      }),
+                      menuList: (baseStyles) => ({
+                        ...baseStyles,
+                        backgroundColor: 'var(--fallback-b1,oklch(var(--b1)))',
+                        padding: 0,
+                      }),
+                      menuPortal: (baseStyles) => ({
+                        ...baseStyles,
+                        zIndex: 9999,
+                        position: 'absolute',
+                      }),
+                      option: (baseStyles, { isFocused }) => ({
+                        ...baseStyles,
+                        backgroundColor: isFocused
+                          ? 'var(--fallback-b2,oklch(var(--b2)))'
+                          : 'var(--fallback-b1,oklch(var(--b1)))',
+                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                        cursor: 'pointer',
+                      }),
+                      multiValue: (baseStyles) => ({
+                        ...baseStyles,
+                        backgroundColor: 'var(--fallback-b2,oklch(var(--b2)))',
+                      }),
+                      multiValueLabel: (baseStyles) => ({
+                        ...baseStyles,
+                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                      }),
+                      multiValueRemove: (baseStyles) => ({
+                        ...baseStyles,
+                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                        ':hover': {
+                          backgroundColor:
+                            'var(--fallback-error,oklch(var(--er)))',
+                          color: 'white',
+                        },
+                      }),
+                      input: (baseStyles) => ({
+                        ...baseStyles,
+                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                      }),
+                    }}
+                    className="text-base-content"
+                    onChange={(values) => {
+                      setValue(
+                        'categories',
+                        values.map((value) => value.value)
+                      );
+                    }}
+                  />
+                  <p className="text-error">{errors['categories']?.message}</p>
+                </div>
+              )}
             </div>
           </div>
-          {Object.keys(errors)}
+
           <button
             className="btn btn-primary btn-soft block w-full"
             type="submit"
