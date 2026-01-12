@@ -1,20 +1,18 @@
 'use client';
-import { getBlog } from '@/server-actions/blogs/action';
+import { getBlog } from '@/libs/api/blog';
 import ManageBlogDialogForm from './ManageBlogDialogForm';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { isActionError } from '@/types/ActionError';
+import type { GetBlogResponse } from '@/libs/api/blog';
 
 const ManageBlogDialog = ({ blogId }: { blogId: string }) => {
-  const [blog, setBlog] = useState<Awaited<ReturnType<typeof getBlog>>>();
-  useEffect(() => {
-    async function fetchBlog() {
-      const blog = await getBlog(blogId);
-      setBlog(blog);
-    }
+  const { data: blog } = useQuery<GetBlogResponse>({
+    queryKey: ['blog', blogId],
+    queryFn: () => getBlog(blogId),
+    retry: false,
+  });
 
-    fetchBlog();
-  }, [blogId]);
-
-  if (!blog) {
+  if (!blog || isActionError(blog)) {
     return null;
   }
 

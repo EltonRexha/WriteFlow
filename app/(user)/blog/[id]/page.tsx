@@ -1,4 +1,4 @@
-import { addView, getBlog } from '@/server-actions/blogs/action';
+import prisma from '@/prisma/client';
 import clsx from 'clsx';
 import { Limelight } from 'next/font/google';
 import React from 'react';
@@ -11,7 +11,6 @@ import ToggleLikeBlogBtn from './_components/ToggleLikeBlogBtn';
 import ToggleDislikeBlogBtn from './_components/ToggleDislikeBlogBtn';
 import BlogComments from './_components/BlogComments';
 import FollowBtn from '@/app/components/ui/FollowBtn';
-import { getUser } from '@/server-actions/user/action';
 import { v4 as uuid } from 'uuid';
 import Link from 'next/link';
 import { getServerSession } from 'next-auth';
@@ -23,23 +22,103 @@ const limeLight = Limelight({
 
 const page = async ({ params }: { params: { id: string } }) => {
   const id = (await params).id;
-  const blog = await getBlog(id);
   const session = await getServerSession();
   const user = session?.user;
 
-  if (!blog.data) {
+  const blog = await prisma.blog.findFirst({
+    where: {
+      id,
+    },
+    select: {
+      Author: {
+        select: {
+          id: true,
+          email: true,
+          image: true,
+          name: true,
+        },
+      },
+      BlogContent: {
+        select: {
+          content: true,
+        },
+      },
+      Categories: {
+        select: {
+          name: true,
+        },
+      },
+      title: true,
+      description: true,
+      id: true,
+      imageUrl: true,
+      createdAt: true,
+      _count: {
+        select: {
+          likedBy: true,
+          dislikedBy: true,
+          viewedBy: true,
+        },
+      },
+    },
+  });
+
+  if (!blog) {
     return 'not found';
   }
 
-  if (user) {
-    addView(id);
+  const isLiked =
+    !!user?.email &&
+    !!(await prisma.blog.findFirst({
+      where: {
+        id,
+        likedBy: {
+          some: {
+            email: user.email,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    }));
+
+  const isDisliked =
+    !!user?.email &&
+    !!(await prisma.blog.findFirst({
+      where: {
+        id,
+        dislikedBy: {
+          some: {
+            email: user.email,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    }));
+
+  if (user?.email) {
+    await prisma.blog.update({
+      where: {
+        id,
+      },
+      data: {
+        viewedBy: {
+          connect: {
+            email: user.email,
+          },
+        },
+      },
+    });
   }
 
-  const author = await getUser({ email: blog.data.Author.email as string });
+  const author = blog.Author;
   const renderId = uuid();
 
-  const authorImage = blog.data.Author.image;
- 
+  const authorImage = blog.Author.image;
+
   return (
     <div className="pt-4">
       <div id="mainContent" className="max-w-[82ch] px-2 m-auto text-pretty">
@@ -50,13 +129,13 @@ const page = async ({ params }: { params: { id: string } }) => {
               limeLight.className
             )}
           >
-            {blog.data.title}
+            {blog.title}
           </h1>
           <p className="text-xl text-base-content/70 pt-2 font-medium">
-            {blog.data.description}
+            {blog.description}
           </p>
           <div className="flex items-center space-x-2 mt-4">
-            <Link href={`/user/${author?.id}`}>
+            <Link href={`/user/${author.id}`}>
               <div className="w-8 aspect-square relative cursor-pointer ">
                 {!authorImage ? (
                   <Image
@@ -77,19 +156,19 @@ const page = async ({ params }: { params: { id: string } }) => {
                 )}
               </div>
             </Link>
-            <Link href={`/user/${author?.id}`}>
-              <p className="text-primary link">{blog.data.Author.name}</p>
+            <Link href={`/user/${author.id}`}>
+              <p className="text-primary link">{blog.Author.name}</p>
             </Link>
 
-            <FollowBtn userId={author?.id} />
+            <FollowBtn userId={author.id} />
             <Dot />
             <p className="text-base-content/60 text-sm">
-              {format(blog.data.createdAt, 'PPP')}
+              {format(blog.createdAt, 'PPP')}
             </p>
           </div>
 
           <Image
-            src={blog.data.imageUrl}
+            src={blog.imageUrl}
             alt=""
             width={0}
             height={0}
@@ -103,32 +182,32 @@ const page = async ({ params }: { params: { id: string } }) => {
           className=""
         >
           <div className="my-4">
-            {blog.data.BlogContent.content && (
-              <BlogContent content={blog.data.BlogContent.content as string} />
+            {blog.BlogContent.content && (
+              <BlogContent content={blog.BlogContent.content as string} />
             )}
           </div>
           {user && (
             <div id="likeSection" className="pt-2 mb-10">
               <div className="flex space-x-2 items-center">
                 <div className="flex items-center">
-                  <ToggleLikeBlogBtn blogId={id} isLiked={!!blog.isLiked} />
+                  <ToggleLikeBlogBtn blogId={id} isLiked={!!isLiked} />
                   <p className="text-sm text-base-content/70">
-                    {blog.data._count.likedBy}
+                    {blog._count.likedBy}
                   </p>
                 </div>
                 <div className="flex items-center">
                   <ToggleDislikeBlogBtn
                     blogId={id}
-                    isDisliked={!!blog.isDisliked}
+                    isDisliked={!!isDisliked}
                   />
                   <p className="text-sm text-base-content/70">
-                    {blog.data._count.dislikedBy}
+                    {blog._count.dislikedBy}
                   </p>
                 </div>
                 <div className="flex items-center space-x-2 ml-auto">
                   <Eye />
                   <p className="text-sm text-base-content/70">
-                    {blog.data._count.viewedBy}
+                    {blog._count.viewedBy}
                   </p>
                 </div>
               </div>

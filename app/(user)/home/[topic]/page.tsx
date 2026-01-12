@@ -1,16 +1,21 @@
 import React from 'react';
 import TopicBar from './_components/TopicBar';
 import BlogsByTopic from './_components/BlogsByTopic';
-import { getCategories } from '@/server-actions/categories/action';
+import prisma from '@/prisma/client';
 import { redirect } from 'next/navigation';
 import SideBar from './_components/SideBar';
 
 const Page = async ({ params }: { params: { topic: string } }) => {
   const { topic } = await params;
+  const categories = await prisma.category.findMany({
+    select: {
+      name: true,
+    },
+  });
   const topics = [
     { name: 'For-You' },
     { name: 'Following' },
-    ...(await getCategories()),
+    ...categories,
   ];
 
   if (!topics.find((item) => item.name.toLowerCase() === topic.toLowerCase())) {

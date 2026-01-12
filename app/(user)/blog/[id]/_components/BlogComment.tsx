@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import ToggleLikeComment from './ToggleLikeCommentBtn';
 import ToggleDislikeComment from './ToggleDislikeCommentBtn';
-import { getComments } from '@/server-actions/comments/action';
+import type { CommentDto } from '@/libs/api/comments';
 
 const BlogComment = ({
   id,
@@ -13,9 +13,9 @@ const BlogComment = ({
   Author: { image, name: authorName },
   createdAt,
   _count,
-  isLiked,
-  isDisliked,
-}: Awaited<ReturnType<typeof getComments>>['comments'][number]) => {
+  isLiked = false,
+  isDisliked = false,
+}: CommentDto) => {
   const [commentLikeStatus, setCommentLikeStatus] = useState<
     'none' | 'liked' | 'disliked'
   >(isLiked ? 'liked' : isDisliked ? 'disliked' : 'none');
@@ -44,7 +44,7 @@ const BlogComment = ({
         </div>
         <p className="text-primary ">{authorName}</p>
         <p className="text-base-content/60 text-sm">
-          {format(createdAt, 'PPP')}
+          {format(new Date(createdAt as any), 'PPP')}
         </p>
       </div>
       <div className="ml-1">

@@ -1,11 +1,9 @@
 'use client';
-import {
-  getUserBlogs,
-  UserBlogsPagination,
-} from '@/server-actions/blogs/action';
 import { isActionError } from '@/types/ActionError';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import BlogManageCard from './BlogManageCard';
+import { getUserBlogs } from '@/libs/api/blog';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 interface User {
   name?: string | null;
@@ -14,39 +12,28 @@ interface User {
 }
 
 const BlogList = ({ user }: { user: User }) => {
-  const [page, setPage] = useState(1);
-  const [blogs, setBlogs] = useState<UserBlogsPagination['blogs']>([]);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['dashboardUserBlogs', user.email],
+    queryFn: ({ pageParam }) => getUserBlogs(user.email as string, pageParam as number),
+    initialPageParam: 1,
+    enabled: !!user.email,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || isActionError(lastPage)) return undefined;
+      if (!lastPage.pagination.hasNextPage) return undefined;
+      return lastPage.pagination.currentPage + 1;
+    },
+    retry: false,
+  });
 
-  useEffect(() => {
-    async function getBlogs() {
-      setIsLoading(true);
-      try {
-        if (!user.email) {
-          return;
-        }
-        const response = await getUserBlogs(user.email, page);
-
-        if (isActionError(response)) {
-          return;
-        }
-
-        if (page === 1) {
-          setBlogs(response.blogs);
-        } else {
-          setBlogs((prev) => [...prev, ...response.blogs]);
-        }
-        setHasNextPage(response.pagination.hasNextPage);
-      } catch (error) {
-        console.error('Error fetching user blogs:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    getBlogs();
-  }, [user, page]);
+  const blogs =
+    data?.pages.flatMap((page) => (isActionError(page) ? [] : page.blogs)) ||
+    [];
 
   if (isLoading && blogs.length === 0) {
     return (
@@ -64,7 +51,12 @@ const BlogList = ({ user }: { user: User }) => {
         {blogs.map((blog) => (
           <BlogManageCard
             key={blog.id}
-            {...blog}
+            id={blog.id}
+            title={blog.title}
+            description={blog.description}
+            imageUrl={blog.imageUrl}
+            createdAt={new Date(blog.createdAt as any)}
+            _count={blog._count}
             Author={{ name: user.name!, image: user.image! }}
           />
         ))}
@@ -79,10 +71,10 @@ const BlogList = ({ user }: { user: User }) => {
         <div className="flex justify-center">
           <button
             className="btn btn-secondary btn-dash btn-sm w-max"
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={isLoading}
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
           >
-            {isLoading ? (
+            {isFetchingNextPage ? (
               <span className="loading loading-spinner"></span>
             ) : (
               'Load More'

@@ -1,6 +1,6 @@
 'use client';
 import { useToast } from '@/app/components/ToastProvider';
-import { autocompleteBlogsByTitle } from '@/server-actions/blogs/action';
+import { autocompleteBlogsByTitle } from '@/libs/api/blog';
 import { isActionError } from '@/types/ActionError';
 import React, { useEffect, useState } from 'react';
 
@@ -17,10 +17,6 @@ const BlogSearchAutocompletion = React.memo(function BlogSearchAutocompletion({
       id: string;
       imageUrl: string;
       description: string;
-      userId: string;
-      blogContentId: string;
-      createdAt: Date;
-      updatedAt: Date;
     }[]
   >([]);
 
@@ -28,7 +24,7 @@ const BlogSearchAutocompletion = React.memo(function BlogSearchAutocompletion({
 
   useEffect(() => {
     async function fetchBlogs() {
-      const blogsByTitle = await autocompleteBlogsByTitle({ title });
+      const blogsByTitle = await autocompleteBlogsByTitle(title);
       if (isActionError(blogsByTitle)) {
         addToast('could not fetch blogs', 'error');
         return;

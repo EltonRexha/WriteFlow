@@ -1,23 +1,17 @@
-import { User } from '@/app/generated/prisma';
-import { getUser } from '@/server-actions/user/action';
-import { getSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getMe, type ClientUser } from '@/libs/api/user';
+import { isActionError } from '@/types/ActionError';
 
 export default function useClientUser() {
-  const [user, setUser] = useState<User | null>(null);
+  const { data } = useQuery({
+    queryKey: ['me'],
+    queryFn: getMe,
+    retry: false,
+  });
 
-  useEffect(() => {
-    async function getSessionUser() {
-      const session = await getSession();
-      const sessionEmail = session?.user?.email;
-      if (sessionEmail) {
-        const user = await getUser({ email: sessionEmail });
-        setUser(user);
-      }
-    }
+  if (!data || isActionError(data)) {
+    return null;
+  }
 
-    getSessionUser();
-  }, []);
-
-  return user;
+  return data as ClientUser;
 }
