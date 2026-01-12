@@ -1,7 +1,7 @@
 'use client';
 import clsx from 'clsx';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const MenuBar = () => {
@@ -9,6 +9,16 @@ const MenuBar = () => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
   const pathname = usePathname();
+
+  const currentTopic = pathname.split('/').pop();
+
+  const initialTopics = [
+    { name: 'Stats' },
+    { name: 'Blogs' },
+    { name: 'Drafts' },
+  ];
+
+  const router = useRouter();
 
   const checkScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
@@ -71,33 +81,18 @@ const MenuBar = () => {
             role="tablist"
             className="tabs tabs-border whitespace-nowrap inline-block min-w-full"
           >
-            <Link
-              href="/dashboard/stats"
-              className={clsx(
-                'tab capitalize',
-                pathname.endsWith('/stats') ? 'tab-active' : ''
-              )}
-            >
-              Your Stats
-            </Link>
-            <Link
-              href="/dashboard/blogs"
-              className={clsx(
-                'tab capitalize',
-                pathname.endsWith('/blogs') ? 'tab-active' : ''
-              )}
-            >
-              Manage Blogs
-            </Link>
-            <Link
-              href="/dashboard/drafts"
-              className={clsx(
-                'tab capitalize',
-                pathname.endsWith('/drafts') ? 'tab-active' : ''
-              )}
-            >
-              Manage Drafts
-            </Link>
+            {initialTopics.map((item) => (
+              <input
+                type="radio"
+                name="my_tabs_1"
+                className={clsx('tab', item.name.toLowerCase() === currentTopic?.toLowerCase() ? 'tab-active' : '')}
+                aria-label={`${item.name}`}
+                key={item.name}
+                onClick={() => {
+                  router.push(`/dashboard/${item.name.toLowerCase()}`);
+                }}
+              />
+            ))}
           </div>
         </div>
 

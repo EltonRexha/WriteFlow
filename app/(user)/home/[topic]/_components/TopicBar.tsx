@@ -1,6 +1,6 @@
 'use client';
 import clsx from 'clsx';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface TopicBarProps {
@@ -12,6 +12,7 @@ const TopicBar = ({ topic, initialTopics }: TopicBarProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
+  const router = useRouter();
 
   const checkScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
@@ -72,22 +73,19 @@ const TopicBar = ({ topic, initialTopics }: TopicBarProps) => {
         >
           <div
             role="tablist"
-            className="tabs tabs-bordered whitespace-nowrap inline-block min-w-full"
+            className="tabs tabs-border whitespace-nowrap inline-block min-w-full"
           >
             {initialTopics.map((item) => (
-              <Link
-                role="tab"
-                className={clsx(
-                  'tab capitalize',
-                  item.name.toLowerCase() === topic.toLowerCase()
-                    ? 'tab-active'
-                    : ''
-                )}
+              <input
+                type="radio"
+                name="my_tabs_1"
+                className={clsx('tab', item.name === topic ? 'tab-active' : '')}
+                aria-label={`${item.name}`}
                 key={item.name}
-                href={`/home/${item.name}`}
-              >
-                {item.name}
-              </Link>
+                onClick={() => {
+                  router.push(`/home/${item.name}`);
+                }}
+              />
             ))}
           </div>
         </div>
