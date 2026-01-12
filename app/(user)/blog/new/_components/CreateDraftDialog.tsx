@@ -1,12 +1,13 @@
 'use client';
 import { DraftSchema } from '@/schemas/draftSchema';
-import { createDraft } from '@/server-actions/drafts/actions';
+import { createDraft } from '@/libs/api/drafts';
 import { isActionError } from '@/types/ActionError';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
 
 type FormData = z.infer<typeof DraftSchema>;
 
@@ -24,14 +25,23 @@ const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
 
   const router = useRouter();
 
-  async function onSubmit(data: FormData) {
-    const response = await createDraft(data);
+  const mutation = useMutation({
+    mutationFn: (payload: FormData) => createDraft(payload),
+    onSuccess: (response) => {
+      if (isActionError(response)) {
+        setError(response.error.message);
+        return;
+      }
 
-    if (isActionError(response)) {
-      setError(response.error.message);
-    } else {
       router.push('/home');
-    }
+    },
+    onError: () => {
+      setError('Something wrong happened');
+    },
+  });
+
+  async function onSubmit(data: FormData) {
+    mutation.mutate(data);
   }
 
   useEffect(() => {

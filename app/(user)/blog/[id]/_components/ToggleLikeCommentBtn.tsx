@@ -2,7 +2,8 @@
 import { ThumbsUp } from 'lucide-react';
 import React from 'react';
 import clsx from 'clsx';
-import { toggleLike } from '@/server-actions/comments/action';
+import { toggleLikeComment } from '@/libs/api/comments';
+import { useMutation } from '@tanstack/react-query';
 
 const ToggleLikeComment = ({
   isLiked,
@@ -13,11 +14,12 @@ const ToggleLikeComment = ({
   commentId: string;
   onLike: () => void;
 }) => {
-
-  const handleLike = async () => {
-    await toggleLike(commentId);
-    onLike();
-  };
+  const mutation = useMutation({
+    mutationFn: () => toggleLikeComment(commentId),
+    onSuccess: () => {
+      onLike();
+    },
+  });
 
   return (
     <button
@@ -25,7 +27,7 @@ const ToggleLikeComment = ({
         'btn btn-circle btn-ghost btn-sm hover:text-green-500 transition-colors',
         isLiked ? 'text-green-500' : ''
       )}
-      onClick={handleLike}
+      onClick={() => mutation.mutate()}
     >
       <ThumbsUp height={15} />
     </button>

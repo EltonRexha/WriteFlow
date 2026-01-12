@@ -2,7 +2,8 @@
 import { ThumbsDown } from 'lucide-react';
 import React from 'react';
 import clsx from 'clsx';
-import { toggleDislike } from '@/server-actions/comments/action';
+import { toggleDislikeComment } from '@/libs/api/comments';
+import { useMutation } from '@tanstack/react-query';
 
 const ToggleDislikeComment = ({
   isDisliked,
@@ -13,11 +14,12 @@ const ToggleDislikeComment = ({
   commentId: string;
   onDislike: () => void;
 }) => {
-
-  const handleDislike = async () => {
-    await toggleDislike(commentId);
-    onDislike();
-  };
+  const mutation = useMutation({
+    mutationFn: () => toggleDislikeComment(commentId),
+    onSuccess: () => {
+      onDislike();
+    },
+  });
 
   return (
     <button
@@ -25,7 +27,7 @@ const ToggleDislikeComment = ({
         'btn btn-circle btn-ghost btn-sm  hover:text-red-500 transition-colors',
         isDisliked ? 'text-red-500' : ''
       )}
-      onClick={handleDislike}
+      onClick={() => mutation.mutate()}
     >
       <ThumbsDown height={15} />
     </button>

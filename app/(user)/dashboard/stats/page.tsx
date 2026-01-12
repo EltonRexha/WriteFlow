@@ -3,22 +3,92 @@ import { Eye, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { Limelight } from 'next/font/google';
 import clsx from 'clsx';
 import SearchBlogStats from './_components/SearchBlogStats';
-import {
-  getTotalBlogsStats,
-  getTotalCommentsStats,
-} from '@/server-actions/stats/action';
+import prisma from '@/prisma/client';
+import { getServerSession } from 'next-auth';
 
 const limeLight = Limelight({
   weight: '400',
 });
 
 const page = async () => {
-  const totalBlogStats = await getTotalBlogsStats();
-  const totalCommentStats = await getTotalCommentsStats();
+  const session = await getServerSession();
+  const user = session?.user;
 
-  if ('error' in totalBlogStats || 'error' in totalCommentStats) {
+  if (!user?.email) {
     return <div>You need to be logged in to view stats</div>;
   }
+
+  const statsPerBlog = await prisma.blog.findMany({
+    where: {
+      Author: {
+        email: user.email,
+      },
+    },
+    select: {
+      _count: {
+        select: {
+          viewedBy: true,
+          BlogComment: true,
+          dislikedBy: true,
+          likedBy: true,
+        },
+      },
+    },
+  });
+
+  const totalBlogStats = statsPerBlog.reduce(
+    (prev, curr) => {
+      return {
+        _count: {
+          BlogComment: prev._count.BlogComment + curr._count.BlogComment,
+          dislikedBy: prev._count.dislikedBy + curr._count.dislikedBy,
+          likedBy: prev._count.likedBy + curr._count.likedBy,
+          viewedBy: prev._count.viewedBy + curr._count.viewedBy,
+        },
+      };
+    },
+    {
+      _count: {
+        likedBy: 0,
+        dislikedBy: 0,
+        BlogComment: 0,
+        viewedBy: 0,
+      },
+    }
+  );
+
+  const statsPerComment = await prisma.blogComment.findMany({
+    where: {
+      Author: {
+        email: user.email,
+      },
+    },
+    select: {
+      _count: {
+        select: {
+          dislikedBy: true,
+          likedBy: true,
+        },
+      },
+    },
+  });
+
+  const totalCommentStats = statsPerComment.reduce(
+    (prev, curr) => {
+      return {
+        _count: {
+          dislikedBy: prev._count.dislikedBy + curr._count.dislikedBy,
+          likedBy: prev._count.likedBy + curr._count.likedBy,
+        },
+      };
+    },
+    {
+      _count: {
+        likedBy: 0,
+        dislikedBy: 0,
+      },
+    }
+  );
 
   return (
     <div className="">

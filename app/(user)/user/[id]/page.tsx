@@ -8,8 +8,6 @@ import clsx from 'clsx';
 import { format } from 'date-fns';
 import UserBlogsList from './_components/UserBlogsList';
 import FollowBtn from '@/app/components/ui/FollowBtn';
-import { followed } from '@/server-actions/user/action';
-import { isActionError } from '@/types/ActionError';
 
 const limeLight = Limelight({
   weight: '400',
@@ -24,11 +22,6 @@ interface Props {
 
 const page = async ({ params: { id } }: Props) => {
   const user = await getUser(id);
-  const userFollowed = await followed({ id });
-
-  if (isActionError(userFollowed)) {
-    return 'Something went wrong';
-  }
 
   if (!user) return <div>User not found</div>;
 
@@ -88,9 +81,9 @@ const page = async ({ params: { id } }: Props) => {
                   <span>
                     {user.createdAt
                       ? `Joined ${format(
-                          new Date(user.createdAt),
-                          'MMMM yyyy'
-                        )}`
+                        new Date(user.createdAt),
+                        'MMMM yyyy'
+                      )}`
                       : 'Join date not available'}
                   </span>
                 </div>

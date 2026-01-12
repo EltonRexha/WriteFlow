@@ -1,4 +1,4 @@
-import { DisplayBlog } from '@/server-actions/recommendation/action';
+import type { DisplayBlog } from '@/libs/api/blog';
 import { format } from 'date-fns';
 import { MoreVertical, ThumbsDown, ThumbsUp, Edit } from 'lucide-react';
 import Image from 'next/image';

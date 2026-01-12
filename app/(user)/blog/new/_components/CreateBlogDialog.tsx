@@ -6,21 +6,21 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Select from 'react-select';
 import { useMounted } from '@/hooks/useMounted';
-import { getCategories } from '@/server-actions/categories/action';
+import { getCategories } from '@/libs/api/categories';
 import { useToast } from '../../../../components/ToastProvider';
 import {
   CldImage,
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from 'next-cloudinary';
-import { createBlog } from '@/server-actions/blogs/action';
+import { createBlog } from '@/libs/api/blog';
 import { isActionError } from '@/types/ActionError';
 import { useRouter } from 'next/navigation';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 type FormData = z.infer<typeof BlogSchema>;
 
 const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
-  const [categories, setCategories] = useState<{ name: string }[]>([]);
   const [showImage, setShowImg] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -42,33 +42,46 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   const { addToast } = useToast();
   const imgUrl = watch('imageUrl');
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getCategories();
-        setCategories(data);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (_) {
-        addToast('Error fetching categories:', 'error');
-      }
-    };
+  const { data: categories = [], isError: categoriesIsError } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+    retry: false,
+  });
 
-    fetchCategories();
-  }, [addToast]);
+  useEffect(() => {
+    if (categoriesIsError) {
+      addToast('Error fetching categories:', 'error');
+    }
+  }, [categoriesIsError, addToast]);
 
   const router = useRouter();
 
   const mounted = useMounted();
+
+  const mutation = useMutation({
+    mutationFn: (payload: FormData) => createBlog(payload),
+    onSuccess: (response) => {
+      if (typeof response === 'string') {
+        router.push(`/blog/${response}`);
+        return;
+      }
+
+      if (isActionError(response)) {
+        setError(response.error.message);
+        return;
+      }
+
+      setError('Something wrong happened');
+    },
+    onError: () => {
+      addToast('Something wrong happened', 'error');
+    },
+  });
+
   if (!mounted) return null;
 
   async function onSubmit(data: FormData) {
-    const response = await createBlog(data);
-
-    if (isActionError(response)) {
-      setError(response.error.message);
-    } else {
-      router.push(`/blog/${response}`);
-    }
+    mutation.mutate(data);
   }
 
   return (

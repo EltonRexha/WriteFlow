@@ -1,13 +1,13 @@
 'use client';
-import {
-  DisplayBlog,
-  followingBlogs,
-  forYouBlogs,
-  getBlogsByTopic,
-} from '@/server-actions/recommendation/action';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import BlogPreviewCard from './BlogPreviewCard';
 import { isActionError } from '@/types/ActionError';
+import {
+  getBlogsByTopic,
+  getFollowingBlogs,
+  getForYouBlogs,
+} from '@/libs/api/recommendation';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 const BlogSkeleton = () => {
   return (
@@ -37,49 +37,40 @@ const BlogSkeleton = () => {
 };
 
 const BlogsByTopic = ({ topic }: { topic: string }) => {
-  const [page, setPage] = useState(1);
-  const [blogs, setBlogs] = useState<DisplayBlog[]>([]);
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [isLoading, setIsLoading] = useState(true); // Initialize as true
-  const [isChangingTopic, setIsChangingTopic] = useState(false);
-
-  useEffect(() => {
-    setIsChangingTopic(true); // Set topic change flag
-    setIsLoading(true);
-    setBlogs([]);
-    setPage(1);
-    setHasNextPage(true);
-  }, [topic]);
-
-  useEffect(() => {
-    async function getBlogs() {
-      let response;
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['recommendation', topic],
+    queryFn: ({ pageParam }) => {
+      const page = pageParam as number;
       if (topic.toLocaleLowerCase() === 'for-you') {
-        response = await forYouBlogs(page);
-      } else if (topic.toLocaleLowerCase() === 'following') {
-        response = await followingBlogs(page);
-      } else {
-        response = await getBlogsByTopic(topic, page);
+        return getForYouBlogs(page);
       }
 
-      if (isActionError(response)) {
-        return;
+      if (topic.toLocaleLowerCase() === 'following') {
+        return getFollowingBlogs(page);
       }
 
-      if (page === 1) {
-        setBlogs(response.blogs);
-      } else {
-        setBlogs((prev) => [...prev, ...response.blogs]);
-      }
-      setHasNextPage(response.pagination.hasNextPage);
-      setIsLoading(false);
-      setIsChangingTopic(false); // Reset topic change flag
-    }
+      return getBlogsByTopic(topic, page);
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || isActionError(lastPage)) return undefined;
+      if (!lastPage.pagination.hasNextPage) return undefined;
+      return lastPage.pagination.currentPage + 1;
+    },
+    retry: false,
+  });
 
-    getBlogs();
-  }, [page, topic]);
+  const blogs =
+    data?.pages.flatMap((page) => (isActionError(page) ? [] : page.blogs)) ||
+    [];
 
-  if (isLoading && (blogs.length === 0 || isChangingTopic)) {
+  if (isLoading && blogs.length === 0) {
     return (
       <div className="space-y-6">
         <BlogSkeleton />
@@ -104,10 +95,10 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
         <div className="flex justify-center">
           <button
             className="btn btn-secondary btn-dash btn-sm w-max"
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={isLoading}
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
           >
-            {isLoading ? (
+            {isFetchingNextPage ? (
               <span className="loading loading-spinner"></span>
             ) : (
               'View More'

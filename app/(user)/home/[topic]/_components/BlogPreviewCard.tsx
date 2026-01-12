@@ -1,9 +1,11 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
-import { DisplayBlog } from '@/server-actions/recommendation/action';
+import type { DisplayBlog } from '@/libs/api/blog';
 
 const BlogPreviewCard = ({
   id,

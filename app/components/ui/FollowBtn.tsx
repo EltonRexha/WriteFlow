@@ -1,63 +1,83 @@
 'use client';
-import {
-  followed,
-  followUser,
-  unfollowUser,
-} from '@/server-actions/user/action';
 import { isActionError } from '@/types/ActionError';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useToast } from '../ToastProvider';
 import useClientUser from '@/hooks/useClientUser';
+import {
+  followUser,
+  getIsFollowed,
+  unfollowUser,
+} from '@/libs/api/user';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 const FollowBtn = ({ userId }: { userId?: string | null }) => {
-  const [isFollowed, setIsFollowed] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
   const { addToast } = useToast();
   const loggedUser = useClientUser();
 
+  const queryClient = useQueryClient();
+
+  const isSelf = !!loggedUser && !!userId && loggedUser.id === userId;
+
+  const { data: isFollowedRes, isLoading } = useQuery({
+    queryKey: ['isFollowed', userId],
+    queryFn: () => getIsFollowed(userId as string),
+    enabled: !!loggedUser && !!userId && !isSelf,
+    retry: false,
+  });
+
   useEffect(() => {
-    async function fetchIsFollowed() {
-      if (!userId) {
-        return;
-      }
-      const isFollowed = await followed({ id: userId });
-      if (isActionError(isFollowed)) {
-        addToast('something went wrong', 'error');
-        return;
-      }
-      setIsLoading(false);
-      setIsFollowed(isFollowed);
+    if (isFollowedRes && isActionError(isFollowedRes)) {
+      addToast('something went wrong', 'error');
     }
+  }, [addToast, isFollowedRes]);
 
-    fetchIsFollowed();
-  }, [setIsFollowed, addToast, userId]);
+  const followMutation = useMutation({
+    mutationFn: () => followUser(userId as string),
+    onSuccess: (res) => {
+      if (isActionError(res)) {
+        addToast('Something went wrong following user', 'error');
+        return;
+      }
+      queryClient.setQueryData(['isFollowed', userId], true);
+    },
+    onError: () => {
+      addToast('Something went wrong following user', 'error');
+    },
+  });
 
-  if (!loggedUser || !userId || loggedUser.id === userId) {
+  const unfollowMutation = useMutation({
+    mutationFn: () => unfollowUser(userId as string),
+    onSuccess: (res) => {
+      if (isActionError(res)) {
+        addToast('Something went wrong un-following user', 'error');
+        return;
+      }
+      queryClient.setQueryData(['isFollowed', userId], false);
+    },
+    onError: () => {
+      addToast('Something went wrong un-following user', 'error');
+    },
+  });
+
+  if (!loggedUser || !userId || isSelf) {
     return null;
   }
 
   const handleToggleFollow = async () => {
-    setIsProcessing(true);
+    const isFollowed = typeof isFollowedRes === 'boolean' ? isFollowedRes : false;
     if (isFollowed) {
-      const res = await unfollowUser({ id: userId });
-      if (isActionError(res)) {
-        addToast('Something went wrong un-following user', 'error');
-        setIsLoading(false);
-        return;
-      }
-      setIsFollowed(false);
-    } else {
-      const res = await followUser({ id: userId });
-      if (isActionError(res)) {
-        addToast('Something went wrong following user', 'error');
-        setIsLoading(false);
-        return;
-      }
-      setIsFollowed(true);
+      unfollowMutation.mutate();
+      return;
     }
-    setIsProcessing(false);
+    followMutation.mutate();
   };
+
+  const isFollowed = typeof isFollowedRes === 'boolean' ? isFollowedRes : false;
+  const isProcessing = followMutation.isPending || unfollowMutation.isPending;
 
   return (
     <button

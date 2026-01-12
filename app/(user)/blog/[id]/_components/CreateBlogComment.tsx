@@ -1,5 +1,5 @@
 'use client';
-import { createComment } from '@/server-actions/comments/action';
+import { createComment } from '@/libs/api/comments';
 import { isActionError } from '@/types/ActionError';
 import { useToast } from '../../../../components/ToastProvider';
 import { useRouter } from 'next/navigation';
@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { BlogCommentSchema } from '@/schemas/blogCommentSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type FormData = z.infer<typeof BlogCommentSchema>;
 
@@ -22,19 +23,30 @@ const CreateBlogComment = ({ blogId }: { blogId: string }) => {
   });
   const { addToast } = useToast();
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (payload: FormData) => createComment(payload),
+    onSuccess: (response) => {
+      if (isActionError(response)) {
+        addToast(response.error.message, 'error');
+        return;
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['comments', blogId] });
+      queryClient.invalidateQueries({ queryKey: ['comments', 'user', blogId] });
+      router.refresh();
+    },
+    onError: () => {
+      addToast('Something went wrong creating comment', 'error');
+    },
+  });
 
   useEffect(() => {
     setValue('blogId', blogId);
   }, [setValue, blogId]);
   async function onSubmit(data: FormData) {
-    const response = await createComment(data);
-
-    if (isActionError(response)) {
-      addToast(response.error.message, 'error');
-      return;
-    }
-
-    router.refresh();
+    mutation.mutate(data);
   }
 
   return (

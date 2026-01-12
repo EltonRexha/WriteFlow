@@ -1,12 +1,12 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import CreateBlogComment from './CreateBlogComment';
 import BlogComment from './BlogComment';
-import { getComments, getUserComments } from '@/server-actions/comments/action';
 import { useToast } from '@/app/components/ToastProvider';
 import useClientUser from '@/hooks/useClientUser';
-
-type CommentsFn = Awaited<ReturnType<typeof getComments>>;
+import { getComments, getUserComments } from '@/libs/api/comments';
+import { isActionError } from '@/types/ActionError';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 const BlogComments = ({
   blogId,
@@ -15,46 +15,59 @@ const BlogComments = ({
   blogId: string;
   renderId: string;
 }) => {
-  const [blogComments, setBlogComments] = useState<CommentsFn>();
-  const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
   const { addToast } = useToast();
   const user = useClientUser();
 
-  const getBlogComments = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const newBlogComments = await getComments(blogId, page);
-      if (page === 1) {
-        const userComments = await getUserComments(blogId);
-        setBlogComments(() => {
-          if (!userComments.comments) return newBlogComments;
-          return {
-            comments: [...userComments.comments, ...newBlogComments.comments],
-            pagination: newBlogComments.pagination,
-          };
-        });
-      } else {
-        setBlogComments((prev) => {
-          if (!prev) return newBlogComments;
-          return {
-            comments: [...prev?.comments, ...newBlogComments.comments],
-            pagination: newBlogComments.pagination,
-          };
-        });
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_) {
-      addToast('Error fetching comments:', 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [blogId, page, addToast]);
+  const {
+    data: userComments,
+    isError: userCommentsIsError,
+  } = useQuery({
+    queryKey: ['comments', 'user', blogId, renderId],
+    queryFn: () => getUserComments(blogId),
+    enabled: !!user,
+    retry: false,
+  });
+
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['comments', blogId, renderId],
+    queryFn: ({ pageParam }) => getComments(blogId, pageParam as number),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || isActionError(lastPage)) return undefined;
+      if (!lastPage.pagination.hasNextPage) return undefined;
+      return lastPage.pagination.currentPage + 1;
+    },
+    retry: false,
+  });
 
   useEffect(() => {
-    console.log('get comments');
-    getBlogComments();
-  }, [page, getBlogComments, renderId]);
+    if (isError || userCommentsIsError) {
+      addToast('Error fetching comments:', 'error');
+    }
+  }, [isError, userCommentsIsError, addToast]);
+
+  const otherComments =
+    data?.pages.flatMap((page) =>
+      isActionError(page) ? [] : page.comments
+    ) || [];
+
+  const mergedComments =
+    user && userComments && !isActionError(userComments)
+      ? [...(userComments.comments || []), ...otherComments]
+      : otherComments;
+
+  const pagination = (() => {
+    const last = data?.pages?.[data.pages.length - 1];
+    if (!last || isActionError(last)) return undefined;
+    return last.pagination;
+  })();
 
   if (isLoading) {
     return <Skeleton />;
@@ -62,7 +75,7 @@ const BlogComments = ({
 
   return (
     <>
-      {blogComments && (!!user || !!blogComments.comments.length) && (
+      {(!!user || !!mergedComments.length) && (
         <div
           id="commentSection"
           className="flex flex-col mt-10 space-y-5 mb-10 border-base-content/70 border-t-[1px] pt-10"
@@ -70,16 +83,25 @@ const BlogComments = ({
           <h2 className="text-2xl font-bold">Replies</h2>
           {user && <CreateBlogComment blogId={blogId} />}
           <div className="space-y-2">
-            {blogComments.comments.map((data) => (
-              <BlogComment key={data.id} {...data} />
+            {mergedComments.map((data) => (
+              <BlogComment
+                key={data.id}
+                id={data.id}
+                content={data.content}
+                Author={data.Author}
+                createdAt={data.createdAt}
+                _count={data._count}
+                isLiked={data.isLiked ?? false}
+                isDisliked={data.isDisliked ?? false}
+              />
             ))}
           </div>
-          {blogComments.pagination.hasNextPage && (
+          {!!pagination?.hasNextPage && hasNextPage && (
             <button
               className="btn btn-secondary btn-dash btn-sm w-max self-center"
-              onClick={() => setPage((prev) => prev + 1)}
+              onClick={() => fetchNextPage()}
             >
-              {isLoading ? (
+              {isFetchingNextPage ? (
                 <span className="loading loading-spinner"></span>
               ) : (
                 'Load More'

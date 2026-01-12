@@ -1,10 +1,11 @@
 'use client';
-import { getBlogStats } from '@/server-actions/stats/action';
 import { isActionError } from '@/types/ActionError';
 import clsx from 'clsx';
 import { Eye, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { Limelight } from 'next/font/google';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { getBlogStats } from '@/libs/api/stats';
+import { useQuery } from '@tanstack/react-query';
 
 const limeLight = Limelight({
   weight: '400',
@@ -26,39 +27,22 @@ const BlogStatsComponent = ({
   blogId: string | null;
   title: string;
 }) => {
-  const [stats, setStats] = useState<BlogStatsData | null>(null);
-  const [error, setError] = useState(false);
+  const {
+    data: stats,
+    isError,
+    isLoading,
+  } = useQuery({
+    queryKey: ['stats', 'blog', blogId],
+    queryFn: () => getBlogStats(blogId as string),
+    enabled: !!blogId,
+    retry: false,
+  });
 
-  useEffect(() => {
-    let mounted = true;
-
-    async function fetchStats() {
-      if (!blogId) return;
-
-      try {
-        const response = await getBlogStats({ blogId });
-        if (!response || isActionError(response)) {
-          if (mounted) setError(true);
-          return;
-        }
-        if (mounted) setStats(response);
-      } catch {
-        if (mounted) setError(true);
-      }
-    }
-
-    fetchStats();
-
-    return () => {
-      mounted = false;
-    };
-  }, [blogId]);
-
-  if (!blogId || !stats) {
+  if (!blogId || isLoading || !stats) {
     return null;
   }
 
-  if (error) {
+  if (isError || isActionError(stats)) {
     return (
       <h1 className="text-3xl m-auto my-4">
         Something wrong happened fetching stats

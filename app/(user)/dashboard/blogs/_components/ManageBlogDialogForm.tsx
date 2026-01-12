@@ -6,29 +6,38 @@ import {
   CloudinaryUploadWidgetInfo,
 } from 'next-cloudinary';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { getBlog } from '@/server-actions/blogs/action';
 import { EditBlogPreviewSchema } from '@/schemas/editBlogSchema';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { updatePreview } from '@/libs/api/blog';
 import Select from 'react-select';
-import { getCategories } from '@/server-actions/categories/action';
+import { getCategories } from '@/libs/api/categories';
 import { useToast } from '@/app/components/ToastProvider';
+import type { GetBlogResponse } from '@/libs/api/blog';
 
 type FormData = z.infer<typeof EditBlogPreviewSchema>;
+
+type GetBlogSuccess = Extract<GetBlogResponse, { data: unknown }>;
 
 const ManageBlogDialogForm = ({
   blogId,
   blog,
 }: {
   blogId: string;
-  blog: Awaited<ReturnType<typeof getBlog>>;
+  blog: GetBlogSuccess;
 }) => {
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const modalId = `edit-modal-${blogId}`;
-  const [categories, setCategories] = useState<{ name: string }[]>([]);
+  const {
+    data: categories = [],
+    isError: categoriesIsError,
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+    retry: false,
+  });
 
   const {
     register,
@@ -39,36 +48,28 @@ const ManageBlogDialogForm = ({
   } = useForm<FormData>({
     resolver: zodResolver(EditBlogPreviewSchema),
     defaultValues: {
-      imageUrl: blog.data?.imageUrl,
-      description: blog.data?.description,
-      title: blog.data?.title,
-      id: blog.data?.id,
-      categories: blog.data?.Categories.map((category) => category.name),
+      imageUrl: blog.data.imageUrl,
+      description: blog.data.description,
+      title: blog.data.title,
+      id: blog.data.id,
+      categories: blog.data.Categories.map((category) => category.name),
     },
   });
 
   const { addToast } = useToast();
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getCategories();
-        setCategories(data);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (_) {
-        addToast('Error fetching categories:', 'error');
-      }
-    };
-
-    fetchCategories();
-  }, [addToast]);
+    if (categoriesIsError) {
+      addToast('Error fetching categories:', 'error');
+    }
+  }, [categoriesIsError, addToast]);
 
   const imgUrl = watch('imageUrl');
   const router = useRouter();
 
   const mutateBlog = useMutation({
     mutationFn: updatePreview,
-    onSuccess: () => {},
+    onSuccess: () => { },
   });
 
   async function onFormSubmit(data: FormData) {
