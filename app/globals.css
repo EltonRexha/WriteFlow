@@ -16,27 +16,6 @@
 }
 
 @layer components {
-  /* Enhanced tab styles */
-  .tab-enhanced {
-    @apply relative px-6 py-3 font-medium transition-all duration-200 border-b-2;
-  }
-  
-  .tab-enhanced:not(.tab-active) {
-    @apply text-base-content/60 border-transparent hover:text-base-content hover:border-base-content/20;
-  }
-  
-  .tab-enhanced.tab-active {
-    @apply text-primary border-primary bg-primary/5;
-  }
-  
-  .tab-enhanced:hover {
-    @apply hover:text-primary;
-  }
-  
-  .tab-enhanced:focus {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/20;
-  }
-
   .tiptap :first-child {
     @apply mt-0;
   }
