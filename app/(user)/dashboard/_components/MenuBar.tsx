@@ -69,34 +69,49 @@ const MenuBar = () => {
         >
           <div
             role="tablist"
-            className="tabs tabs-border whitespace-nowrap inline-block min-w-full"
+            className="flex whitespace-nowrap min-w-full"
           >
             <Link
               href="/dashboard/stats"
               className={clsx(
-                'tab capitalize',
-                pathname.endsWith('/stats') ? 'tab-active' : ''
+                'relative px-6 py-3 font-medium transition-all duration-200 border-b-2 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-t-lg',
+                pathname.endsWith('/stats')
+                  ? 'text-primary border-primary bg-primary/5'
+                  : 'text-base-content/60 border-transparent hover:text-base-content hover:border-base-content/20'
               )}
             >
               Your Stats
+              {pathname.endsWith('/stats') && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transform scale-x-100 transition-transform duration-200"></div>
+              )}
             </Link>
             <Link
               href="/dashboard/blogs"
               className={clsx(
-                'tab capitalize',
-                pathname.endsWith('/blogs') ? 'tab-active' : ''
+                'relative px-6 py-3 font-medium transition-all duration-200 border-b-2 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-t-lg',
+                pathname.endsWith('/blogs')
+                  ? 'text-primary border-primary bg-primary/5'
+                  : 'text-base-content/60 border-transparent hover:text-base-content hover:border-base-content/20'
               )}
             >
               Manage Blogs
+              {pathname.endsWith('/blogs') && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transform scale-x-100 transition-transform duration-200"></div>
+              )}
             </Link>
             <Link
               href="/dashboard/drafts"
               className={clsx(
-                'tab capitalize',
-                pathname.endsWith('/drafts') ? 'tab-active' : ''
+                'relative px-6 py-3 font-medium transition-all duration-200 border-b-2 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-t-lg',
+                pathname.endsWith('/drafts')
+                  ? 'text-primary border-primary bg-primary/5'
+                  : 'text-base-content/60 border-transparent hover:text-base-content hover:border-base-content/20'
               )}
             >
               Manage Drafts
+              {pathname.endsWith('/drafts') && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transform scale-x-100 transition-transform duration-200"></div>
+              )}
             </Link>
           </div>
         </div>

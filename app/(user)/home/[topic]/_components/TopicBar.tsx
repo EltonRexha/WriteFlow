@@ -72,21 +72,24 @@ const TopicBar = ({ topic, initialTopics }: TopicBarProps) => {
         >
           <div
             role="tablist"
-            className="tabs tabs-bordered whitespace-nowrap inline-block min-w-full"
+            className="flex whitespace-nowrap min-w-full"
           >
             {initialTopics.map((item) => (
               <Link
                 role="tab"
                 className={clsx(
-                  'tab capitalize',
+                  'relative px-6 py-3 font-medium transition-all duration-200 border-b-2 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-t-lg',
                   item.name.toLowerCase() === topic.toLowerCase()
-                    ? 'tab-active'
-                    : ''
+                    ? 'text-primary border-primary bg-primary/5'
+                    : 'text-base-content/60 border-transparent hover:text-base-content hover:border-base-content/20'
                 )}
                 key={item.name}
                 href={`/home/${item.name}`}
               >
                 {item.name}
+                {item.name.toLowerCase() === topic.toLowerCase() && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transform scale-x-100 transition-transform duration-200"></div>
+                )}
               </Link>
             ))}
           </div>
