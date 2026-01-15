@@ -10,7 +10,7 @@ import React, { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { EditBlogPreviewSchema } from '@/schemas/editBlogSchema';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { updatePreview } from '@/libs/api/blog';
 import Select from 'react-select';
 import { getCategories } from '@/libs/api/categories';
@@ -28,6 +28,8 @@ const ManageBlogDialogForm = ({
   blogId: string;
   blog: GetBlogSuccess;
 }) => {
+  const queryClient = useQueryClient();
+
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const modalId = `edit-modal-${blogId}`;
   const {
@@ -78,6 +80,7 @@ const ManageBlogDialogForm = ({
     if (modal) {
       modal.close();
     }
+    queryClient.invalidateQueries({ queryKey: ['dashboardUserBlogs'] });
     router.refresh();
   }
 
@@ -162,7 +165,7 @@ const ManageBlogDialogForm = ({
                 <p className="text-error">{errors['description']?.message}</p>
               </div>
 
-              {categories && (
+              {Array.isArray(categories) && (
                 <div>
                   <Select<{ value: string; label: string }, true>
                     placeholder="Categories"

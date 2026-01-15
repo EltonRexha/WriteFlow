@@ -5,7 +5,7 @@ import prisma from '@/prisma/client';
 import { redirect } from 'next/navigation';
 import SideBar from './_components/SideBar';
 
-const Page = async ({ params }: { params: { topic: string } }) => {
+const Page = async ({ params }: { params: Promise<{ topic: string }> }) => {
   const { topic } = await params;
   const categories = await prisma.category.findMany({
     select: {

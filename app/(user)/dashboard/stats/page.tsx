@@ -1,14 +1,8 @@
 import React from 'react';
 import { Eye, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { Limelight } from 'next/font/google';
-import clsx from 'clsx';
 import SearchBlogStats from './_components/SearchBlogStats';
 import prisma from '@/prisma/client';
 import { getServerSession } from 'next-auth';
-
-const limeLight = Limelight({
-  weight: '400',
-});
 
 const page = async () => {
   const session = await getServerSession();
@@ -94,11 +88,7 @@ const page = async () => {
     <div className="">
       <div className="space-y-8 [&_.stat]:border-0 [&_.stat]:min-w-full [&_.stat]:max-w-min [&_.stat]:bg-base-200 [&_.stat]:hover:bg-base-300 [&_.stat]:rounded-md  ">
         <div>
-          <h1
-            className={clsx('text-4xl text-base-content', limeLight.className)}
-          >
-            Overall
-          </h1>
+          <h1 className="text-4xl text-base-content">Overall</h1>
           <div className="mt-5 space-y-2 ">
             <h1 className="text-2xl text-base-content/80">Blog stats</h1>
             <div className="grid overflow-auto sm:grid-cols-2 xl:grid-cols-4 m-auto xl:m-0 w-max gap-4 py-8">
@@ -166,11 +156,7 @@ const page = async () => {
           </div>
         </div>
         <div>
-          <h1
-            className={clsx('text-4xl text-base-content', limeLight.className)}
-          >
-            Specific
-          </h1>
+          <h1 className="text-4xl text-base-content">Specific</h1>
           <SearchBlogStats />
         </div>
       </div>

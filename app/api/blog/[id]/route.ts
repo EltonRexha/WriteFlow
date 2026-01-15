@@ -4,12 +4,12 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
     _req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession();
     const user = session?.user;
 
-    const { id } = params;
+    const { id } = await params;
 
     const blog = await prisma.blog.findFirst({
         where: {
@@ -90,7 +90,7 @@ export async function GET(
 
 export async function DELETE(
     _req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession();
     const user = session?.user;
@@ -102,7 +102,7 @@ export async function DELETE(
         );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const blog = await prisma.blog.findFirst({
         where: {

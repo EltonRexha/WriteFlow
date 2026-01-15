@@ -1,12 +1,14 @@
-import { Limelight } from 'next/font/google';
 import Link from 'next/link';
 import clsx from 'clsx';
 import Avatar from '@/app/components/Avatar';
 import Navbar from '@/app/components/Navbar';
 import { Pen } from 'lucide-react';
+import { Limelight } from 'next/font/google';
 
 const limeLight = Limelight({
   weight: '400',
+  subsets: ['latin'], 
+  preload: true
 });
 
 export default function UserLayout({

@@ -1,14 +1,13 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import DraftList from './_components/DraftList';
 import { Edit3, Clock, ShieldCheck } from 'lucide-react';
+import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
 
 const DraftsPage = async () => {
   const session = await getServerSession(authOptions);
 
   return (
     <div className="min-h-screen bg-base-200/30">
-      {/* Hero Section */}
       <div className="bg-base-100 border-b border-base-content/10">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between">

@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(
     _req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession();
     const user = session?.user;
@@ -16,7 +16,7 @@ export async function POST(
         );
     }
 
-    const { id: commentId } = params;
+    const { id: commentId } = await params;
 
     const isLiked =
         !!(await prisma.blogComment.findFirst({

@@ -1,14 +1,17 @@
-import { Limelight } from 'next/font/google';
 import Link from 'next/link';
 import clsx from 'clsx';
 import Avatar from '@/app/components/Avatar';
 import Navbar from '@/app/components/Navbar';
 import CreateDraftBtn from '@/app/(user)/blog/new/_components/CreateDraftBtn';
 import CreateBlogBtn from '@/app/(user)/blog/new/_components/CreateBlogBtn';
+import { Limelight } from 'next/font/google';
 
 const limeLight = Limelight({
   weight: '400',
+  subsets: ['latin'], 
+  preload: true
 });
+
 
 export default function UserLayout({
   children,
@@ -35,7 +38,7 @@ export default function UserLayout({
               <CreateDraftBtn />
             </li>
             <li>
-              <CreateBlogBtn/>
+              <CreateBlogBtn />
             </li>
             <li>
               <Avatar />

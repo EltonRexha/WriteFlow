@@ -4,7 +4,7 @@ import React from 'react';
 import DarkManageCard from './DraftManageCard';
 import { getDrafts } from '@/libs/api/drafts';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { Loader2, Clock } from 'lucide-react';
+import { Edit3, Loader2 } from 'lucide-react';
 
 interface User {
   name?: string | null;
@@ -38,15 +38,18 @@ const DraftList = ({ user }: { user: User }) => {
 
   if (isLoading && drafts.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-warning/10 rounded-full mb-4">
-            <Loader2 className="h-8 w-8 text-warning animate-spin" />
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 mb-2"></div>
+            <div className="skeleton h-4 w-32"></div>
           </div>
-          <p className="text-base-content/60">Loading your drafts...</p>
+          <div className="skeleton h-8 w-16 rounded-lg"></div>
         </div>
-        <DraftSkeleton />
-        <DraftSkeleton />
+        <div className="grid gap-6">
+          <DraftSkeleton />
+          <DraftSkeleton />
+        </div>
       </div>
     );
   }
@@ -55,6 +58,7 @@ const DraftList = ({ user }: { user: User }) => {
     return (
       <div className="text-center py-16">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-base-300 rounded-full mb-6">
+          <Edit3 className="h-10 w-10 text-base-content/40" />
         </div>
         <h3 className="text-xl font-semibold mb-2">No drafts yet</h3>
         <p className="text-base-content/60 max-w-md mx-auto">
@@ -120,34 +124,31 @@ const DraftList = ({ user }: { user: User }) => {
 
 const DraftSkeleton = () => {
   return (
-    <article className="card card-side bg-base-100 border border-base-content/10 shadow-sm hover:shadow-md transition-shadow">
-      <figure className="w-32 h-32 bg-base-300 rounded-s-xl flex items-center justify-center">
-        <div className="skeleton w-12 h-12 rounded-full"></div>
-      </figure>
-      <div className="card-body p-6">
+    <article className="flex gap-6 py-6 border-b border-base-content/10 bg-base-200/50 p-4 rounded-lg max-w-3xl mx-auto w-full">
+      <div className="flex-1">
         <div className="flex items-center gap-2 mb-2">
-          <div className="badge badge-ghost badge-sm">Draft</div>
-          <div className="skeleton h-4 w-24"></div>
-          <div className="skeleton h-4 w-16"></div>
-        </div>
-
-        <div className="space-y-2 mb-4">
-          <div className="skeleton h-6 w-3/4"></div>
-          <div className="skeleton h-4 w-full"></div>
-          <div className="skeleton h-4 w-2/3"></div>
-        </div>
-
-        <div className="flex items-center gap-4 mb-4">
+          <div className="skeleton h-5 w-12 rounded"></div>
           <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4 text-base-content/40" />
-            <div className="skeleton h-4 w-16"></div>
+            <div className="skeleton h-3 w-3"></div>
+            <div className="skeleton h-3 w-16"></div>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="skeleton h-3 w-3"></div>
+            <div className="skeleton h-3 w-12"></div>
           </div>
         </div>
 
-        <div className="card-actions">
-          <div className="skeleton h-8 w-20"></div>
-          <div className="skeleton h-8 w-20"></div>
+        <div className="mb-4">
+          <div className="skeleton h-6 w-3/4"></div>
         </div>
+
+        <div className="flex gap-2">
+          <div className="skeleton h-8 w-16"></div>
+        </div>
+      </div>
+
+      <div className="relative">
+        <div className="skeleton w-8 h-8 rounded"></div>
       </div>
     </article>
   );

@@ -15,12 +15,11 @@ const limeLight = Limelight({
 });
 
 interface Props {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
-const page = async ({ params: { id } }: Props) => {
+const page = async ({ params }: Props) => {
+  const id = (await params).id;
   const user = await getUser(id);
 
   if (!user) return <div>User not found</div>;

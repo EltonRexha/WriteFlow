@@ -162,7 +162,7 @@ const ManageBlogDialogForm = ({
                 <p className="text-error">{errors['description']?.message}</p>
               </div>
 
-              {categories && (
+              {Array.isArray(categories) && categories.length > 0 && (
                 <div>
                   <Select<{ value: string; label: string }, true>
                     placeholder="Categories"

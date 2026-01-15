@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Limelight } from 'next/font/google';
 import './globals.css';
 import ReactQuery from '../libs/ReactQuery';
 import { ToastProvider } from './components/ToastProvider';
@@ -15,6 +15,13 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const limeLight = Limelight({
+  variable: '--font-limelight',
+  subsets: ['latin'],
+  preload: true,
+  weight: '400',
+});
+
 export const metadata: Metadata = {
   title: 'WriteFlow',
   description: 'WriteFlow write your ideas',
@@ -28,13 +35,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-[100vh] mb-1`}
+        className={`${geistSans.variable} ${geistMono.variable} ${limeLight.variable} antialiased min-h-[100vh] mb-1`}
       >
-          <AuthProvider>
-            <ReactQuery>
-              <ToastProvider>{children}</ToastProvider>
-            </ReactQuery>
-          </AuthProvider>
+        <AuthProvider>
+          <ReactQuery>
+            <ToastProvider>{children}</ToastProvider>
+          </ReactQuery>
+        </AuthProvider>
       </body>
     </html>
   );

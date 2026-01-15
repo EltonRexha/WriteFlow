@@ -171,7 +171,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                 <p className="text-error">{errors['description']?.message}</p>
               </div>
 
-              {categories && (
+              {Array.isArray(categories) && (
                 <div>
                   <Select<{ value: string; label: string }, true>
                     placeholder="Categories"

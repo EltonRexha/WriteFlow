@@ -20,7 +20,7 @@ const BlogList = ({ user }: { user: User }) => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['dashboardUserBlogs', user.email],
+    queryKey: ['dashboardUserBlogs'],
     queryFn: ({ pageParam }) => getUserBlogs(user.email as string, pageParam as number),
     initialPageParam: 1,
     enabled: !!user.email,
@@ -38,15 +38,18 @@ const BlogList = ({ user }: { user: User }) => {
 
   if (isLoading && blogs.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-            <Loader2 className="h-8 w-8 text-primary animate-spin" />
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 mb-2"></div>
+            <div className="skeleton h-4 w-32"></div>
           </div>
-          <p className="text-base-content/60">Loading your blogs...</p>
+          <div className="skeleton h-8 w-16 rounded-lg"></div>
         </div>
-        <BlogSkeleton />
-        <BlogSkeleton />
+        <div className="grid gap-6">
+          <BlogSkeleton />
+          <BlogSkeleton />
+        </div>
       </div>
     );
   }
@@ -124,15 +127,19 @@ const BlogList = ({ user }: { user: User }) => {
 
 const BlogSkeleton = () => {
   return (
-    <article className="card card-side bg-base-100 border border-base-content/10 shadow-sm hover:shadow-md transition-shadow">
-      <figure className="w-32 h-32 bg-base-300 rounded-s-xl">
-        <div className="skeleton w-full h-full rounded-s-xl"></div>
-      </figure>
-      <div className="card-body p-6">
+    <article className="flex gap-6 py-6 border-b border-base-content/10 bg-base-200/50 p-4 rounded-lg max-w-3xl mx-auto w-full">
+      <div className="flex-1">
         <div className="flex items-center gap-2 mb-2">
           <div className="skeleton w-6 h-6 rounded-full"></div>
           <div className="skeleton h-4 w-24"></div>
-          <div className="skeleton h-4 w-16"></div>
+          <div className="flex items-center gap-1">
+            <div className="skeleton h-3 w-3"></div>
+            <div className="skeleton h-3 w-16"></div>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="skeleton h-3 w-3"></div>
+            <div className="skeleton h-3 w-12"></div>
+          </div>
         </div>
 
         <div className="space-y-2 mb-4">
@@ -144,12 +151,19 @@ const BlogSkeleton = () => {
         <div className="flex items-center gap-4 mb-4">
           <div className="skeleton h-5 w-12"></div>
           <div className="skeleton h-5 w-12"></div>
-          <div className="skeleton h-5 w-12"></div>
         </div>
 
-        <div className="card-actions">
-          <div className="skeleton h-8 w-20"></div>
-          <div className="skeleton h-8 w-20"></div>
+        <div className="flex gap-2">
+          <div className="skeleton h-8 w-16"></div>
+        </div>
+      </div>
+
+      <div className="relative">
+        <div className="relative w-28 h-28 shrink-0">
+          <div className="skeleton w-full h-full rounded-md"></div>
+        </div>
+        <div className="absolute -top-2 -right-2">
+          <div className="skeleton w-8 h-8 rounded"></div>
         </div>
       </div>
     </article>

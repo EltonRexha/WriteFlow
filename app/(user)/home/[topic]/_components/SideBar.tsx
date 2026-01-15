@@ -1,14 +1,8 @@
 import prisma from '@/prisma/client';
-import clsx from 'clsx';
 import { format, startOfMonth, startOfToday } from 'date-fns';
-import { Limelight } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-
-const limeLight = Limelight({
-  weight: '400',
-});
 
 const SideBar = async () => {
   const [popularBlogs, popularWriters] = await Promise.all([
@@ -22,10 +16,7 @@ const SideBar = async () => {
         {!!popularBlogs.length && (
           <>
             <h1
-              className={clsx(
-                'text-2xl text-base-content p-2',
-                limeLight.className
-              )}
+              className="text-2xl text-base-content p-2"
             >
               Popular
             </h1>
@@ -72,10 +63,7 @@ const SideBar = async () => {
         {!!popularBlogs.length && (
           <>
             <h1
-              className={clsx(
-                'text-2xl text-base-content p-2',
-                limeLight.className
-              )}
+              className="text-2xl text-base-content p-2"
             >
               Writers
             </h1>

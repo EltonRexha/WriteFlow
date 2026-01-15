@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
     _req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession();
     const user = session?.user;
@@ -16,7 +16,7 @@ export async function GET(
         );
     }
 
-    const { id: blogId } = params;
+    const { id: blogId } = await params;
 
     const stats = await prisma.blog.findFirst({
         where: {

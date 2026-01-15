@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const pageParam = searchParams.get('page');
     const page = pageParam ? Number(pageParam) : 1;
-    const skip = (page - 1) * BLOGS_PER_PAGE;
+    const skip = Math.max(0, (page - 1) * BLOGS_PER_PAGE);
 
     const blogs = await prisma.blog.findMany({
         take: BLOGS_PER_PAGE,

@@ -1,9 +1,11 @@
-import { Limelight } from 'next/font/google';
 import Link from 'next/link';
 import clsx from 'clsx';
+import { Limelight } from 'next/font/google';
 
 const limeLight = Limelight({
   weight: '400',
+  subsets: ['latin'],
+  preload: true
 });
 
 export default function GuestLayout({

@@ -1,24 +1,9 @@
 'use client';
 import { isActionError } from '@/types/ActionError';
-import clsx from 'clsx';
 import { Eye, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { Limelight } from 'next/font/google';
 import React from 'react';
 import { getBlogStats } from '@/libs/api/stats';
 import { useQuery } from '@tanstack/react-query';
-
-const limeLight = Limelight({
-  weight: '400',
-});
-
-interface BlogStatsData {
-  _count: {
-    likedBy: number;
-    dislikedBy: number;
-    BlogComment: number;
-    viewedBy: number;
-  };
-}
 
 const BlogStatsComponent = ({
   blogId,
@@ -53,7 +38,7 @@ const BlogStatsComponent = ({
   return (
     <div className="space-y-8 [&_.stat]:border-0 [&_.stat]:min-w-full [&_.stat]:max-w-min [&_.stat]:bg-base-200 [&_.stat]:hover:bg-base-300 [&_.stat]:rounded-md  ">
       <div>
-        <h1 className={clsx('text-2xl text-base-content', limeLight.className)}>
+        <h1 className="text-2xl text-base-content">
           {title}
         </h1>
         <div className="mt-5 space-y-2 ">

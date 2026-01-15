@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
     _req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession();
     const email = session?.user?.email;
@@ -16,7 +16,7 @@ export async function GET(
         );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const isFollowed = !!(await prisma.user.findFirst({
         where: {
@@ -34,7 +34,7 @@ export async function GET(
 
 export async function POST(
     _req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession();
     const email = session?.user?.email;
@@ -46,7 +46,7 @@ export async function POST(
         );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     await prisma.user.update({
         where: {
@@ -66,7 +66,7 @@ export async function POST(
 
 export async function DELETE(
     _req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession();
     const email = session?.user?.email;
@@ -78,7 +78,7 @@ export async function DELETE(
         );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     await prisma.user.update({
         where: {

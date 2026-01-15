@@ -1,6 +1,6 @@
 import type { DisplayBlog } from '@/libs/api/blog';
 import { format } from 'date-fns';
-import { MoreVertical, ThumbsDown, ThumbsUp, Edit } from 'lucide-react';
+import { MoreVertical, ThumbsDown, ThumbsUp, Edit, Clock } from 'lucide-react';
 import Image from 'next/image';
 import ManageBlogDialog from './ManageBlogDialog';
 import DeleteBtn from './DeleteBtn';
@@ -35,10 +35,14 @@ const BlogManageCard = ({
               </div>
             </div>
             <span className="text-sm">{Author.name}</span>
-            <span className="hidden sm:block text-base-content/60">·</span>
-            <time className="hidden sm:block text-sm text-base-content/60">
-              {format(new Date(createdAt), 'MMM d')}
-            </time>
+            <div className="flex items-center gap-1 text-xs text-base-content/60">
+              <Clock className="h-3 w-3" />
+              <span>{format(new Date(createdAt), 'MMM d, yyyy')}</span>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-base-content/60">
+              <Clock className="h-3 w-3" />
+              <span>{format(new Date(createdAt), 'h:mm a')}</span>
+            </div>
           </div>
 
           <div>

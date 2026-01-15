@@ -1,6 +1,4 @@
 import prisma from '@/prisma/client';
-import clsx from 'clsx';
-import { Limelight } from 'next/font/google';
 import React from 'react';
 import Image from 'next/image';
 import defaultProfile from '@/public/profile.svg';
@@ -14,13 +12,16 @@ import FollowBtn from '@/app/components/ui/FollowBtn';
 import { v4 as uuid } from 'uuid';
 import Link from 'next/link';
 import { getServerSession } from 'next-auth';
+import { Limelight } from 'next/font/google';
+import clsx from 'clsx';
 
 const limeLight = Limelight({
   weight: '400',
-  subsets: ['latin'],
+  subsets: ['latin'], 
+  preload: true
 });
 
-const page = async ({ params }: { params: { id: string } }) => {
+const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id;
   const session = await getServerSession();
   const user = session?.user;
@@ -125,7 +126,7 @@ const page = async ({ params }: { params: { id: string } }) => {
         <div id="thumbnail" className="relative">
           <h1
             className={clsx(
-              'font-bold text-4xl text-base-content',
+              'font-bold text-4xl',
               limeLight.className
             )}
           >
