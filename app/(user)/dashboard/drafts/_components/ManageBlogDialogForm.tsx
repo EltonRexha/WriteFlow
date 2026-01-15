@@ -14,7 +14,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { updatePreview } from '@/libs/api/blog';
 import Select from 'react-select';
 import { getCategories } from '@/libs/api/categories';
-import { useToast } from '@/app/components/ToastProvider';
+import { useToast } from '@/components/ToastProvider';
 import type { GetBlogResponse } from '@/libs/api/blog';
 
 type FormData = z.infer<typeof EditBlogPreviewSchema>;

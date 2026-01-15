@@ -4,6 +4,7 @@ import { isActionError } from '@/types/ActionError';
 import BlogPreviewCard from '../../../home/[topic]/_components/BlogPreviewCard';
 import { getUserBlogs } from '@/libs/api/blog';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { FileText } from 'lucide-react';
 
 // Re-using BlogSkeleton from BlogsByTopic
 const BlogSkeleton = () => {
@@ -70,18 +71,26 @@ const UserBlogsList = ({ userEmail }: Props) => {
     );
   }
 
+  if (blogs.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-base-300 rounded-full mb-6">
+          <FileText className="h-10 w-10 text-base-content/40" />
+        </div>
+        <h3 className="text-xl font-semibold mb-2">No blogs found</h3>
+        <p className="text-base-content/60 max-w-md mx-auto">
+          This user hasn&apos;t published any blogs yet.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 py-2">
       <div className="space-y-6">
         {blogs.map((blog) => (
           <BlogPreviewCard key={blog.id} {...blog} />
         ))}
-        {(isLoading || blogs.length === 0) && (
-          <>
-            <BlogSkeleton />
-            <BlogSkeleton />
-          </>
-        )}
       </div>
       {hasNextPage && (
         <div className="flex justify-center">

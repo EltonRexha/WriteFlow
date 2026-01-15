@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { generateHTML } from '@tiptap/core';
-import { TipTapExtensions } from '@/app/components/textEditor/TextEditor';
+import { TipTapExtensions } from '@/components/textEditor/TextEditor';
 import { useMounted } from '@/hooks/useMounted';
 
 const BlogContent = ({ content }: { content: string }) => {

@@ -8,7 +8,7 @@ import BlogContent from './_components/BlogContent';
 import ToggleLikeBlogBtn from './_components/ToggleLikeBlogBtn';
 import ToggleDislikeBlogBtn from './_components/ToggleDislikeBlogBtn';
 import BlogComments from './_components/BlogComments';
-import FollowBtn from '@/app/components/ui/FollowBtn';
+import FollowBtn from '@/components/ui/FollowBtn';
 import { v4 as uuid } from 'uuid';
 import Link from 'next/link';
 import { getServerSession } from 'next-auth';
@@ -17,7 +17,7 @@ import clsx from 'clsx';
 
 const limeLight = Limelight({
   weight: '400',
-  subsets: ['latin'], 
+  subsets: ['latin'],
   preload: true
 });
 

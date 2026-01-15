@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import CreateBlogComment from './CreateBlogComment';
 import BlogComment from './BlogComment';
-import { useToast } from '@/app/components/ToastProvider';
+import { useToast } from '@/components/ToastProvider';
 import useClientUser from '@/hooks/useClientUser';
 import { getComments, getUserComments } from '@/libs/api/comments';
 import { isActionError } from '@/types/ActionError';

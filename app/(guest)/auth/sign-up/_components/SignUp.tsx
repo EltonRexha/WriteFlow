@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useToast } from '@/app/components/ToastProvider';
+import { useToast } from '@/components/ToastProvider';
 
 const schema = z.object({
   password: z

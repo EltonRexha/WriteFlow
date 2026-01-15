@@ -7,7 +7,7 @@ import { Limelight } from 'next/font/google';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 import UserBlogsList from './_components/UserBlogsList';
-import FollowBtn from '@/app/components/ui/FollowBtn';
+import FollowBtn from '@/components/ui/FollowBtn';
 
 const limeLight = Limelight({
   weight: '400',

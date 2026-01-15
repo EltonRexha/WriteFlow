@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@/app/components/ToastProvider';
+import { useToast } from '@/components/ToastProvider';
 import { deleteBlog } from '@/libs/api/blog';
 import { isActionError } from '@/types/ActionError';
 import React from 'react';

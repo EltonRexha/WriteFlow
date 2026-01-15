@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import TextEditor from '../../../../components/textEditor/TextEditor';
+import TextEditor from '../../../../../components/textEditor/TextEditor';
 import CreateDraftDialog from './CreateDraftDialog';
 import CreateBlogDialog from './CreateBlogDialog';
 

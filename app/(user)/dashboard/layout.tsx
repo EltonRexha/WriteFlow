@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import clsx from 'clsx';
-import Avatar from '../../components/Avatar';
-import Navbar from '@/app/components/Navbar';
+import Avatar from '../../../components/Avatar';
+import Navbar from '@/components/Navbar';
 import { Pen } from 'lucide-react';
 import MenuBar from './_components/MenuBar';
 import { Limelight } from 'next/font/google';
 
 const limeLight = Limelight({
   weight: '400',
-  subsets: ['latin'], 
+  subsets: ['latin'],
   preload: true
 });
 
