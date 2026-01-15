@@ -18,22 +18,9 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const pageParam = searchParams.get('page');
     const page = pageParam ? Number(pageParam) : 1;
-    const safePage = Number.isFinite(page) && page > 0 ? page : 1;
-    const skip = (safePage - 1) * BLOGS_PER_PAGE;
+    const skip = (page - 1) * BLOGS_PER_PAGE;
 
     const blogs = await prisma.blog.findMany({
-        orderBy: [
-            {
-                likedBy: {
-                    _count: 'desc',
-                },
-            },
-            {
-                viewedBy: {
-                    _count: 'desc',
-                },
-            },
-        ],
         take: BLOGS_PER_PAGE,
         skip,
         select: {
@@ -65,10 +52,10 @@ export async function GET(req: Request) {
         {
             blogs,
             pagination: {
-                currentPage: safePage,
+                currentPage: page,
                 totalPages,
-                hasNextPage: safePage < totalPages,
-                hasPreviousPage: safePage > 1,
+                hasNextPage: page < totalPages,
+                hasPreviousPage: page > 1,
             },
         },
         { status: 200 }

@@ -1,11 +1,12 @@
 import axios from '@/config/axios';
 import { BlogCommentSchema } from '@/schemas/blogCommentSchema';
-import type { ActionError } from '@/types/ActionError';
+import { ResponseError } from '@/types/ResponseError';
 import { z, ZodError } from 'zod';
+import { isResponseError } from '@/types/guards/isResponseError';
 
 type CreateCommentPayload = z.infer<typeof BlogCommentSchema>;
 
-export interface CommentDto {
+export interface Comment {
     id: string;
     content: string;
     Author: {
@@ -30,31 +31,30 @@ export interface Pagination {
 }
 
 export interface CommentsResponse {
-    comments: CommentDto[];
+    comments: Comment[];
     pagination: Pagination;
 }
 
 export async function getComments(
     blogId: string,
     page: number = 1
-): Promise<ActionError | CommentsResponse> {
+): Promise<ResponseError | CommentsResponse> {
     try {
-        const res = await axios.get<ActionError | CommentsResponse>('/comments', {
+        const res = await axios.get<ResponseError | CommentsResponse>('/comments', {
             params: { blogId, page },
         });
         return res.data;
     } catch (err) {
-        const data = (err as any)?.response?.data;
-        if (data) return data as ActionError;
+        if (isResponseError(err)) return err;
         throw err;
     }
 }
 
 export async function getUserComments(
     blogId: string
-): Promise<ActionError | { comments: CommentDto[] }> {
+): Promise<ResponseError | { comments: Comment[] }> {
     try {
-        const res = await axios.get<ActionError | { comments: CommentDto[] }>(
+        const res = await axios.get<ResponseError | { comments: Comment[] }>(
             '/comments/user',
             {
                 params: { blogId },
@@ -62,52 +62,48 @@ export async function getUserComments(
         );
         return res.data;
     } catch (err) {
-        const data = (err as any)?.response?.data;
-        if (data) return data as ActionError;
+        if (isResponseError(err)) return err;
         throw err;
     }
 }
 
 export async function createComment(
     payload: CreateCommentPayload
-): Promise<ActionError | string | ZodError> {
+): Promise<ResponseError | string | ZodError> {
     try {
         const parsed = BlogCommentSchema.parse(payload);
-        const res = await axios.post<ActionError | string | ZodError>('/comments', parsed);
+        const res = await axios.post<ResponseError | string | ZodError>('/comments', parsed);
         return res.data;
     } catch (err) {
-        const data = (err as any)?.response?.data;
-        if (data) return data as ActionError | ZodError;
+        if (isResponseError(err)) return err;
         throw err;
     }
 }
 
 export async function toggleLikeComment(
     commentId: string
-): Promise<ActionError | { message: string }> {
+): Promise<ResponseError | { message: string }> {
     try {
-        const res = await axios.post<ActionError | { message: string }>(
+        const res = await axios.post<ResponseError | { message: string }>(
             `/comments/${commentId}/like`
         );
         return res.data;
     } catch (err) {
-        const data = (err as any)?.response?.data;
-        if (data) return data as ActionError;
+        if (isResponseError(err)) return err;
         throw err;
     }
 }
 
 export async function toggleDislikeComment(
     commentId: string
-): Promise<ActionError | { message: string }> {
+): Promise<ResponseError | { message: string }> {
     try {
-        const res = await axios.post<ActionError | { message: string }>(
+        const res = await axios.post<ResponseError | { message: string }>(
             `/comments/${commentId}/dislike`
         );
         return res.data;
     } catch (err) {
-        const data = (err as any)?.response?.data;
-        if (data) return data as ActionError;
+        if (isResponseError(err)) return err;
         throw err;
     }
 }

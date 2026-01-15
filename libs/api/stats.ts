@@ -1,5 +1,6 @@
 import axios from '@/config/axios';
-import type { ActionError } from '@/types/ActionError';
+import { isResponseError } from '@/types/guards/isResponseError';
+import { ResponseError } from '@/types/ResponseError';
 
 export interface TotalBlogStats {
     _count: {
@@ -26,36 +27,36 @@ export interface BlogStats {
     };
 }
 
-async function safeGet<T>(url: string, params?: Record<string, unknown>) {
+export async function getTotalBlogsStats(): Promise<ResponseError | TotalBlogStats> {
     try {
-        const res = await axios.get<T>(url, { params });
+        const res = await axios.get<TotalBlogStats>('/stats/blogs/total');
         return res.data;
     } catch (err) {
-        const data = (err as any)?.response?.data;
-        if (data) return data as ActionError;
+        if (isResponseError(err)) return err;
         throw err;
     }
 }
 
-export async function getTotalBlogsStats(): Promise<ActionError | TotalBlogStats> {
-    return (await safeGet<TotalBlogStats>('/stats/blogs/total')) as
-        | ActionError
-        | TotalBlogStats;
-}
-
 export async function getTotalCommentsStats(): Promise<
-    ActionError | TotalCommentsStats
+    ResponseError | TotalCommentsStats
 > {
-    return (await safeGet<TotalCommentsStats>('/stats/comments/total')) as
-        | ActionError
-        | TotalCommentsStats;
+    try {
+        const res = await axios.get<TotalCommentsStats>('/stats/comments/total');
+        return res.data;
+    } catch (err) {
+        if (isResponseError(err)) return err;
+        throw err;
+    }
 }
 
 export async function getBlogStats(
     blogId: string
-): Promise<ActionError | BlogStats | null> {
-    return (await safeGet<BlogStats | null>(`/stats/blogs/${blogId}`)) as
-        | ActionError
-        | BlogStats
-        | null;
+): Promise<ResponseError | BlogStats | null> {
+    try {
+        const res = await axios.get<BlogStats | null>(`/stats/blogs/${blogId}`);
+        return res.data;
+    } catch (err) {
+        if (isResponseError(err)) return err;
+        throw err;
+    }
 }
