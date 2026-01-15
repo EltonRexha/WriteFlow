@@ -1,10 +1,10 @@
 'use client';
 import { isActionError } from '@/types/ActionError';
 import React from 'react';
-import BlogManageCard from './BlogManageCard';
-import { getUserBlogs } from '@/libs/api/blog';
+import DarkManageCard from './DraftManageCard';
+import { getDrafts } from '@/libs/api/drafts';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { FileText, Loader2 } from 'lucide-react';
+import { Loader2, Clock } from 'lucide-react';
 
 interface User {
   name?: string | null;
@@ -12,7 +12,7 @@ interface User {
   image?: string | null;
 }
 
-const BlogList = ({ user }: { user: User }) => {
+const DraftList = ({ user }: { user: User }) => {
   const {
     data,
     isLoading,
@@ -20,8 +20,8 @@ const BlogList = ({ user }: { user: User }) => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['dashboardUserBlogs', user.email],
-    queryFn: ({ pageParam }) => getUserBlogs(user.email as string, pageParam as number),
+    queryKey: ['dashboardDrafts', user.email],
+    queryFn: ({ pageParam }) => getDrafts(pageParam as number, 10),
     initialPageParam: 1,
     enabled: !!user.email,
     getNextPageParam: (lastPage) => {
@@ -32,34 +32,33 @@ const BlogList = ({ user }: { user: User }) => {
     retry: false,
   });
 
-  const blogs =
-    data?.pages.flatMap((page) => (isActionError(page) ? [] : page.blogs)) ||
+  const drafts =
+    data?.pages.flatMap((page) => (isActionError(page) ? [] : page.drafts)) ||
     [];
 
-  if (isLoading && blogs.length === 0) {
+  if (isLoading && drafts.length === 0) {
     return (
       <div className="space-y-6">
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-            <Loader2 className="h-8 w-8 text-primary animate-spin" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-warning/10 rounded-full mb-4">
+            <Loader2 className="h-8 w-8 text-warning animate-spin" />
           </div>
-          <p className="text-base-content/60">Loading your blogs...</p>
+          <p className="text-base-content/60">Loading your drafts...</p>
         </div>
-        <BlogSkeleton />
-        <BlogSkeleton />
+        <DraftSkeleton />
+        <DraftSkeleton />
       </div>
     );
   }
 
-  if (blogs.length === 0 && !isLoading) {
+  if (drafts.length === 0 && !isLoading) {
     return (
       <div className="text-center py-16">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-base-300 rounded-full mb-6">
-          <FileText className="h-10 w-10 text-base-content/40" />
         </div>
-        <h3 className="text-xl font-semibold mb-2">No published blogs yet</h3>
+        <h3 className="text-xl font-semibold mb-2">No drafts yet</h3>
         <p className="text-base-content/60 max-w-md mx-auto">
-          Your published articles will appear here. Start by publishing your first blog post to see it in this list.
+          Your draft articles will appear here. Start writing and save your first draft to see it in this list.
         </p>
       </div>
     );
@@ -69,33 +68,30 @@ const BlogList = ({ user }: { user: User }) => {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">Published Articles</h2>
+          <h2 className="text-2xl font-semibold">Draft Articles</h2>
           <p className="text-base-content/60 text-sm mt-1">
-            {blogs.length} {blogs.length === 1 ? 'article' : 'articles'} published
+            {drafts.length} {drafts.length === 1 ? 'draft' : 'drafts'} in progress
           </p>
         </div>
-        <div className="badge badge-primary badge-lg">
-          {blogs.length} {blogs.length === 1 ? 'Blog' : 'Blogs'}
+        <div className="badge badge-warning badge-lg">
+          {drafts.length} {drafts.length === 1 ? 'Draft' : 'Drafts'}
         </div>
       </div>
 
       <div className="grid gap-6">
-        {blogs.map((blog) => (
-          <BlogManageCard
-            key={blog.id}
-            id={blog.id}
-            title={blog.title}
-            description={blog.description}
-            imageUrl={blog.imageUrl}
-            createdAt={new Date(blog.createdAt)}
-            _count={blog._count}
-            Author={{ name: user.name!, image: user.image! }}
+        {drafts.map((draft) => (
+          <DarkManageCard
+            key={draft.id}
+            id={draft.id}
+            name={draft.name}
+            createdAt={draft.createdAt}
+            updatedAt={draft.updatedAt}
           />
         ))}
         {(isLoading || !user) && (
           <>
-            <BlogSkeleton />
-            <BlogSkeleton />
+            <DraftSkeleton />
+            <DraftSkeleton />
           </>
         )}
       </div>
@@ -103,7 +99,7 @@ const BlogList = ({ user }: { user: User }) => {
       {hasNextPage && !isLoading && (
         <div className="flex justify-center pt-4">
           <button
-            className="btn btn-primary btn-wide btn-lg gap-2"
+            className="btn btn-warning btn-wide btn-lg gap-2"
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
           >
@@ -113,7 +109,7 @@ const BlogList = ({ user }: { user: User }) => {
                 Loading...
               </>
             ) : (
-              'Load More Articles'
+              'Load More Drafts'
             )}
           </button>
         </div>
@@ -122,15 +118,15 @@ const BlogList = ({ user }: { user: User }) => {
   );
 };
 
-const BlogSkeleton = () => {
+const DraftSkeleton = () => {
   return (
     <article className="card card-side bg-base-100 border border-base-content/10 shadow-sm hover:shadow-md transition-shadow">
-      <figure className="w-32 h-32 bg-base-300 rounded-s-xl">
-        <div className="skeleton w-full h-full rounded-s-xl"></div>
+      <figure className="w-32 h-32 bg-base-300 rounded-s-xl flex items-center justify-center">
+        <div className="skeleton w-12 h-12 rounded-full"></div>
       </figure>
       <div className="card-body p-6">
         <div className="flex items-center gap-2 mb-2">
-          <div className="skeleton w-6 h-6 rounded-full"></div>
+          <div className="badge badge-ghost badge-sm">Draft</div>
           <div className="skeleton h-4 w-24"></div>
           <div className="skeleton h-4 w-16"></div>
         </div>
@@ -142,9 +138,10 @@ const BlogSkeleton = () => {
         </div>
 
         <div className="flex items-center gap-4 mb-4">
-          <div className="skeleton h-5 w-12"></div>
-          <div className="skeleton h-5 w-12"></div>
-          <div className="skeleton h-5 w-12"></div>
+          <div className="flex items-center gap-1">
+            <Clock className="h-4 w-4 text-base-content/40" />
+            <div className="skeleton h-4 w-16"></div>
+          </div>
         </div>
 
         <div className="card-actions">
@@ -156,4 +153,4 @@ const BlogSkeleton = () => {
   );
 };
 
-export default BlogList;
+export default DraftList;

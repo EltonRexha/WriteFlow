@@ -52,7 +52,7 @@ const MenuBar = () => {
 
   return (
     <div className="w-full border-base-content/10">
-      <div className="relative max-w-screen-xl">
+      <div className="relative w-full">
         {showLeftArrow && (
           <button
             onClick={() => scroll('left')}
@@ -75,11 +75,11 @@ const MenuBar = () => {
 
         <div
           ref={scrollContainerRef}
-          className="overflow-x-auto no-scrollbar"
+          className="overflow-x-auto no-scrollbar w-full flex justify-center"
         >
           <div
             role="tablist"
-            className="tabs tabs-border whitespace-nowrap inline-block min-w-full"
+            className="tabs tabs-border whitespace-nowrap inline-block "
           >
             {initialTopics.map((item) => (
               <input

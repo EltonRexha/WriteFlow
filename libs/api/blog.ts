@@ -1,7 +1,8 @@
 import axios from '@/config/axios';
 import { BlogSchema } from '@/schemas/blogSchema';
 import { EditBlogPreviewSchema } from '@/schemas/editBlogSchema';
-import { ActionError } from '@/types/ActionError';
+import { isResponseError } from '@/types/guards/isResponseError';
+import { ResponseError } from '@/types/ResponseError';
 import { z, ZodError } from 'zod';
 
 type UpdatePreview = z.infer<typeof EditBlogPreviewSchema>;
@@ -59,39 +60,43 @@ export interface BlogDetail {
 }
 
 export type GetBlogResponse =
-  | ActionError
+  | ResponseError
   | {
     data: BlogDetail;
     isLiked?: boolean;
     isDisliked?: boolean;
   };
 
-export async function updatePreview(data: UpdatePreview) {
-  const res = await axios.put<
-    | ZodError<{
-      title: string;
-      categories: string[];
-      imageUrl: string;
-      description: string;
-      id: string;
-    }>
-    | {
-      error: string;
-    }
-  >(`/blog/preview/${data.id}`, data);
-  return res.data;
+export async function updatePreview(data: UpdatePreview): Promise<ResponseError | ZodError | { error: string }> {
+  try {
+    const res = await axios.put<
+      | ZodError<{
+        title: string;
+        categories: string[];
+        imageUrl: string;
+        description: string;
+        id: string;
+      }>
+      | {
+        error: string;
+      }
+    >(`/blog/preview/${data.id}`, data);
+    return res.data;
+  } catch (err) {
+    if (isResponseError(err)) return err;
+    throw err;
+  }
 }
 
 export async function createBlog(
   data: CreateBlog
-): Promise<ActionError | string | ZodError> {
+): Promise<ResponseError | string | ZodError> {
   try {
     const parsed = BlogSchema.parse(data);
-    const res = await axios.post<ActionError | string | ZodError>('/blog', parsed);
+    const res = await axios.post<ResponseError | string | ZodError>('/blog', parsed);
     return res.data;
   } catch (err) {
-    const data = (err as any)?.response?.data;
-    if (data) return data as ActionError | ZodError;
+    if (isResponseError(err)) return err;
     throw err;
   }
 }
@@ -101,29 +106,27 @@ export async function getBlog(id: string): Promise<GetBlogResponse> {
     const res = await axios.get<GetBlogResponse>(`/blog/${id}`);
     return res.data;
   } catch (err) {
-    const data = (err as any)?.response?.data;
-    if (data) return data as ActionError;
+    if (isResponseError(err)) return err;
     throw err;
   }
 }
 
 export async function deleteBlog(
   blogId: string
-): Promise<ActionError | { message: string; code: number }> {
+): Promise<ResponseError | { message: string; code: number }> {
   try {
-    const res = await axios.delete<ActionError | { message: string; code: number }>(
+    const res = await axios.delete<ResponseError | { message: string; code: number }>(
       `/blog/${blogId}`
     );
     return res.data;
   } catch (err) {
-    const data = (err as any)?.response?.data;
-    if (data) return data as ActionError;
+    if (isResponseError(err)) return err;
     throw err;
   }
 }
 
 export async function autocompleteBlogsByTitle(title: string): Promise<
-  | ActionError
+  | ResponseError
   | {
     id: string;
     title: string;
@@ -133,7 +136,7 @@ export async function autocompleteBlogsByTitle(title: string): Promise<
 > {
   try {
     const res = await axios.get<
-      | ActionError
+      | ResponseError
       | {
         id: string;
         title: string;
@@ -147,8 +150,7 @@ export async function autocompleteBlogsByTitle(title: string): Promise<
     });
     return res.data;
   } catch (err) {
-    const data = (err as any)?.response?.data;
-    if (data) return data as ActionError;
+    if (isResponseError(err)) return err;
     throw err;
   }
 }
@@ -156,9 +158,9 @@ export async function autocompleteBlogsByTitle(title: string): Promise<
 export async function getUserBlogs(
   email: string,
   page: number = 1
-): Promise<ActionError | BlogPagination<DisplayBlog>> {
+): Promise<ResponseError | BlogPagination<DisplayBlog>> {
   try {
-    const res = await axios.get<ActionError | BlogPagination<DisplayBlog>>(
+    const res = await axios.get<ResponseError | BlogPagination<DisplayBlog>>(
       `/blog/user`,
       {
         params: {
@@ -169,38 +171,35 @@ export async function getUserBlogs(
     );
     return res.data;
   } catch (err) {
-    const data = (err as any)?.response?.data;
-    if (data) return data as ActionError;
+    if (isResponseError(err)) return err;
     throw err;
   }
 }
 
 export async function toggleLikeBlog(
   blogId: string
-): Promise<ActionError | { message: string }> {
+): Promise<ResponseError | { message: string }> {
   try {
-    const res = await axios.post<ActionError | { message: string }>(
+    const res = await axios.post<ResponseError | { message: string }>(
       `/blog/${blogId}/like`
     );
     return res.data;
   } catch (err) {
-    const data = (err as any)?.response?.data;
-    if (data) return data as ActionError;
+    if (isResponseError(err)) return err;
     throw err;
   }
 }
 
 export async function toggleDislikeBlog(
   blogId: string
-): Promise<ActionError | { message: string }> {
+): Promise<ResponseError | { message: string }> {
   try {
-    const res = await axios.post<ActionError | { message: string }>(
+    const res = await axios.post<ResponseError | { message: string }>(
       `/blog/${blogId}/dislike`
     );
     return res.data;
   } catch (err) {
-    const data = (err as any)?.response?.data;
-    if (data) return data as ActionError;
+    if (isResponseError(err)) return err;
     throw err;
   }
 }

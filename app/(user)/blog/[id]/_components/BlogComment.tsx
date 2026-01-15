@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import ToggleLikeComment from './ToggleLikeCommentBtn';
 import ToggleDislikeComment from './ToggleDislikeCommentBtn';
-import type { CommentDto } from '@/libs/api/comments';
+import type { Comment } from '@/libs/api/comments';
 
 const BlogComment = ({
   id,
@@ -15,7 +15,7 @@ const BlogComment = ({
   _count,
   isLiked = false,
   isDisliked = false,
-}: CommentDto) => {
+}: Comment) => {
   const [commentLikeStatus, setCommentLikeStatus] = useState<
     'none' | 'liked' | 'disliked'
   >(isLiked ? 'liked' : isDisliked ? 'disliked' : 'none');
