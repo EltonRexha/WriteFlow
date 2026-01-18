@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
 import { generateHTML } from '@tiptap/core';
-import { TipTapExtensions } from '@/components/textEditor/TextEditor';
 import { useMounted } from '@/hooks/useMounted';
+import { TIP_TAP_EXTENSIONS } from '@/libs/TipTapExtensions';
 
 const BlogContent = ({ content }: { content: string }) => {
   const mounted = useMounted();
@@ -10,7 +10,7 @@ const BlogContent = ({ content }: { content: string }) => {
     return <Skeleton />;
   }
 
-  const html = generateHTML(JSON.parse(content), TipTapExtensions);
+  const html = generateHTML(JSON.parse(content), TIP_TAP_EXTENSIONS);
 
   return <div dangerouslySetInnerHTML={{ __html: html }} className="tiptap" />;
 };
