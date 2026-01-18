@@ -1,21 +1,21 @@
-'use client';
-import { zodResolver } from '@hookform/resolvers/zod';
+"use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CldImage,
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
-} from 'next-cloudinary';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { EditBlogPreviewSchema } from '@/schemas/editBlogSchema';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { updatePreview } from '@/libs/api/blog';
-import Select from 'react-select';
-import { getCategories } from '@/libs/api/categories';
-import { useToast } from '@/components/ToastProvider';
-import type { GetBlogResponse } from '@/libs/api/blog';
+} from "next-cloudinary";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { EditBlogPreviewSchema } from "@/schemas/editBlogSchema";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { updatePreview } from "@/libs/api/blog";
+import Select from "react-select";
+import { getCategories } from "@/libs/api/categories";
+import { useToast } from "@/components/ToastProvider";
+import type { GetBlogResponse } from "@/libs/api/blog";
 
 type FormData = z.infer<typeof EditBlogPreviewSchema>;
 
@@ -32,11 +32,8 @@ const ManageBlogDialogForm = ({
 
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const modalId = `edit-modal-${blogId}`;
-  const {
-    data: categories = [],
-    isError: categoriesIsError,
-  } = useQuery({
-    queryKey: ['categories'],
+  const { data: categories = [], isError: categoriesIsError } = useQuery({
+    queryKey: ["categories"],
     queryFn: getCategories,
     retry: false,
   });
@@ -62,16 +59,16 @@ const ManageBlogDialogForm = ({
 
   useEffect(() => {
     if (categoriesIsError) {
-      addToast('Error fetching categories:', 'error');
+      addToast("Error fetching categories:", "error");
     }
   }, [categoriesIsError, addToast]);
 
-  const imgUrl = watch('imageUrl');
+  const imgUrl = watch("imageUrl");
   const router = useRouter();
 
   const mutateBlog = useMutation({
     mutationFn: updatePreview,
-    onSuccess: () => { },
+    onSuccess: () => {},
   });
 
   async function onFormSubmit(data: FormData) {
@@ -80,7 +77,7 @@ const ManageBlogDialogForm = ({
     if (modal) {
       modal.close();
     }
-    queryClient.invalidateQueries({ queryKey: ['dashboardUserBlogs'] });
+    queryClient.invalidateQueries({ queryKey: ["dashboardUserBlogs"] });
     router.refresh();
   }
 
@@ -102,7 +99,7 @@ const ManageBlogDialogForm = ({
           <div className="space-x-2 space-y-4 lg:flex lg:space-y-0">
             <div className="flex-1">
               <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative">
-                {' '}
+                {" "}
                 <CldImage
                   src={imgUrl}
                   alt="thumbnail"
@@ -115,11 +112,11 @@ const ManageBlogDialogForm = ({
                   onSuccess={(result) => {
                     const info = result?.info as CloudinaryUploadWidgetInfo;
                     const url = info.secure_url;
-                    setValue('imageUrl', url);
+                    setValue("imageUrl", url);
                   }}
                   onClose={() => {
                     (document.getElementById(
-                      modalId
+                      modalId,
                     ) as HTMLDialogElement)!.showModal();
                   }}
                 >
@@ -140,7 +137,7 @@ const ManageBlogDialogForm = ({
                 </CldUploadWidget>
               </div>
               {!imgUrl && (
-                <p className="text-error">{errors['imageUrl']?.message}</p>
+                <p className="text-error">{errors["imageUrl"]?.message}</p>
               )}
             </div>
 
@@ -149,20 +146,20 @@ const ManageBlogDialogForm = ({
                 <input
                   className="input w-full"
                   placeholder="Title"
-                  {...register('title')}
+                  {...register("title")}
                   required
                 />
-                <p className="text-error">{errors['title']?.message}</p>
+                <p className="text-error">{errors["title"]?.message}</p>
               </div>
 
               <div>
                 <textarea
                   className="textarea w-full h-30 resize-none "
                   placeholder="Description"
-                  {...register('description')}
+                  {...register("description")}
                   required
                 />
-                <p className="text-error">{errors['description']?.message}</p>
+                <p className="text-error">{errors["description"]?.message}</p>
               </div>
 
               {Array.isArray(categories) && (
@@ -176,67 +173,64 @@ const ManageBlogDialogForm = ({
                       label: name,
                     }))}
                     menuPortalTarget={document.getElementById(modalId)}
-                    menuPosition={'fixed'}
-                    value={watch('categories').map((category) => ({
+                    menuPosition={"fixed"}
+                    value={watch("categories").map((category) => ({
                       label: category,
                       value: category,
                     }))}
                     styles={{
                       control: (baseStyles) => ({
                         ...baseStyles,
-                        backgroundColor: 'var(--fallback-b1,oklch(var(--b1)))',
+                        backgroundColor: "var(--fallback-b1,oklch(var(--b1)))",
                         borderColor:
-                          'var(--fallback-border-color,oklch(var(--bc)/0.2))',
+                          "var(--fallback-border-color,oklch(var(--bc)/0.2))",
                       }),
                       menuList: (baseStyles) => ({
                         ...baseStyles,
-                        backgroundColor: 'var(--fallback-b1,oklch(var(--b1)))',
+                        backgroundColor: "var(--color-base-100)",
                         padding: 0,
                       }),
                       menuPortal: (baseStyles) => ({
                         ...baseStyles,
-                        zIndex: 9999,
-                        position: 'absolute',
                       }),
                       option: (baseStyles, { isFocused }) => ({
                         ...baseStyles,
                         backgroundColor: isFocused
-                          ? 'var(--fallback-b2,oklch(var(--b2)))'
-                          : 'var(--fallback-b1,oklch(var(--b1)))',
-                        color: 'var(--fallback-bc,oklch(var(--bc)))',
-                        cursor: 'pointer',
+                          ? "var(--color-base-200)"
+                          : "var(--color-base-100)",
+                        cursor: "pointer",
                       }),
                       multiValue: (baseStyles) => ({
                         ...baseStyles,
-                        backgroundColor: 'var(--fallback-b2,oklch(var(--b2)))',
+                        backgroundColor: "var(--color-base-200)",
                       }),
                       multiValueLabel: (baseStyles) => ({
                         ...baseStyles,
-                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                        color: "var(--color-base-foreground)",
                       }),
                       multiValueRemove: (baseStyles) => ({
                         ...baseStyles,
-                        color: 'var(--fallback-bc,oklch(var(--bc)))',
-                        ':hover': {
+                        color: "var(--color-base-foreground)",
+                        ":hover": {
                           backgroundColor:
-                            'var(--fallback-error,oklch(var(--er)))',
-                          color: 'white',
+                            "var(--fallback-error,oklch(var(--er)))",
+                          color: "white",
                         },
                       }),
                       input: (baseStyles) => ({
                         ...baseStyles,
-                        color: 'var(--fallback-bc,oklch(var(--bc)))',
+                        color: "var(--color-base-foreground)",
                       }),
                     }}
                     className="text-base-content"
                     onChange={(values) => {
                       setValue(
-                        'categories',
-                        values.map((value) => value.value)
+                        "categories",
+                        values.map((value) => value.value),
                       );
                     }}
                   />
-                  <p className="text-error">{errors['categories']?.message}</p>
+                  <p className="text-error">{errors["categories"]?.message}</p>
                 </div>
               )}
             </div>

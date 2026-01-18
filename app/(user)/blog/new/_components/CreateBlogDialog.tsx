@@ -1,24 +1,30 @@
-'use client';
-import { BlogSchema } from '@/schemas/blogSchema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import Select from 'react-select';
-import { useMounted } from '@/hooks/useMounted';
-import { getCategories } from '@/libs/api/categories';
-import { useToast } from '../../../../../components/ToastProvider';
+"use client";
+import { BlogSchemaForm } from "@/schemas/blogSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useMounted } from "@/hooks/useMounted";
+import { getCategories } from "@/libs/api/categories";
+import { useToast } from "../../../../../components/ToastProvider";
 import {
   CldImage,
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
-} from 'next-cloudinary';
-import { createBlog } from '@/libs/api/blog';
-import { isActionError } from '@/types/ActionError';
-import { useRouter } from 'next/navigation';
-import { useMutation, useQuery } from '@tanstack/react-query';
+} from "next-cloudinary";
+import { createBlog } from "@/libs/api/blog";
+import { useRouter } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import CategoriesSelect from "@/components/CategoriesSelect";
+import {
+  isApiZodErrorResponse,
+} from "@/types/guards/isApiErrorResponse";
+import isZodError from "@/types/guards/isZodApiErrorResponse";
+import { INITIAL_CONTENT } from "@/components/textEditor/TextEditor";
+import { generateJSON } from "@tiptap/core";
+import { TIP_TAP_EXTENSIONS } from "@/libs/TipTapExtensions";
 
-type FormData = z.infer<typeof BlogSchema>;
+type FormData = z.infer<typeof BlogSchemaForm>;
 
 const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   const [showImage, setShowImg] = useState(false);
@@ -32,49 +38,60 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
     setValue,
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(BlogSchema),
+    resolver: zodResolver(BlogSchemaForm),
   });
 
-  useEffect(() => {
-    setValue('content', blogContent);
-  }, [blogContent, setValue]);
-
   const { addToast } = useToast();
-  const imgUrl = watch('imageUrl');
+  const imgUrl = watch("imageUrl");
 
   const { data: categories = [], isError: categoriesIsError } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: getCategories,
     retry: false,
   });
 
   useEffect(() => {
     if (categoriesIsError) {
-      addToast('Error fetching categories:', 'error');
+      addToast("Error fetching categories:", "error");
     }
   }, [categoriesIsError, addToast]);
 
   const router = useRouter();
-
   const mounted = useMounted();
 
+  //Sometimes tiptap does not convert the Initial content to tiptap JSON because its mentally retarded library.
+  //Its the worst thing i have ever used
+  //it has ruined my life
+  if (blogContent === INITIAL_CONTENT) {
+    blogContent = JSON.stringify(generateJSON(blogContent, TIP_TAP_EXTENSIONS));
+  }
+
   const mutation = useMutation({
-    mutationFn: (payload: FormData) => createBlog(payload),
+    mutationFn: (payload: FormData) => {
+      return createBlog({ ...payload, content: blogContent });
+    },
     onSuccess: (response) => {
-      if (typeof response === 'string') {
+      if (typeof response === "string") {
         router.push(`/blog/${response}`);
         return;
       }
 
-      if (isActionError(response)) {
-        setError(response.error.message);
+      setError("Something wrong happened");
+    },
+    onError: (error) => {
+      const unknownError = error as unknown;
+
+      if (isApiZodErrorResponse(unknownError)) {
+        setError(unknownError.response.data.issues[0].message);
         return;
       }
 
-      setError('Something wrong happened');
-    },
-    onError: () => {
-      addToast('Something wrong happened', 'error');
+      if (isZodError(unknownError)) {
+        setError(JSON.parse(unknownError.message)[0].message);
+        return;
+      }
+
+      addToast("Something wrong happened", "error");
     },
   });
 
@@ -82,6 +99,10 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
 
   async function onSubmit(data: FormData) {
     mutation.mutate(data);
+  }
+
+  function setValues(values: string[]) {
+    setValue("categories", values);
   }
 
   return (
@@ -119,12 +140,12 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                     onSuccess={(result) => {
                       const info = result?.info as CloudinaryUploadWidgetInfo;
                       const url = info.secure_url;
-                      setValue('imageUrl', url);
+                      setValue("imageUrl", url);
                     }}
                     onClose={() => {
                       setShowImg(true);
                       (document.getElementById(
-                        'createBlogModal'
+                        "createBlogModal",
                       ) as HTMLDialogElement)!.showModal();
                     }}
                   >
@@ -146,7 +167,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                 )}
               </div>
               {!imgUrl && (
-                <p className="text-error">{errors['imageUrl']?.message}</p>
+                <p className="text-error">{errors["imageUrl"]?.message}</p>
               )}
             </div>
 
@@ -155,97 +176,37 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                 <input
                   className="input w-full"
                   placeholder="Title"
-                  {...register('title')}
+                  {...register("title")}
                   required
                 />
-                <p className="text-error">{errors['title']?.message}</p>
+                <p className="text-error">{errors["title"]?.message}</p>
               </div>
 
               <div>
                 <textarea
                   className="textarea w-full h-30 resize-none "
                   placeholder="Description"
-                  {...register('description')}
+                  {...register("description")}
                   required
                 />
-                <p className="text-error">{errors['description']?.message}</p>
+                <p className="text-error">{errors["description"]?.message}</p>
               </div>
 
               {Array.isArray(categories) && (
-                <div>
-                  <Select<{ value: string; label: string }, true>
-                    placeholder="Categories"
-                    isMulti
-                    menuPlacement="top"
-                    options={categories.map(({ name }) => ({
-                      value: name,
-                      label: name,
-                    }))}
-                    menuPortalTarget={document.getElementById(
-                      'createBlogModal'
-                    )}
-                    menuPosition={'fixed'}
-                    styles={{
-                      control: (baseStyles) => ({
-                        ...baseStyles,
-                        backgroundColor: 'var(--fallback-b1,oklch(var(--b1)))',
-                        borderColor:
-                          'var(--fallback-border-color,oklch(var(--bc)/0.2))',
-                      }),
-                      menuList: (baseStyles) => ({
-                        ...baseStyles,
-                        backgroundColor: 'var(--fallback-b1,oklch(var(--b1)))',
-                        padding: 0,
-                      }),
-                      menuPortal: (baseStyles) => ({
-                        ...baseStyles,
-                        zIndex: 9999,
-                        position: 'absolute',
-                      }),
-                      option: (baseStyles, { isFocused }) => ({
-                        ...baseStyles,
-                        backgroundColor: isFocused
-                          ? 'var(--fallback-b2,oklch(var(--b2)))'
-                          : 'var(--fallback-b1,oklch(var(--b1)))',
-                        color: 'var(--fallback-bc,oklch(var(--bc)))',
-                        cursor: 'pointer',
-                      }),
-                      multiValue: (baseStyles) => ({
-                        ...baseStyles,
-                        backgroundColor: 'var(--fallback-b2,oklch(var(--b2)))',
-                      }),
-                      multiValueLabel: (baseStyles) => ({
-                        ...baseStyles,
-                        color: 'var(--fallback-bc,oklch(var(--bc)))',
-                      }),
-                      multiValueRemove: (baseStyles) => ({
-                        ...baseStyles,
-                        color: 'var(--fallback-bc,oklch(var(--bc)))',
-                        ':hover': {
-                          backgroundColor:
-                            'var(--fallback-error,oklch(var(--er)))',
-                          color: 'white',
-                        },
-                      }),
-                      input: (baseStyles) => ({
-                        ...baseStyles,
-                        color: 'var(--fallback-bc,oklch(var(--bc)))',
-                      }),
-                    }}
-                    className="text-base-content"
-                    onChange={(values) => {
-                      setValue(
-                        'categories',
-                        values.map((value) => value.value)
-                      );
-                    }}
-                  />
-                  <p className="text-error">{errors['categories']?.message}</p>
-                </div>
+                <CategoriesSelect
+                  categories={categories}
+                  setValues={setValues}
+                  errors={errors}
+                  modalId="createBlogModal"
+                />
               )}
             </div>
           </div>
-          <button className="btn btn-primary btn-soft block w-full">
+
+          <button
+            className="btn btn-primary btn-soft block w-full"
+            type="submit"
+          >
             Publish
           </button>
           {error && <p className="text-error my-2">{error}</p>}
