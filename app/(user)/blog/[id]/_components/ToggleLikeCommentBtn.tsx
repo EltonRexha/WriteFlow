@@ -33,8 +33,13 @@ const ToggleLikeComment = ({
         isLiked ? 'text-green-500' : ''
       )}
       onClick={handleLike}
+      disabled={mutation.isPending}
     >
-      <ThumbsUp height={15} />
+      {mutation.isPending ? (
+        <span className="loading loading-spinner loading-xs"></span>
+      ) : (
+        <ThumbsUp height={15} />
+      )}
     </button>
   );
 };

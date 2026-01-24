@@ -56,8 +56,8 @@ const CreateBlogComment = ({ blogId }: { blogId: string }) => {
           placeholder="What are your thoughts?"
           {...register('content')}
         />
-        <button className="btn btn-primary btn-sm absolute bottom-2 right-2">
-          Comment
+        <button className="btn btn-primary btn-sm absolute bottom-2 right-2" disabled={mutation.isPending}>
+          {mutation.isPending ? "Posting..." : "Comment"}
         </button>
       </form>
       <p className="text-error mt-2 text-sm">{errors['content']?.message}</p>

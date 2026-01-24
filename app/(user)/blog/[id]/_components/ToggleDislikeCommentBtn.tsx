@@ -33,8 +33,13 @@ const ToggleDislikeComment = ({
         isDisliked ? 'text-red-500' : ''
       )}
       onClick={handleDislike}
+      disabled={mutation.isPending}
     >
-      <ThumbsDown height={15} />
+      {mutation.isPending ? (
+        <span className="loading loading-spinner loading-xs"></span>
+      ) : (
+        <ThumbsDown height={15} />
+      )}
     </button>
   );
 };

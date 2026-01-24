@@ -69,8 +69,8 @@ const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
             {...register('name')}
             required
           />
-          <button className="btn btn-primary btn-soft block w-full">
-            Save
+          <button className="btn btn-primary btn-soft block w-full" disabled={mutation.isPending}>
+            {mutation.isPending ? "Saving..." : "Save"}
           </button>
         </form>
         <div

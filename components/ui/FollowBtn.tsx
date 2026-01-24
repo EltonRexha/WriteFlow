@@ -76,7 +76,7 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
       onClick={handleToggleFollow}
       disabled={isLoading || isProcessing}
     >
-      {isFollowed ? 'unfollow' : 'follow'}
+      {isProcessing ? 'processing...' : (isFollowed ? 'unfollow' : 'follow')}
     </button>
   );
 };

@@ -7,7 +7,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
 import { TIP_TAP_EXTENSIONS } from "@/libs/TipTapExtensions";
 
-const ONCHANGE_DEBOUNCE_DELAY = 2000;
+const ONCHANGE_DEBOUNCE_DELAY = 500;
 
 interface EditDraftEditorProps {
   onUpdate: (content: string) => void;

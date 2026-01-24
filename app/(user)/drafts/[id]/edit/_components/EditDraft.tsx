@@ -49,11 +49,12 @@ const EditDraft = ({ draftId }: EditDraftProps) => {
         addToast("Draft saved successfully", "success");
         setHasUnsavedChanges(false);
         setInitialContent(draftContent);
+        mutation.reset(); // Reset mutation state to allow future saves
       } else {
         addToast("Failed to save draft", "error");
       }
     }
-  }, [mutation.isSuccess, mutation.data, addToast, draftContent]);
+  }, [mutation.isSuccess, mutation.data, addToast, draftContent, mutation]);
 
   useEffect(() => {
     if (mutation.isError) {
@@ -64,7 +65,9 @@ const EditDraft = ({ draftId }: EditDraftProps) => {
   // Handle content updates
   function onUpdate(content: string) {
     setDraftContent(content);
-    setHasUnsavedChanges(content !== initialContent);
+    // Only mark as unsaved if content is different from initial content and mutation is not in progress
+    const hasChanges = content !== initialContent && !mutation.isPending;
+    setHasUnsavedChanges(hasChanges);
   }
 
   // Handle save
@@ -73,8 +76,19 @@ const EditDraft = ({ draftId }: EditDraftProps) => {
       addToast("No changes to save", "info");
       return;
     }
+    
+    // Reset mutation before making a new request
+    mutation.reset();
     mutation.mutate({ draftId, content: draftContent });
   }
+
+  // Ensure unsaved changes state is properly updated when mutation completes
+  useEffect(() => {
+    if (!mutation.isPending && draftContent && initialContent) {
+      const hasChanges = draftContent !== initialContent;
+      setHasUnsavedChanges(hasChanges);
+    }
+  }, [mutation.isPending, draftContent, initialContent]);
 
   // Warn before leaving with unsaved changes
   useEffect(() => {

@@ -4,6 +4,220 @@
   themes: emerald --default, forest --prefersdark;
 }
 
+/* Remove all border radius from DaisyUI components */
+@layer base {
+  * {
+    border-radius: 0 !important;
+  }
+  
+  /* Specific DaisyUI component overrides */
+  .btn {
+    border-radius: 0 !important;
+  }
+  
+  .input {
+    border-radius: 0 !important;
+  }
+  
+  .textarea {
+    border-radius: 0 !important;
+  }
+  
+  .select {
+    border-radius: 0 !important;
+  }
+  
+  .card {
+    border-radius: 0 !important;
+  }
+  
+  .modal {
+    border-radius: 0 !important;
+  }
+  
+  .modal-box {
+    border-radius: 0 !important;
+  }
+  
+  .dropdown {
+    border-radius: 0 !important;
+  }
+  
+  .dropdown-content {
+    border-radius: 0 !important;
+  }
+  
+  .menu {
+    border-radius: 0 !important;
+  }
+  
+  .navbar {
+    border-radius: 0 !important;
+  }
+  
+  .alert {
+    border-radius: 0 !important;
+  }
+  
+  .badge {
+    border-radius: 0 !important;
+  }
+  
+  .toast {
+    border-radius: 0 !important;
+  }
+  
+  .tooltip {
+    border-radius: 0 !important;
+  }
+  
+  .divider {
+    border-radius: 0 !important;
+  }
+  
+  .join {
+    border-radius: 0 !important;
+  }
+  
+  .join > * {
+    border-radius: 0 !important;
+  }
+  
+  .tabs {
+    border-radius: 0 !important;
+  }
+  
+  .tab {
+    border-radius: 0 !important;
+  }
+  
+  .toggle {
+    border-radius: 0 !important;
+  }
+  
+  .range {
+    border-radius: 0 !important;
+  }
+  
+  .progress {
+    border-radius: 0 !important;
+  }
+  
+  .stat {
+    border-radius: 0 !important;
+  }
+  
+  .steps {
+    border-radius: 0 !important;
+  }
+  
+  .step {
+    border-radius: 0 !important;
+  }
+  
+  .timeline {
+    border-radius: 0 !important;
+  }
+  
+  .chat {
+    border-radius: 0 !important;
+  }
+  
+  .chat-bubble {
+    border-radius: 0 !important;
+  }
+  
+  .indicator {
+    border-radius: 0 !important;
+  }
+  
+  .swap {
+    border-radius: 0 !important;
+  }
+  
+  .mask {
+    border-radius: 0 !important;
+  }
+  
+  .artboard {
+    border-radius: 0 !important;
+  }
+  
+  .phone {
+    border-radius: 0 !important;
+  }
+  
+  .mockup {
+    border-radius: 0 !important;
+  }
+  
+  .mockup-window {
+    border-radius: 0 !important;
+  }
+  
+  .mockup-phone {
+    border-radius: 0 !important;
+  }
+  
+  .mockup-browser {
+    border-radius: 0 !important;
+  }
+  
+  .mockup-code {
+    border-radius: 0 !important;
+  }
+  
+  .kbd {
+    border-radius: 0 !important;
+  }
+  
+  .link {
+    border-radius: 0 !important;
+  }
+  
+  .rating {
+    border-radius: 0 !important;
+  }
+  
+  .radio {
+    border-radius: 0 !important;
+  }
+  
+  .checkbox {
+    border-radius: 0 !important;
+  }
+  
+  .swap-indicator {
+    border-radius: 0 !important;
+  }
+  
+  .swap-on {
+    border-radius: 0 !important;
+  }
+  
+  .swap-off {
+    border-radius: 0 !important;
+  }
+  
+  /* Avatar and image overrides */
+  .avatar {
+    border-radius: 0 !important;
+  }
+  
+  .avatar > div {
+    border-radius: 0 !important;
+  }
+  
+  .rounded-full {
+    border-radius: 0 !important;
+  }
+  
+  /* Override any remaining rounded elements */
+  [class*="rounded"] {
+    border-radius: 0 !important;
+  }
+}
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -56,11 +270,11 @@
     @apply text-[1.6rem];
   }
   .tiptap code {
-    @apply bg-base-200 rounded-[0.4rem] text-base-content text-[0.85rem] px-[0.3em] py-[0.25em] font-mono;
+    @apply bg-base-200 text-base-content text-[0.85rem] px-[0.3em] py-[0.25em] font-mono;
   }
 
   .tiptap pre {
-    @apply bg-[#1e1e1e] rounded-lg text-[#d4d4d4] font-mono my-6 px-6 py-4;
+    @apply bg-[#1e1e1e] text-[#d4d4d4] font-mono my-6 px-6 py-4;
   }
 
   .tiptap pre code {
@@ -69,7 +283,7 @@
 
   /* Style for code blocks in the editor */
   .ProseMirror pre {
-    @apply bg-[#1e1e1e] rounded-lg text-[#d4d4d4] font-mono my-6 px-6 py-4;
+    @apply bg-[#1e1e1e] text-[#d4d4d4] font-mono my-6 px-6 py-4;
   }
 
   .ProseMirror pre code {
@@ -77,7 +291,7 @@
   }
 
   .tiptap mark {
-    @apply bg-[#faf594] rounded-[0.4rem] box-decoration-clone px-[0.3rem] py-[0.1rem];
+    @apply bg-[#faf594] box-decoration-clone px-[0.3rem] py-[0.1rem];
   }
 
   .tiptap blockquote {
@@ -93,7 +307,7 @@
   }
 
   .tiptap pre {
-    @apply bg-[var(--black)] rounded-lg text-[var(--white)] font-['JetBrainsMono',_monospace] my-6 px-4 py-3;
+    @apply bg-[var(--black)] text-[var(--white)] font-['JetBrainsMono',_monospace] my-6 px-4 py-3;
 
     code {
       @apply bg-transparent text-inherit text-[0.8rem] p-0;

@@ -47,7 +47,9 @@ const BlogManageCard = ({
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-1 line-clamp-2 leading-tight break-words">{title}</h2>
+            <Link href={`/blog/${id}`}>
+              <h2 className="text-xl font-bold mb-1 line-clamp-2 leading-tight break-words hover:text-primary transition-colors cursor-pointer">{title}</h2>
+            </Link>
             <p className="text-base-content/70 line-clamp-1 sm:line-clamp-2 mb-4 break-words">
               {description}
             </p>

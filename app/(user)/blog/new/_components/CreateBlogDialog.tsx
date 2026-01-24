@@ -226,8 +226,9 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
           <button
             className="btn btn-primary btn-soft block w-full"
             type="submit"
+            disabled={mutation.isPending}
           >
-            Publish
+            {mutation.isPending ? "Publishing..." : "Publish"}
           </button>
           {error && <p className="text-error my-2">{error}</p>}
         </form>

@@ -232,8 +232,9 @@ const ManageBlogDialogForm = ({
           <button
             className="btn btn-primary btn-soft block w-full"
             type="submit"
+            disabled={mutateBlog.isPending}
           >
-            Change
+            {mutateBlog.isPending ? "Updating..." : "Change"}
           </button>
         </form>
       </div>
