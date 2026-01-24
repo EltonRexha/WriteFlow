@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# except the example env file
+!.env.example
+
 # vercel
 .vercel
 
@@ -41,4 +44,4 @@ yarn-error.log*
 next-env.d.ts
 
 # Prisma
-app/generated
+generated/*
