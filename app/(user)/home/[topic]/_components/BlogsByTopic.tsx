@@ -8,7 +8,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 const BlogSkeleton = () => {
   return (
     <article className="flex gap-6 py-6 border-b border-base-content/10">
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
           <div className="skeleton w-6 h-6 rounded-full"></div>
           <div className="skeleton h-4 w-24 hidden sm:block "></div>

@@ -75,7 +75,7 @@ const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
         </form>
         <div
           id="errors"
-          className="flex flex-col space-y-2 text-sm text-accent"
+          className="flex flex-col space-y-2 text-sm text-red-500"
         >
           {Object.keys(errors).map((item) => {
             const errorMessage = errors[item as keyof typeof errors]?.message;

@@ -23,7 +23,7 @@ const BlogManageCard = ({
   return (
     <>
       <article className="flex gap-6 py-6 border-b border-base-content/10 bg-base-200/50 p-4 rounded-lg hover:bg-base-200 transition-colors max-w-3xl mx-auto w-full">
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <div className="avatar">
               <div className="w-6 h-6 rounded-full">
@@ -47,8 +47,8 @@ const BlogManageCard = ({
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-1 line-clamp-2">{title}</h2>
-            <p className="text-base-content/70 line-clamp-1 sm:line-clamp-2 mb-4">
+            <h2 className="text-xl font-bold mb-1 line-clamp-2 leading-tight break-words">{title}</h2>
+            <p className="text-base-content/70 line-clamp-1 sm:line-clamp-2 mb-4 break-words">
               {description}
             </p>
           </div>

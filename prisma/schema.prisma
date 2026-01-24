@@ -119,7 +119,7 @@ model Blog {
   description   String
   Categories    Category[]
   Author        User          @relation(fields: [userId], references: [id])
-  BlogContent   BlogContent   @relation(fields: [blogContentId], references: [id])
+  BlogContent   BlogContent   @relation(fields: [blogContentId], references: [id], onDelete: Cascade)
   likedBy       User[]        @relation("liked")
   dislikedBy    User[]        @relation("disliked")
   userId        String        @map("user_id")

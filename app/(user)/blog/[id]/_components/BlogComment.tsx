@@ -89,8 +89,8 @@ const BlogComment = ({
           {format(new Date(createdAt as any), 'PPP')}
         </p>
       </div>
-      <div className="ml-1">
-        <p className="text-base-content/80">{content}</p>
+      <div className="ml-1 min-w-0">
+        <p className="text-base-content/80 break-words whitespace-pre-wrap">{content}</p>
       </div>
       <div className="flex space-x-2 items-center">
         <div className="flex items-center">
