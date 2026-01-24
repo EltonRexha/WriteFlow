@@ -2,8 +2,7 @@
 import { isActionError } from '@/types/ActionError';
 import { Eye, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
 import React from 'react';
-import { getBlogStats } from '@/libs/api/stats';
-import { useQuery } from '@tanstack/react-query';
+import { useBlogStats } from '@/hooks/queries/stats';
 
 const BlogStatsComponent = ({
   blogId,
@@ -16,12 +15,7 @@ const BlogStatsComponent = ({
     data: stats,
     isError,
     isLoading,
-  } = useQuery({
-    queryKey: ['stats', 'blog', blogId],
-    queryFn: () => getBlogStats(blogId as string),
-    enabled: !!blogId,
-    retry: false,
-  });
+  } = useBlogStats({ blogId: blogId as string });
 
   if (!blogId || isLoading || !stats) {
     return null;

@@ -4,9 +4,10 @@ import CreateBlogComment from './CreateBlogComment';
 import BlogComment from './BlogComment';
 import { useToast } from '@/components/ToastProvider';
 import useClientUser from '@/hooks/useClientUser';
-import { getComments, getUserComments } from '@/libs/api/comments';
+import { useUserComments as useUserCommentsQuery, commentQueryKeys } from '@/hooks/queries/comments';
+import commentApi from '@/libs/api/services/comments';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { isActionError } from '@/types/ActionError';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 const BlogComments = ({
   blogId,
@@ -21,12 +22,7 @@ const BlogComments = ({
   const {
     data: userComments,
     isError: userCommentsIsError,
-  } = useQuery({
-    queryKey: ['comments', 'user', blogId, renderId],
-    queryFn: () => getUserComments(blogId),
-    enabled: !!user,
-    retry: false,
-  });
+  } = useUserCommentsQuery({ blogId, renderId });
 
   const {
     data,
@@ -36,8 +32,8 @@ const BlogComments = ({
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['comments', blogId, renderId],
-    queryFn: ({ pageParam }) => getComments(blogId, pageParam as number),
+    queryKey: commentQueryKeys.list(blogId, renderId),
+    queryFn: ({ pageParam }) => commentApi.getComments(blogId, pageParam as number),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (!lastPage || isActionError(lastPage)) return undefined;

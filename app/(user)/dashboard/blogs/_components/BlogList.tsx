@@ -2,7 +2,7 @@
 import { isActionError } from '@/types/ActionError';
 import React from 'react';
 import BlogManageCard from './BlogManageCard';
-import { getUserBlogs } from '@/libs/api/blog';
+import blogApi from '@/libs/api/services/blog';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { FileText, Loader2 } from 'lucide-react';
 
@@ -21,7 +21,7 @@ const BlogList = ({ user }: { user: User }) => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ['dashboardUserBlogs'],
-    queryFn: ({ pageParam }) => getUserBlogs(user.email as string, pageParam as number),
+    queryFn: ({ pageParam }) => blogApi.getUserBlogs(user.email as string, pageParam as number),
     initialPageParam: 1,
     enabled: !!user.email,
     getNextPageParam: (lastPage) => {

@@ -1,4 +1,4 @@
-import type { DisplayBlog } from '@/libs/api/blog';
+import type { DisplayBlog } from '@/libs/api/services/blog';
 import { format } from 'date-fns';
 import { MoreVertical, ThumbsDown, ThumbsUp, Edit, Clock } from 'lucide-react';
 import Image from 'next/image';

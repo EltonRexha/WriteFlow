@@ -5,21 +5,22 @@ import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMounted } from "@/hooks/useMounted";
-import { getCategories } from "@/libs/api/categories";
+import { useCategories } from "@/hooks/queries/categories";
+import { useCreateBlog } from "@/hooks/queries/blog";
 import { useToast } from "../../../../../components/ToastProvider";
 import {
   CldImage,
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from "next-cloudinary";
-import { createBlog } from "@/libs/api/blog";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import CategoriesSelect from "@/components/CategoriesSelect";
 import {
   isApiZodErrorResponse,
+  isApiErrorResponse,
 } from "@/types/guards/isApiErrorResponse";
 import isZodError from "@/types/guards/isZodApiErrorResponse";
+import { isResponseError } from "@/types/guards/isResponseError";
 import { INITIAL_CONTENT } from "@/components/textEditor/TextEditor";
 import { generateJSON } from "@tiptap/core";
 import { TIP_TAP_EXTENSIONS } from "@/libs/TipTapExtensions";
@@ -44,11 +45,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   const { addToast } = useToast();
   const imgUrl = watch("imageUrl");
 
-  const { data: categories = [], isError: categoriesIsError } = useQuery({
-    queryKey: ["categories"],
-    queryFn: getCategories,
-    retry: false,
-  });
+  const { data: categories = [], isError: categoriesIsError } = useCategories();
 
   useEffect(() => {
     if (categoriesIsError) {
@@ -66,21 +63,23 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
     blogContent = JSON.stringify(generateJSON(blogContent, TIP_TAP_EXTENSIONS));
   }
 
-  const mutation = useMutation({
-    mutationFn: (payload: FormData) => {
-      return createBlog(payload);
-    },
-    onSuccess: (response) => {
-      if (typeof response === "string") {
-        router.push(`/blog/${response}`);
+  const mutation = useCreateBlog();
+
+  useEffect(() => {
+    if (mutation.isSuccess && mutation.data) {
+      if (typeof mutation.data === "string") {
+        router.push(`/blog/${mutation.data}`);
         return;
       }
-
       setError("Something wrong happened");
-    },
-    onError: (error) => {
-      const unknownError = error as unknown;
+    }
+  }, [mutation.isSuccess, mutation.data, router]);
 
+  useEffect(() => {
+    if (mutation.isError && mutation.error) {
+      const unknownError = mutation.error as unknown;
+
+      // Check for Zod validation errors
       if (isApiZodErrorResponse(unknownError)) {
         setError(unknownError.response.data.issues[0].message);
         return;
@@ -91,14 +90,35 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
         return;
       }
 
+      // Check for backend ResponseError format (e.g., "blog content must be at least 50 characters long")
+      if (isApiErrorResponse(unknownError)) {
+        const errorData = unknownError.response.data;
+        if (isResponseError(errorData)) {
+          setError(errorData.error.message);
+          return;
+        }
+        // Fallback: try to get message from error object directly
+        if (errorData && typeof errorData === 'object' && 'error' in errorData) {
+          const err = errorData.error as { message?: string };
+          if (err && typeof err.message === 'string') {
+            setError(err.message);
+            return;
+          }
+        }
+      }
+
       addToast("Something wrong happened", "error");
-    },
-  });
+    }
+  }, [mutation.isError, mutation.error, addToast]);
 
   if (!mounted) return null;
 
   async function onSubmit(data: FormData) {
-    mutation.mutate(data);
+    // Include the blog content in the submission
+    mutation.mutate({
+      ...data,
+      content: blogContent,
+    });
   }
 
   function setValues(values: string[]) {

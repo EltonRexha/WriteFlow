@@ -5,19 +5,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMounted } from "@/hooks/useMounted";
-import { getCategories } from "@/libs/api/categories";
+import { useCategories } from "@/hooks/queries/categories";
+import { usePublishDraft } from "@/hooks/queries/drafts";
 import { useToast } from "@/components/ToastProvider";
 import {
   CldImage,
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from "next-cloudinary";
-import { publishDraft } from "@/libs/api/drafts";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import CategoriesSelect from "@/components/CategoriesSelect";
 import {
   isApiZodErrorResponse,
+  isApiErrorResponse,
 } from "@/types/guards/isApiErrorResponse";
 import isZodError from "@/types/guards/isZodApiErrorResponse";
 import { isResponseError } from "@/types/guards/isResponseError";
@@ -29,7 +29,7 @@ interface PublishDraftDialogProps {
   draftContent: string;
 }
 
-const PublishDraftDialog = ({ draftId, draftContent }: PublishDraftDialogProps) => {
+const PublishDraftDialog = ({ draftId }: PublishDraftDialogProps) => {
   const [showImage, setShowImg] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -47,11 +47,7 @@ const PublishDraftDialog = ({ draftId, draftContent }: PublishDraftDialogProps) 
   const { addToast } = useToast();
   const imgUrl = watch("imageUrl");
 
-  const { data: categories = [], isError: categoriesIsError } = useQuery({
-    queryKey: ["categories"],
-    queryFn: getCategories,
-    retry: false,
-  });
+  const { data: categories = [], isError: categoriesIsError } = useCategories();
 
   useEffect(() => {
     if (categoriesIsError) {
@@ -62,22 +58,24 @@ const PublishDraftDialog = ({ draftId, draftContent }: PublishDraftDialogProps) 
   const router = useRouter();
   const mounted = useMounted();
 
-  const mutation = useMutation({
-    mutationFn: (payload: FormData) => {
-      return publishDraft(draftId, payload);
-    },
-    onSuccess: (response) => {
-      if (typeof response === "string") {
+  const mutation = usePublishDraft();
+  
+  useEffect(() => {
+    if (mutation.isSuccess && mutation.data) {
+      if (typeof mutation.data === "string") {
         addToast("Draft published successfully!", "success");
-        router.push(`/blog/${response}`);
+        router.push(`/blog/${mutation.data}`);
         return;
       }
-
       setError("Something wrong happened");
-    },
-    onError: (error) => {
-      const unknownError = error as unknown;
+    }
+  }, [mutation.isSuccess, mutation.data, addToast, router]);
 
+  useEffect(() => {
+    if (mutation.isError && mutation.error) {
+      const unknownError = mutation.error as unknown;
+
+      // Check for Zod validation errors
       if (isApiZodErrorResponse(unknownError)) {
         setError(unknownError.response.data.issues[0].message);
         return;
@@ -88,14 +86,31 @@ const PublishDraftDialog = ({ draftId, draftContent }: PublishDraftDialogProps) 
         return;
       }
 
+      // Check for backend ResponseError format (e.g., "blog content must be at least 50 characters long")
+      if (isApiErrorResponse(unknownError)) {
+        const errorData = unknownError.response.data;
+        if (isResponseError(errorData)) {
+          setError(errorData.error.message);
+          return;
+        }
+        // Fallback: try to get message from error object directly
+        if (errorData && typeof errorData === 'object' && 'error' in errorData) {
+          const err = errorData.error as { message?: string };
+          if (err && typeof err.message === 'string') {
+            setError(err.message);
+            return;
+          }
+        }
+      }
+
       addToast("Something wrong happened", "error");
-    },
-  });
+    }
+  }, [mutation.isError, mutation.error, addToast]);
 
   if (!mounted) return null;
 
   async function onSubmit(data: FormData) {
-    mutation.mutate(data);
+    mutation.mutate({ draftId, blogData: data });
   }
 
   function setValues(values: string[]) {

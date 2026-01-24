@@ -2,7 +2,7 @@
 import React from 'react';
 import { isActionError } from '@/types/ActionError';
 import BlogPreviewCard from '../../../home/[topic]/_components/BlogPreviewCard';
-import { getUserBlogs } from '@/libs/api/blog';
+import blogApi from '@/libs/api/services/blog';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { FileText } from 'lucide-react';
 
@@ -47,7 +47,7 @@ const UserBlogsList = ({ userEmail }: Props) => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ['userBlogs', userEmail],
-    queryFn: ({ pageParam }) => getUserBlogs(userEmail, pageParam as number),
+    queryFn: ({ pageParam }) => blogApi.getUserBlogs(userEmail, pageParam as number),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (!lastPage || isActionError(lastPage)) return undefined;

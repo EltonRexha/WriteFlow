@@ -1,6 +1,6 @@
 'use client';
 import { useToast } from '@/components/ToastProvider';
-import { autocompleteBlogsByTitle } from '@/libs/api/blog';
+import { useBlogAutocomplete } from '@/hooks/queries/blog';
 import { isActionError } from '@/types/ActionError';
 import React, { useEffect, useState } from 'react';
 
@@ -21,24 +21,32 @@ const BlogSearchAutocompletion = React.memo(function BlogSearchAutocompletion({
   >([]);
 
   const { addToast } = useToast();
+  const { data: blogsByTitle, isError } = useBlogAutocomplete({ title });
 
   useEffect(() => {
-    async function fetchBlogs() {
-      const blogsByTitle = await autocompleteBlogsByTitle(title);
-      if (isActionError(blogsByTitle)) {
-        addToast('could not fetch blogs', 'error');
-        return;
-      }
-
-      if (!title) {
-        return;
-      }
-
-      setBlogs(blogsByTitle);
+    if (isError) {
+      addToast('could not fetch blogs', 'error');
+      setBlogs([]);
+      return;
     }
 
-    fetchBlogs();
-  }, [title, addToast]);
+    if (!title) {
+      setBlogs([]);
+      return;
+    }
+
+    if (!blogsByTitle) {
+      return;
+    }
+
+    if (isActionError(blogsByTitle)) {
+      addToast('could not fetch blogs', 'error');
+      setBlogs([]);
+      return;
+    }
+
+    setBlogs(blogsByTitle);
+  }, [title, blogsByTitle, isError, addToast]);
 
   return (
     <div className="mt-2 w-full">

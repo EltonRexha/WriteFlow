@@ -16,6 +16,7 @@ interface EditDraftEditorProps {
 
 const EditDraftEditor = ({ onUpdate, initialContent }: EditDraftEditorProps) => {
   const [content, setContent] = useState(initialContent);
+  const [isEditorReady, setIsEditorReady] = useState(false);
   const debouncedEditorContent = useDebounce(content, ONCHANGE_DEBOUNCE_DELAY);
 
   const editor = useEditor({
@@ -40,6 +41,8 @@ const EditDraftEditor = ({ onUpdate, initialContent }: EditDraftEditorProps) => 
           console.error("Failed to parse initial content:", error);
         }
       }
+      // Mark editor as ready after content is set
+      setIsEditorReady(true);
     },
     content: initialContent,
   });
@@ -49,6 +52,15 @@ const EditDraftEditor = ({ onUpdate, initialContent }: EditDraftEditorProps) => 
       onUpdate(debouncedEditorContent);
     }
   }, [debouncedEditorContent, onUpdate]);
+
+  // Show loading state until editor is ready
+  if (!editor || !isEditorReady) {
+    return (
+      <div className="flex items-center justify-center min-h-[90vh]">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
 
   return (
     <>

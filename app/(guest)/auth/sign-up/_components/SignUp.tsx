@@ -1,8 +1,7 @@
 "use client";
 
-import { createUser } from "@/libs/api/user";
+import { useCreateUser } from "@/hooks/queries/user";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { BuiltInProviderType } from "next-auth/providers/index";
 import {
   ClientSafeProvider,
@@ -56,23 +55,22 @@ const SignUp = () => {
     }
   }, [searchParams]);
 
-  const createUserMutation = useMutation({
-    mutationFn: (data: FormData) =>
-      createUser({
-        email: data.email,
-        name: data.firstName + (data.lastName ? " " : "") + data.lastName,
-        password: data.password,
-      }),
-    onSuccess: () => {
+  const createUserMutation = useCreateUser();
+
+  useEffect(() => {
+    if (createUserMutation.isSuccess) {
       signIn("credentials", {
         email,
         password: watch("password"),
       });
-    },
-    onError: () => {
+    }
+  }, [createUserMutation.isSuccess, email, watch]);
+
+  useEffect(() => {
+    if (createUserMutation.isError) {
       console.error("Something wrong happened");
-    },
-  });
+    }
+  }, [createUserMutation.isError]);
 
   const [providers, setProviders] = useState<Record<
     LiteralUnion<BuiltInProviderType, string>,
@@ -91,7 +89,11 @@ const SignUp = () => {
   }, []);
 
   async function onSubmit(data: FormData) {
-    createUserMutation.mutate(data);
+    createUserMutation.mutate({
+      email: data.email,
+      name: data.firstName + (data.lastName ? " " : "") + data.lastName,
+      password: data.password,
+    });
   }
 
   return (

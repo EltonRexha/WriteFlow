@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
-import type { DisplayBlog } from '@/libs/api/blog';
+import type { DisplayBlog } from '@/libs/api/services/blog';
 
 const BlogPreviewCard = ({
   id,

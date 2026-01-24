@@ -1,16 +1,11 @@
 'use client';
-import { getBlog } from '@/libs/api/blog';
+import { useBlog } from '@/hooks/queries/blog';
 import ManageBlogDialogForm from './ManageBlogDialogForm';
-import { useQuery } from '@tanstack/react-query';
 import { isActionError } from '@/types/ActionError';
-import type { GetBlogResponse } from '@/libs/api/blog';
+import type { GetBlogResponse } from '@/libs/api/services/blog';
 
 const ManageBlogDialog = ({ blogId }: { blogId: string }) => {
-  const { data: blog } = useQuery<GetBlogResponse>({
-    queryKey: ['blog', blogId],
-    queryFn: () => getBlog(blogId),
-    retry: false,
-  });
+  const { data: blog } = useBlog({ id: blogId });
 
   if (!blog || isActionError(blog)) {
     return null;

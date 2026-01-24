@@ -2,11 +2,7 @@
 import React from 'react';
 import BlogPreviewCard from './BlogPreviewCard';
 import { isActionError } from '@/types/ActionError';
-import {
-  getBlogsByTopic,
-  getFollowingBlogs,
-  getForYouBlogs,
-} from '@/libs/api/recommendation';
+import recommendationApi from '@/libs/api/services/recommendation';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 const BlogSkeleton = () => {
@@ -48,14 +44,14 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
     queryFn: ({ pageParam }) => {
       const page = pageParam as number;
       if (topic.toLocaleLowerCase() === 'for-you') {
-        return getForYouBlogs(page);
+        return recommendationApi.getForYouBlogs(page);
       }
 
       if (topic.toLocaleLowerCase() === 'following') {
-        return getFollowingBlogs(page);
+        return recommendationApi.getFollowingBlogs(page);
       }
 
-      return getBlogsByTopic(topic, page);
+      return recommendationApi.getBlogsByTopic(topic, page);
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {

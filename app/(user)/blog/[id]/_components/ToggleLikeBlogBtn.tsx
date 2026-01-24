@@ -1,10 +1,9 @@
 'use client';
-import { toggleLikeBlog } from '@/libs/api/blog';
+import { useToggleLikeBlog } from '@/hooks/queries/blog';
 import { ThumbsUp } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
-import { useMutation } from '@tanstack/react-query';
 import { isActionError } from '@/types/ActionError';
 
 const ToggleLikeBlogBtn = ({
@@ -15,17 +14,18 @@ const ToggleLikeBlogBtn = ({
   isLiked: boolean;
 }) => {
   const router = useRouter();
+  const mutation = useToggleLikeBlog();
 
-  const mutation = useMutation({
-    mutationFn: () => toggleLikeBlog(blogId),
-    onSuccess: (res) => {
-      if (isActionError(res)) return;
+  useEffect(() => {
+    if (mutation.isSuccess && mutation.data) {
+      if (isActionError(mutation.data)) return;
       router.refresh();
-    },
-  });
+      mutation.reset();
+    }
+  }, [mutation.isSuccess, mutation.data, router, mutation]);
 
   const handleLike = async () => {
-    mutation.mutate();
+    mutation.mutate(blogId);
   };
 
   return (

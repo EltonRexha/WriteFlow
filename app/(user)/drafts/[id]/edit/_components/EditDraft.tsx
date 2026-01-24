@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { getDraft, updateDraft } from "@/libs/api/drafts";
+import { useDraft, useUpdateDraft } from "@/hooks/queries/drafts";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import EditDraftEditor from "./EditDraftEditor";
@@ -22,11 +21,7 @@ const EditDraft = ({ draftId }: EditDraftProps) => {
   const { addToast } = useToast();
 
   // Fetch draft data
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["draft", draftId],
-    queryFn: () => getDraft(draftId),
-    retry: false,
-  });
+  const { data, isLoading, isError } = useDraft({ id: draftId });
 
   // Initialize content when data is loaded
   useEffect(() => {
@@ -46,21 +41,25 @@ const EditDraft = ({ draftId }: EditDraftProps) => {
   }, [isError, data, addToast, router]);
 
   // Mutation to save draft content
-  const mutation = useMutation({
-    mutationFn: (content: string) => updateDraft(draftId, content),
-    onSuccess: (response) => {
-      if (!isResponseError(response)) {
+  const mutation = useUpdateDraft();
+
+  useEffect(() => {
+    if (mutation.isSuccess && mutation.data) {
+      if (!isResponseError(mutation.data)) {
         addToast("Draft saved successfully", "success");
         setHasUnsavedChanges(false);
         setInitialContent(draftContent);
       } else {
         addToast("Failed to save draft", "error");
       }
-    },
-    onError: () => {
+    }
+  }, [mutation.isSuccess, mutation.data, addToast, draftContent]);
+
+  useEffect(() => {
+    if (mutation.isError) {
       addToast("An error occurred while saving", "error");
-    },
-  });
+    }
+  }, [mutation.isError, addToast]);
 
   // Handle content updates
   function onUpdate(content: string) {
@@ -74,7 +73,7 @@ const EditDraft = ({ draftId }: EditDraftProps) => {
       addToast("No changes to save", "info");
       return;
     }
-    mutation.mutate(draftContent);
+    mutation.mutate({ draftId, content: draftContent });
   }
 
   // Warn before leaving with unsaved changes

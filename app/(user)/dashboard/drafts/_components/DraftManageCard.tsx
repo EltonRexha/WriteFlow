@@ -1,4 +1,4 @@
-import type { DraftDto } from '@/libs/api/drafts';
+import type { DraftDto } from '@/libs/api/services/drafts';
 import { format } from 'date-fns';
 import { MoreVertical, Edit, Clock, Trash2 } from 'lucide-react';
 import DeleteBtn from './DeleteBtn';

@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { getBlog, updateBlogContent } from "@/libs/api/blog";
+import { useBlog, useUpdateBlogContent } from "@/hooks/queries/blog";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import EditTextEditor from "./EditTextEditor";
@@ -20,11 +19,7 @@ const EditBlog = ({ blogId }: EditBlogProps) => {
   const { addToast } = useToast();
 
   // Fetch blog data
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["blog", blogId],
-    queryFn: () => getBlog(blogId),
-    retry: false,
-  });
+  const { data, isLoading, isError } = useBlog({ id: blogId });
 
   // Initialize content when data is loaded
   useEffect(() => {
@@ -44,10 +39,11 @@ const EditBlog = ({ blogId }: EditBlogProps) => {
   }, [isError, data, addToast, router]);
 
   // Mutation to save blog content
-  const mutation = useMutation({
-    mutationFn: (content: string) => updateBlogContent(blogId, content),
-    onSuccess: (response) => {
-      if (!isResponseError(response)) {
+  const mutation = useUpdateBlogContent();
+
+  useEffect(() => {
+    if (mutation.isSuccess && mutation.data) {
+      if (!isResponseError(mutation.data)) {
         addToast("Blog content saved successfully", "success");
         setHasUnsavedChanges(false);
         setInitialContent(blogContent);
@@ -55,11 +51,14 @@ const EditBlog = ({ blogId }: EditBlogProps) => {
       } else {
         addToast("Failed to save blog content", "error");
       }
-    },
-    onError: () => {
+    }
+  }, [mutation.isSuccess, mutation.data, addToast, blogContent, router, blogId]);
+
+  useEffect(() => {
+    if (mutation.isError) {
       addToast("An error occurred while saving", "error");
-    },
-  });
+    }
+  }, [mutation.isError, addToast]);
 
   // Handle content updates
   function onUpdate(content: string) {
@@ -73,7 +72,7 @@ const EditBlog = ({ blogId }: EditBlogProps) => {
       addToast("No changes to save", "info");
       return;
     }
-    mutation.mutate(blogContent);
+    mutation.mutate({ blogId, content: blogContent });
   }
 
   // Warn before leaving with unsaved changes

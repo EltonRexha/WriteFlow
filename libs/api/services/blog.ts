@@ -1,7 +1,6 @@
 import axios from "@/config/axios";
 import { BlogSchema } from "@/schemas/blogSchema";
 import { EditBlogPreviewSchema } from "@/schemas/editBlogSchema";
-import { isResponseError } from "@/types/guards/isResponseError";
 import { ResponseError } from "@/types/ResponseError";
 import { z, ZodError } from "zod";
 
@@ -67,10 +66,18 @@ export type GetBlogResponse =
       isDisliked?: boolean;
     };
 
-export async function updatePreview(
-  data: UpdatePreview,
-): Promise<ResponseError | ZodError | { error: string }> {
-  try {
+const blogApi = {
+  updatePreview: async (
+    data: UpdatePreview,
+  ): Promise<ZodError<{
+    title: string;
+    categories: string[];
+    imageUrl: string;
+    description: string;
+    id: string;
+  }> | {
+    error: string;
+  }> => {
     const res = await axios.put<
       | ZodError<{
           title: string;
@@ -84,61 +91,41 @@ export async function updatePreview(
         }
     >(`/blog/preview/${data.id}`, data);
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
 
-export async function createBlog(
-  data: CreateBlog,
-): Promise<ResponseError | string | ZodError> {
-  try {
+  createBlog: async (
+    data: CreateBlog & { content: string },
+  ): Promise<ResponseError | string | ZodError> => {
     const res = await axios.post<ResponseError | string | ZodError>(
       "/blog",
       data,
     );
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
 
-export async function getBlog(id: string): Promise<GetBlogResponse> {
-  try {
+  getBlog: async (id: string): Promise<GetBlogResponse> => {
     const res = await axios.get<GetBlogResponse>(`/blog/${id}`);
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
 
-export async function deleteBlog(
-  blogId: string,
-): Promise<ResponseError | { message: string; code: number }> {
-  try {
+  deleteBlog: async (
+    blogId: string,
+  ): Promise<ResponseError | { message: string; code: number }> => {
     const res = await axios.delete<
       ResponseError | { message: string; code: number }
     >(`/blog/${blogId}`);
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
 
-export async function autocompleteBlogsByTitle(title: string): Promise<
-  | ResponseError
-  | {
-      id: string;
-      title: string;
-      imageUrl: string;
-      description: string;
-    }[]
-> {
-  try {
+  autocompleteBlogsByTitle: async (title: string): Promise<
+    | ResponseError
+    | {
+        id: string;
+        title: string;
+        imageUrl: string;
+        description: string;
+      }[]
+  > => {
     const res = await axios.get<
       | ResponseError
       | {
@@ -153,17 +140,12 @@ export async function autocompleteBlogsByTitle(title: string): Promise<
       },
     });
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
 
-export async function getUserBlogs(
-  email: string,
-  page: number = 1,
-): Promise<ResponseError | BlogPagination<DisplayBlog>> {
-  try {
+  getUserBlogs: async (
+    email: string,
+    page: number = 1,
+  ): Promise<ResponseError | BlogPagination<DisplayBlog>> => {
     const res = await axios.get<ResponseError | BlogPagination<DisplayBlog>>(
       `/blog/user`,
       {
@@ -174,51 +156,35 @@ export async function getUserBlogs(
       },
     );
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
 
-export async function toggleLikeBlog(
-  blogId: string,
-): Promise<ResponseError | { message: string }> {
-  try {
+  toggleLikeBlog: async (
+    blogId: string,
+  ): Promise<ResponseError | { message: string }> => {
     const res = await axios.post<ResponseError | { message: string }>(
       `/blog/${blogId}/like`,
     );
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
 
-export async function toggleDislikeBlog(
-  blogId: string,
-): Promise<ResponseError | { message: string }> {
-  try {
+  toggleDislikeBlog: async (
+    blogId: string,
+  ): Promise<ResponseError | { message: string }> => {
     const res = await axios.post<ResponseError | { message: string }>(
       `/blog/${blogId}/dislike`,
     );
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
 
-export async function updateBlogContent(
-  blogId: string,
-  content: string,
-): Promise<ResponseError | { message: string; code: number }> {
-  try {
+  updateBlogContent: async (
+    blogId: string,
+    content: string,
+  ): Promise<ResponseError | { message: string; code: number }> => {
     const res = await axios.put<
       ResponseError | { message: string; code: number }
     >(`/blog/${blogId}`, { content });
     return res.data;
-  } catch (err) {
-    if (isResponseError(err)) return err;
-    throw err;
-  }
-}
+  },
+};
+
+export default blogApi;

@@ -2,7 +2,7 @@
 import { isActionError } from '@/types/ActionError';
 import React from 'react';
 import DarkManageCard from './DraftManageCard';
-import { getDrafts } from '@/libs/api/drafts';
+import draftApi from '@/libs/api/services/drafts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Edit3, Loader2 } from 'lucide-react';
 
@@ -21,7 +21,7 @@ const DraftList = ({ user }: { user: User }) => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ['dashboardDrafts', user.email],
-    queryFn: ({ pageParam }) => getDrafts(pageParam as number, 10),
+    queryFn: ({ pageParam }) => draftApi.getDrafts(pageParam as number, 10),
     initialPageParam: 1,
     enabled: !!user.email,
     getNextPageParam: (lastPage) => {
