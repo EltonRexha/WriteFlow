@@ -6,6 +6,7 @@ import ManageBlogDialog from './ManageBlogDialog';
 import DeleteBtn from './DeleteBtn';
 import ModalDeleteBtn from './ModalDeleteBtn';
 import ManageModalBtn from './ManageModalBtn';
+import Link from 'next/link';
 
 const BlogManageCard = ({
   id,
@@ -65,10 +66,12 @@ const BlogManageCard = ({
           </div>
 
           <div className="flex gap-2">
-            <button className="btn btn-primary btn-sm">
-              <Edit className="h-4 w-4" />
-              Edit
-            </button>
+            <Link href={`/blog/${id}/edit`}>
+              <button className="btn btn-primary btn-sm">
+                <Edit className="h-4 w-4" />
+                Edit
+              </button>
+            </Link>
           </div>
         </div>
 

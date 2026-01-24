@@ -29,7 +29,20 @@ export async function POST(req: Request) {
   }
 
   const blogContentText = generateText(blogContentMetaData, TIP_TAP_EXTENSIONS);
-  const parsed = BlogSchema.safeParse({ ...json, content: blogContentText });
+
+  if (blogContentText.length < 50) {
+    return NextResponse.json(
+      {
+        error: {
+          message: "blog content must be at least 50 characters long",
+          code: 400,
+        },
+      },
+      { status: 400 },
+    );
+  }
+
+  const parsed = BlogSchema.safeParse(json);
 
   if (!parsed.success) {
     return NextResponse.json(parsed.error, { status: 400 });

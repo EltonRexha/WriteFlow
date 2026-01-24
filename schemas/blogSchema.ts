@@ -19,10 +19,6 @@ export const BlogSchema = z.object({
     .min(10, "Description must be at least 10 characters long")
     .max(200, "Description must not exceed 200 characters")
     .nonempty("Description is required"),
-  content: z
-    .string()
-    .nonempty("Content is required")
-    .min(50, "Blog content must be at least 50 characters long"),
 });
 
 export const BlogSchemaForm = z.object({

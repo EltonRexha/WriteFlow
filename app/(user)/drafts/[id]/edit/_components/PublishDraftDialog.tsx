@@ -6,13 +6,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMounted } from "@/hooks/useMounted";
 import { getCategories } from "@/libs/api/categories";
-import { useToast } from "../../../../../components/ToastProvider";
+import { useToast } from "@/components/ToastProvider";
 import {
   CldImage,
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from "next-cloudinary";
-import { createBlog } from "@/libs/api/blog";
+import { publishDraft } from "@/libs/api/drafts";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import CategoriesSelect from "@/components/CategoriesSelect";
@@ -20,13 +20,16 @@ import {
   isApiZodErrorResponse,
 } from "@/types/guards/isApiErrorResponse";
 import isZodError from "@/types/guards/isZodApiErrorResponse";
-import { INITIAL_CONTENT } from "@/components/textEditor/TextEditor";
-import { generateJSON } from "@tiptap/core";
-import { TIP_TAP_EXTENSIONS } from "@/libs/TipTapExtensions";
+import { isResponseError } from "@/types/guards/isResponseError";
 
 type FormData = z.infer<typeof BlogSchemaForm>;
 
-const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
+interface PublishDraftDialogProps {
+  draftId: string;
+  draftContent: string;
+}
+
+const PublishDraftDialog = ({ draftId, draftContent }: PublishDraftDialogProps) => {
   const [showImage, setShowImg] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -59,19 +62,13 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   const router = useRouter();
   const mounted = useMounted();
 
-  //Sometimes tiptap does not convert the Initial content to tiptap JSON because its mentally retarded library.
-  //Its the worst thing i have ever used
-  //it has ruined my life
-  if (blogContent === INITIAL_CONTENT) {
-    blogContent = JSON.stringify(generateJSON(blogContent, TIP_TAP_EXTENSIONS));
-  }
-
   const mutation = useMutation({
     mutationFn: (payload: FormData) => {
-      return createBlog(payload);
+      return publishDraft(draftId, payload);
     },
     onSuccess: (response) => {
       if (typeof response === "string") {
+        addToast("Draft published successfully!", "success");
         router.push(`/blog/${response}`);
         return;
       }
@@ -106,7 +103,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   }
 
   return (
-    <dialog id="createBlogModal" className="modal">
+    <dialog id="publishDraftModal" className="modal">
       <div className="modal-box flex flex-col space-y-4 min-w-[35%] ">
         <form method="dialog">
           <button
@@ -117,7 +114,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
             ✕
           </button>
         </form>
-        <h3 className="font-bold text-lg">Publish blog</h3>
+        <h3 className="font-bold text-lg">Publish Draft</h3>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -145,7 +142,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                     onClose={() => {
                       setShowImg(true);
                       (document.getElementById(
-                        "createBlogModal",
+                        "publishDraftModal",
                       ) as HTMLDialogElement)!.showModal();
                     }}
                   >
@@ -197,7 +194,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                   categories={categories}
                   setValues={setValues}
                   errors={errors}
-                  modalId="createBlogModal"
+                  modalId="publishDraftModal"
                 />
               )}
             </div>
@@ -206,8 +203,9 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
           <button
             className="btn btn-primary btn-soft block w-full"
             type="submit"
+            disabled={mutation.isPending}
           >
-            Publish
+            {mutation.isPending ? "Publishing..." : "Publish"}
           </button>
           {error && <p className="text-error my-2">{error}</p>}
         </form>
@@ -216,4 +214,4 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   );
 };
 
-export default CreateBlogDialog;
+export default PublishDraftDialog;

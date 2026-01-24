@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { MoreVertical, Edit, Clock, Trash2 } from 'lucide-react';
 import DeleteBtn from './DeleteBtn';
 import ModalDeleteBtn from './ModalDeleteBtn';
+import Link from 'next/link';
 
 const DarkManageCard = ({
   id,
@@ -32,10 +33,12 @@ const DarkManageCard = ({
           </div>
 
           <div className="flex gap-2">
-            <button className="btn btn-primary btn-sm">
-              <Edit className="h-4 w-4" />
-              Edit
-            </button>
+            <Link href={`/drafts/${id}/edit`}>
+              <button className="btn btn-primary btn-sm">
+                <Edit className="h-4 w-4" />
+                Edit
+              </button>
+            </Link>
           </div>
         </div>
 

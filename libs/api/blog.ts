@@ -93,11 +93,16 @@ export async function updatePreview(
 export async function createBlog(
   data: CreateBlog,
 ): Promise<ResponseError | string | ZodError> {
-  const res = await axios.post<ResponseError | string | ZodError>(
-    "/blog",
-    data,
-  );
-  return res.data;
+  try {
+    const res = await axios.post<ResponseError | string | ZodError>(
+      "/blog",
+      data,
+    );
+    return res.data;
+  } catch (err) {
+    if (isResponseError(err)) return err;
+    throw err;
+  }
 }
 
 export async function getBlog(id: string): Promise<GetBlogResponse> {
@@ -196,6 +201,21 @@ export async function toggleDislikeBlog(
     const res = await axios.post<ResponseError | { message: string }>(
       `/blog/${blogId}/dislike`,
     );
+    return res.data;
+  } catch (err) {
+    if (isResponseError(err)) return err;
+    throw err;
+  }
+}
+
+export async function updateBlogContent(
+  blogId: string,
+  content: string,
+): Promise<ResponseError | { message: string; code: number }> {
+  try {
+    const res = await axios.put<
+      ResponseError | { message: string; code: number }
+    >(`/blog/${blogId}`, { content });
     return res.data;
   } catch (err) {
     if (isResponseError(err)) return err;
