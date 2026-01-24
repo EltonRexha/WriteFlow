@@ -48,8 +48,7 @@ export async function GET(req: Request) {
       }
 
       return NextResponse.json(draft);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { error: { message: "failed to fetch draft", code: 500 } },
         { status: 500 },
@@ -103,8 +102,7 @@ export async function GET(req: Request) {
         totalCount,
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: { message: "failed to fetch drafts", code: 500 } },
       { status: 500 },
@@ -157,8 +155,7 @@ export async function DELETE(req: Request) {
     });
 
     return NextResponse.json({ message: "draft deleted successfully" });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: { message: "failed to delete draft", code: 500 } },
       { status: 500 },
@@ -295,8 +292,7 @@ export async function PUT(req: Request) {
       { message: "draft updated successfully", code: 200 },
       { status: 200 },
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: { message: "failed to update draft", code: 500 } },
       { status: 500 },

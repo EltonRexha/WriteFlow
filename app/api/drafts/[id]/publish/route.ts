@@ -167,8 +167,7 @@ export async function POST(
         });
 
         return NextResponse.json(createdBlog.id, { status: 201 });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: { message: 'failed to publish draft', code: 500 } },
             { status: 500 }

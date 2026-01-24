@@ -86,7 +86,7 @@ const BlogComment = ({
         </div>
         <p className="text-primary ">{authorName}</p>
         <p className="text-base-content/60 text-sm">
-          {format(new Date(createdAt as any), 'PPP')}
+          {format(new Date(createdAt as Date), 'PPP')}
         </p>
       </div>
       <div className="ml-1 min-w-0">
