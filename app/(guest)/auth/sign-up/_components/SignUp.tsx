@@ -28,8 +28,14 @@ const schema = z.object({
       "Password must contain at least one special character",
     ),
   email: z.string().email(),
-  firstName: z.string().min(3).max(10),
-  lastName: z.string().min(3).max(10).optional(),
+  firstName: z
+    .string()
+    .min(3, "First name must be at least 3 characters")
+    .max(10, "First name must be at most 10 characters"),
+  lastName: z
+    .string()
+    .min(3, "Last name must be at least 3 characters")
+    .max(10, "Last name must be at most 10 characters"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -116,7 +122,8 @@ const SignUp = () => {
 
             <label className="input validator">
               <input
-                placeholder="Last Name (Optional)"
+                placeholder="Last Name"
+                required
                 {...register("lastName")}
                 className="w-full"
               />
