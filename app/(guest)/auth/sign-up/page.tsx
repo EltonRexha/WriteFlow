@@ -1,5 +1,5 @@
 import React from 'react';
-import SignUp from './_components/SignUp';
+import SignUpWrapper from './_components/SignUpWrapper';
 
 const SignUpPage = () => {
   return (
@@ -11,7 +11,7 @@ const SignUpPage = () => {
         <h2 className="font-bold text-xl sm:text-2xl text-center pb-4 text-base-content">
           Create An Account
         </h2>
-        <SignUp />
+        <SignUpWrapper />
       </div>
     </div>
   );

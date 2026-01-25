@@ -126,13 +126,13 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
         <div id="thumbnail" className="relative">
           <h1
             className={clsx(
-              'font-bold text-4xl',
+              'font-bold text-4xl break-words leading-tight',
               limeLight.className
             )}
           >
             {blog.title}
           </h1>
-          <p className="text-xl text-base-content/70 pt-2 font-medium">
+          <p className="text-xl text-base-content/70 pt-2 font-medium line-clamp-3 leading-relaxed break-words">
             {blog.description}
           </p>
           <div className="flex items-center space-x-2 mt-4">

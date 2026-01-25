@@ -1,4 +1,4 @@
-import type { DisplayBlog } from '@/libs/api/blog';
+import type { DisplayBlog } from '@/libs/api/services/blog';
 import { format } from 'date-fns';
 import { MoreVertical, ThumbsDown, ThumbsUp, Edit, Clock } from 'lucide-react';
 import Image from 'next/image';
@@ -6,6 +6,7 @@ import ManageBlogDialog from './ManageBlogDialog';
 import DeleteBtn from './DeleteBtn';
 import ModalDeleteBtn from './ModalDeleteBtn';
 import ManageModalBtn from './ManageModalBtn';
+import Link from 'next/link';
 
 const BlogManageCard = ({
   id,
@@ -22,7 +23,7 @@ const BlogManageCard = ({
   return (
     <>
       <article className="flex gap-6 py-6 border-b border-base-content/10 bg-base-200/50 p-4 rounded-lg hover:bg-base-200 transition-colors max-w-3xl mx-auto w-full">
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <div className="avatar">
               <div className="w-6 h-6 rounded-full">
@@ -46,8 +47,10 @@ const BlogManageCard = ({
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-1 line-clamp-2">{title}</h2>
-            <p className="text-base-content/70 line-clamp-1 sm:line-clamp-2 mb-4">
+            <Link href={`/blog/${id}`}>
+              <h2 className="text-xl font-bold mb-1 line-clamp-2 leading-tight break-words hover:text-primary transition-colors cursor-pointer">{title}</h2>
+            </Link>
+            <p className="text-base-content/70 line-clamp-1 sm:line-clamp-2 mb-4 break-words">
               {description}
             </p>
           </div>
@@ -65,10 +68,12 @@ const BlogManageCard = ({
           </div>
 
           <div className="flex gap-2">
-            <button className="btn btn-primary btn-sm">
-              <Edit className="h-4 w-4" />
-              Edit
-            </button>
+            <Link href={`/blog/${id}/edit`}>
+              <button className="btn btn-primary btn-sm">
+                <Edit className="h-4 w-4" />
+                Edit
+              </button>
+            </Link>
           </div>
         </div>
 

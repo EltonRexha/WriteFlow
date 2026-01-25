@@ -1,13 +1,12 @@
 'use client';
 import { DraftSchema } from '@/schemas/draftSchema';
-import { createDraft } from '@/libs/api/drafts';
+import { useCreateDraft } from '@/hooks/queries/drafts';
 import { isActionError } from '@/types/ActionError';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
 
 type FormData = z.infer<typeof DraftSchema>;
 
@@ -24,21 +23,23 @@ const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+  const mutation = useCreateDraft();
 
-  const mutation = useMutation({
-    mutationFn: (payload: FormData) => createDraft(payload),
-    onSuccess: (response) => {
-      if (isActionError(response)) {
-        setError(response.error.message);
+  useEffect(() => {
+    if (mutation.isSuccess && mutation.data) {
+      if (isActionError(mutation.data)) {
+        setError(mutation.data.error.message);
         return;
       }
-
       router.push('/home');
-    },
-    onError: () => {
+    }
+  }, [mutation.isSuccess, mutation.data, router]);
+
+  useEffect(() => {
+    if (mutation.isError) {
       setError('Something wrong happened');
-    },
-  });
+    }
+  }, [mutation.isError]);
 
   async function onSubmit(data: FormData) {
     mutation.mutate(data);
@@ -68,13 +69,13 @@ const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
             {...register('name')}
             required
           />
-          <button className="btn btn-primary btn-soft block w-full">
-            Save
+          <button className="btn btn-primary btn-soft block w-full" disabled={mutation.isPending}>
+            {mutation.isPending ? "Saving..." : "Save"}
           </button>
         </form>
         <div
           id="errors"
-          className="flex flex-col space-y-2 text-sm text-accent"
+          className="flex flex-col space-y-2 text-sm text-red-500"
         >
           {Object.keys(errors).map((item) => {
             const errorMessage = errors[item as keyof typeof errors]?.message;

@@ -1,4 +1,4 @@
-import SignIn from './_components/SignIn';
+import SignInWrapper from './_components/SignInWrapper';
 
 export default function SignInPage() {
   return (
@@ -11,7 +11,7 @@ export default function SignInPage() {
           <h2 className="font-bold text-xl sm:text-2xl text-center pb-4 text-base-content">
             Sign In To Your Account
           </h2>
-          <SignIn />
+          <SignInWrapper />
         </div>
       </div>
     </>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { isActionError } from '@/types/ActionError';
 import BlogPreviewCard from '../../../home/[topic]/_components/BlogPreviewCard';
-import { getUserBlogs } from '@/libs/api/blog';
+import blogApi from '@/libs/api/services/blog';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { FileText } from 'lucide-react';
 
@@ -10,7 +10,7 @@ import { FileText } from 'lucide-react';
 const BlogSkeleton = () => {
   return (
     <article className="flex gap-6 py-6 border-b border-base-content/10">
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
           <div className="skeleton w-6 h-6 rounded-full"></div>
           <div className="skeleton h-4 w-24 hidden sm:block "></div>
@@ -47,7 +47,7 @@ const UserBlogsList = ({ userEmail }: Props) => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ['userBlogs', userEmail],
-    queryFn: ({ pageParam }) => getUserBlogs(userEmail, pageParam as number),
+    queryFn: ({ pageParam }) => blogApi.getUserBlogs(userEmail, pageParam as number),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (!lastPage || isActionError(lastPage)) return undefined;

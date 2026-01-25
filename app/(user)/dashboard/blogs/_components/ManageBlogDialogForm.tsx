@@ -10,12 +10,12 @@ import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { EditBlogPreviewSchema } from "@/schemas/editBlogSchema";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { updatePreview } from "@/libs/api/blog";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUpdateBlogPreview } from "@/hooks/queries/blog";
+import { useCategories } from "@/hooks/queries/categories";
 import Select from "react-select";
-import { getCategories } from "@/libs/api/categories";
 import { useToast } from "@/components/ToastProvider";
-import type { GetBlogResponse } from "@/libs/api/blog";
+import type { GetBlogResponse } from "@/libs/api/services/blog";
 
 type FormData = z.infer<typeof EditBlogPreviewSchema>;
 
@@ -32,11 +32,7 @@ const ManageBlogDialogForm = ({
 
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const modalId = `edit-modal-${blogId}`;
-  const { data: categories = [], isError: categoriesIsError } = useQuery({
-    queryKey: ["categories"],
-    queryFn: getCategories,
-    retry: false,
-  });
+  const { data: categories = [], isError: categoriesIsError } = useCategories();
 
   const {
     register,
@@ -66,10 +62,7 @@ const ManageBlogDialogForm = ({
   const imgUrl = watch("imageUrl");
   const router = useRouter();
 
-  const mutateBlog = useMutation({
-    mutationFn: updatePreview,
-    onSuccess: () => {},
-  });
+  const mutateBlog = useUpdateBlogPreview();
 
   async function onFormSubmit(data: FormData) {
     await mutateBlog.mutateAsync(data);
@@ -239,8 +232,9 @@ const ManageBlogDialogForm = ({
           <button
             className="btn btn-primary btn-soft block w-full"
             type="submit"
+            disabled={mutateBlog.isPending}
           >
-            Change
+            {mutateBlog.isPending ? "Updating..." : "Change"}
           </button>
         </form>
       </div>

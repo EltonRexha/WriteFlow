@@ -2,17 +2,13 @@
 import React from 'react';
 import BlogPreviewCard from './BlogPreviewCard';
 import { isActionError } from '@/types/ActionError';
-import {
-  getBlogsByTopic,
-  getFollowingBlogs,
-  getForYouBlogs,
-} from '@/libs/api/recommendation';
+import recommendationApi from '@/libs/api/services/recommendation';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 const BlogSkeleton = () => {
   return (
     <article className="flex gap-6 py-6 border-b border-base-content/10">
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
           <div className="skeleton w-6 h-6 rounded-full"></div>
           <div className="skeleton h-4 w-24 hidden sm:block "></div>
@@ -48,14 +44,14 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
     queryFn: ({ pageParam }) => {
       const page = pageParam as number;
       if (topic.toLocaleLowerCase() === 'for-you') {
-        return getForYouBlogs(page);
+        return recommendationApi.getForYouBlogs(page);
       }
 
       if (topic.toLocaleLowerCase() === 'following') {
-        return getFollowingBlogs(page);
+        return recommendationApi.getFollowingBlogs(page);
       }
 
-      return getBlogsByTopic(topic, page);
+      return recommendationApi.getBlogsByTopic(topic, page);
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {

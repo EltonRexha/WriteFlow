@@ -1,9 +1,8 @@
 'use client';
 import { ThumbsUp } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import clsx from 'clsx';
-import { toggleLikeComment } from '@/libs/api/comments';
-import { useMutation } from '@tanstack/react-query';
+import { useToggleLikeComment } from '@/hooks/queries/comments';
 
 const ToggleLikeComment = ({
   isLiked,
@@ -14,12 +13,18 @@ const ToggleLikeComment = ({
   commentId: string;
   onLike: () => void;
 }) => {
-  const mutation = useMutation({
-    mutationFn: () => toggleLikeComment(commentId),
-    onSuccess: () => {
+  const mutation = useToggleLikeComment();
+
+  const handleLike = useCallback(() => {
+    mutation.mutate(commentId);
+  }, [mutation, commentId]);
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
       onLike();
-    },
-  });
+      mutation.reset();
+    }
+  }, [mutation.isSuccess, onLike, mutation]);
 
   return (
     <button
@@ -27,9 +32,14 @@ const ToggleLikeComment = ({
         'btn btn-circle btn-ghost btn-sm hover:text-green-500 transition-colors',
         isLiked ? 'text-green-500' : ''
       )}
-      onClick={() => mutation.mutate()}
+      onClick={handleLike}
+      disabled={mutation.isPending}
     >
-      <ThumbsUp height={15} />
+      {mutation.isPending ? (
+        <span className="loading loading-spinner loading-xs"></span>
+      ) : (
+        <ThumbsUp height={15} />
+      )}
     </button>
   );
 };

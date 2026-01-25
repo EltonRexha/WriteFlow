@@ -1,8 +1,9 @@
-import type { DraftDto } from '@/libs/api/drafts';
+import type { DraftDto } from '@/libs/api/services/drafts';
 import { format } from 'date-fns';
 import { MoreVertical, Edit, Clock, Trash2 } from 'lucide-react';
 import DeleteBtn from './DeleteBtn';
 import ModalDeleteBtn from './ModalDeleteBtn';
+import Link from 'next/link';
 
 const DarkManageCard = ({
   id,
@@ -14,7 +15,7 @@ const DarkManageCard = ({
   return (
     <>
       <article className="flex gap-6 py-6 border-b border-base-content/10 bg-base-200/50 p-4 rounded-lg hover:bg-base-200 transition-colors max-w-3xl mx-auto w-full">
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <div className="badge badge-warning badge-sm">Draft</div>
             <div className="flex items-center gap-1 text-xs text-base-content/60">
@@ -28,14 +29,17 @@ const DarkManageCard = ({
           </div>
 
           <div className="mb-4">
-            <h2 className="text-xl font-bold mb-1 line-clamp-2">{name}</h2>
+            <h2 className="text-xl font-bold mb-2 line-clamp-2 leading-tight break-words">{name}</h2>
+            <p className="text-base-content/60 text-sm italic">Draft in progress</p>
           </div>
 
           <div className="flex gap-2">
-            <button className="btn btn-primary btn-sm">
-              <Edit className="h-4 w-4" />
-              Edit
-            </button>
+            <Link href={`/drafts/${id}/edit`}>
+              <button className="btn btn-primary btn-sm">
+                <Edit className="h-4 w-4" />
+                Edit
+              </button>
+            </Link>
           </div>
         </div>
 

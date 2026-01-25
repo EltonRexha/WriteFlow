@@ -1,8 +1,7 @@
 "use client";
 
-import { createUser } from "@/libs/api/user";
+import { useCreateUser } from "@/hooks/queries/user";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { BuiltInProviderType } from "next-auth/providers/index";
 import {
   ClientSafeProvider,
@@ -29,8 +28,14 @@ const schema = z.object({
       "Password must contain at least one special character",
     ),
   email: z.string().email(),
-  firstName: z.string().min(3).max(10),
-  lastName: z.string().min(3).max(10).optional(),
+  firstName: z
+    .string()
+    .min(3, "First name must be at least 3 characters")
+    .max(10, "First name must be at most 10 characters"),
+  lastName: z
+    .string()
+    .min(3, "Last name must be at least 3 characters")
+    .max(10, "Last name must be at most 10 characters"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -56,23 +61,22 @@ const SignUp = () => {
     }
   }, [searchParams]);
 
-  const createUserMutation = useMutation({
-    mutationFn: (data: FormData) =>
-      createUser({
-        email: data.email,
-        name: data.firstName + (data.lastName ? " " : "") + data.lastName,
-        password: data.password,
-      }),
-    onSuccess: () => {
+  const createUserMutation = useCreateUser();
+
+  useEffect(() => {
+    if (createUserMutation.isSuccess) {
       signIn("credentials", {
         email,
         password: watch("password"),
       });
-    },
-    onError: () => {
+    }
+  }, [createUserMutation.isSuccess, email, watch]);
+
+  useEffect(() => {
+    if (createUserMutation.isError) {
       console.error("Something wrong happened");
-    },
-  });
+    }
+  }, [createUserMutation.isError]);
 
   const [providers, setProviders] = useState<Record<
     LiteralUnion<BuiltInProviderType, string>,
@@ -91,7 +95,11 @@ const SignUp = () => {
   }, []);
 
   async function onSubmit(data: FormData) {
-    createUserMutation.mutate(data);
+    createUserMutation.mutate({
+      email: data.email,
+      name: data.firstName + (data.lastName ? " " : "") + data.lastName,
+      password: data.password,
+    });
   }
 
   return (
@@ -114,7 +122,8 @@ const SignUp = () => {
 
             <label className="input validator">
               <input
-                placeholder="Last Name (Optional)"
+                placeholder="Last Name"
+                required
                 {...register("lastName")}
                 className="w-full"
               />

@@ -1,37 +1,47 @@
 'use client';
 
 import { useToast } from '@/components/ToastProvider';
-import { deleteBlog } from '@/libs/api/blog';
+import { useDeleteBlog, blogQueryKeys } from '@/hooks/queries/blog';
+import { recommendationQueryKeys } from '@/hooks/queries/recommendation';
+import { statsQueryKeys } from '@/hooks/queries/stats';
 import { isActionError } from '@/types/ActionError';
-import React from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 const DeleteBtn = ({ blogId }: { blogId: string }) => {
   const { addToast } = useToast();
   const queryClient = useQueryClient();
+  const mutation = useDeleteBlog();
 
-  const mutation = useMutation({
-    mutationFn: () => deleteBlog(blogId),
-    onSuccess: (deleteResponse) => {
-      if (isActionError(deleteResponse)) {
-        addToast(deleteResponse.error.message, 'error');
+  useEffect(() => {
+    if (mutation.isSuccess && mutation.data) {
+      if (isActionError(mutation.data)) {
+        addToast(mutation.data.error.message, 'error');
         return;
       }
-
-      addToast(deleteResponse.message, 'success');
-      queryClient.invalidateQueries({ queryKey: ['userBlogs'] });
+      addToast(mutation.data.message, 'success');
+      // Invalidate all blog-related queries
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.all });
       queryClient.invalidateQueries({ queryKey: ['dashboardUserBlogs'] });
-    },
-    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['userBlogs'] });
+      // Invalidate recommendation queries to remove deleted blog from feeds
+      queryClient.invalidateQueries({ queryKey: recommendationQueryKeys.all });
+      // Invalidate stats queries since blog count and stats will change
+      queryClient.invalidateQueries({ queryKey: statsQueryKeys.all });
+    }
+  }, [mutation.isSuccess, mutation.data, addToast, queryClient]);
+
+  useEffect(() => {
+    if (mutation.isError) {
       addToast('Something went wrong deleting blog', 'error');
-    },
-  });
+    }
+  }, [mutation.isError, addToast]);
 
   return (
     <button
       className="btn btn-error"
       onClick={async () => {
-        mutation.mutate();
+        mutation.mutate(blogId);
       }}
     >
       Delete

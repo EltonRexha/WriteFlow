@@ -1,9 +1,8 @@
 'use client';
 import { ThumbsDown } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import clsx from 'clsx';
-import { toggleDislikeComment } from '@/libs/api/comments';
-import { useMutation } from '@tanstack/react-query';
+import { useToggleDislikeComment } from '@/hooks/queries/comments';
 
 const ToggleDislikeComment = ({
   isDisliked,
@@ -14,22 +13,33 @@ const ToggleDislikeComment = ({
   commentId: string;
   onDislike: () => void;
 }) => {
-  const mutation = useMutation({
-    mutationFn: () => toggleDislikeComment(commentId),
-    onSuccess: () => {
+  const mutation = useToggleDislikeComment();
+
+  const handleDislike = useCallback(() => {
+    mutation.mutate(commentId);
+  }, [mutation, commentId]);
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
       onDislike();
-    },
-  });
+      mutation.reset();
+    }
+  }, [mutation.isSuccess, onDislike, mutation]);
 
   return (
     <button
       className={clsx(
-        'btn btn-circle btn-ghost btn-sm  hover:text-red-500 transition-colors',
+        'btn btn-circle btn-ghost btn-sm hover:text-red-500 transition-colors',
         isDisliked ? 'text-red-500' : ''
       )}
-      onClick={() => mutation.mutate()}
+      onClick={handleDislike}
+      disabled={mutation.isPending}
     >
-      <ThumbsDown height={15} />
+      {mutation.isPending ? (
+        <span className="loading loading-spinner loading-xs"></span>
+      ) : (
+        <ThumbsDown height={15} />
+      )}
     </button>
   );
 };

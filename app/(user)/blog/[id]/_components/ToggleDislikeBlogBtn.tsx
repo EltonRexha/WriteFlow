@@ -1,10 +1,9 @@
 'use client';
-import { toggleDislikeBlog } from '@/libs/api/blog';
+import { useToggleDislikeBlog } from '@/hooks/queries/blog';
 import { ThumbsDown } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
-import { useMutation } from '@tanstack/react-query';
 import { isActionError } from '@/types/ActionError';
 
 const ToggleDislikeBlogBtn = ({
@@ -15,17 +14,18 @@ const ToggleDislikeBlogBtn = ({
   isDisliked: boolean;
 }) => {
   const router = useRouter();
+  const mutation = useToggleDislikeBlog();
 
-  const mutation = useMutation({
-    mutationFn: () => toggleDislikeBlog(blogId),
-    onSuccess: (res) => {
-      if (isActionError(res)) return;
+  useEffect(() => {
+    if (mutation.isSuccess && mutation.data) {
+      if (isActionError(mutation.data)) return;
       router.refresh();
-    },
-  });
+      mutation.reset();
+    }
+  }, [mutation.isSuccess, mutation.data, router, mutation]);
 
   const handleDislike = async () => {
-    mutation.mutate();
+    mutation.mutate(blogId);
   };
 
   return (
