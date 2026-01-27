@@ -1,114 +1,130 @@
 "use client";
 
-import { useEditor, EditorContent } from '@tiptap/react';
-import MenuBar from '@/components/textEditor/_components/MenuBar';
-import { TIP_TAP_EXTENSIONS } from '@/libs/TipTapExtensions';
+import { useEditor, EditorContent } from "@tiptap/react";
+import MenuBar from "@/components/textEditor/_components/MenuBar";
+import { TIP_TAP_EXTENSIONS } from "@/libs/TipTapExtensions";
 
 const DEMO_CONTENT = {
-  type: 'doc',
+  type: "doc",
   content: [
     {
-      type: 'heading',
+      type: "heading",
       attrs: { level: 1 },
-      content: [{ type: 'text', text: 'Welcome to WriteFlow' }]
+      content: [{ type: "text", text: "WriteFlow" }],
     },
     {
-      type: 'paragraph',
+      type: "paragraph",
       content: [
-        { type: 'text', text: 'Experience the future of content creation with our powerful, intuitive editor. WriteFlow combines the best of modern technology with a seamless writing experience that makes content creation a joy rather than a chore.' }
-      ]
+        {
+          type: "text",
+          text: "A modern, open-source blogging platform built with cutting-edge web technologies. WriteFlow leverages the power of Next.js 15 for server-side rendering and optimal performance, TypeScript for type safety and maintainability, and Tailwind CSS for responsive, utility-first styling.",
+        },
+      ],
     },
     {
-      type: 'heading',
+      type: "heading",
       attrs: { level: 2 },
-      content: [{ type: 'text', text: 'Why Choose WriteFlow?' }]
+      content: [{ type: "text", text: "Technology Stack" }],
     },
     {
-      type: 'bulletList',
+      type: "bulletList",
       content: [
         {
-          type: 'listItem',
+          type: "listItem",
           content: [
-            { type: 'paragraph', content: [{ type: 'text', text: '🚀 Lightning-fast performance that never slows you down' }] }
-          ]
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Next.js 15 - React framework with App Router and server components",
+                },
+              ],
+            },
+          ],
         },
         {
-          type: 'listItem',
+          type: "listItem",
           content: [
-            { type: 'paragraph', content: [{ type: 'text', text: '✨ Beautiful, distraction-free interface that helps you focus on what matters most - your writing' }] }
-          ]
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "TypeScript - Static typing for enhanced developer experience",
+                },
+              ],
+            },
+          ],
         },
         {
-          type: 'listItem',
+          type: "listItem",
           content: [
-            { type: 'paragraph', content: [{ type: 'text', text: '🔧 Advanced formatting tools with TipTap editor integration for professional results' }] }
-          ]
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Tailwind CSS - Utility-first CSS framework for rapid UI development",
+                },
+              ],
+            },
+          ],
         },
         {
-          type: 'listItem',
+          type: "listItem",
           content: [
-            { type: 'paragraph', content: [{ type: 'text', text: '💾 Auto-save functionality that ensures you never lose your precious work' }] }
-          ]
-        }
-      ]
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Prisma - Modern database toolkit for type-safe database access",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "TipTap - Rich text editor built on ProseMirror",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "NextAuth.js - Authentication solution for Next.js applications",
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
-      type: 'paragraph',
+      type: "paragraph",
       content: [
-        { type: 'text', text: 'Start writing your story today. Your ideas deserve the best platform, and WriteFlow is here to help you bring them to life with style and ease.' }
-      ]
+        {
+          type: "text",
+          text: "The platform combines server-side rendering with client-side interactivity, delivering exceptional performance and user experience. Built with modern development practices and a focus on scalability and maintainability.",
+        },
+      ],
     },
-    {
-      type: 'heading',
-      attrs: { level: 2 },
-      content: [{ type: 'text', text: 'Key Features' }]
-    },
-    {
-      type: 'paragraph',
-      content: [
-        { type: 'text', text: 'WriteFlow offers a comprehensive suite of tools designed for modern content creators. Whether you\'re a blogger, technical writer, or creative professional, our platform adapts to your unique needs.' }
-      ]
-    },
-    {
-      type: 'heading',
-      attrs: { level: 3 },
-      content: [{ type: 'text', text: 'Rich Text Editing' }]
-    },
-    {
-      type: 'paragraph',
-      content: [
-        { type: 'text', text: 'Our advanced TipTap editor provides you with all the formatting options you need, from basic text styling to complex layouts. Create beautiful documents with headings, lists, quotes, code blocks, and more.' }
-      ]
-    },
-    {
-      type: 'heading',
-      attrs: { level: 3 },
-      content: [{ type: 'text', text: 'Seamless Integration' }]
-    },
-    {
-      'type': 'paragraph',
-      'content': [
-        { 'type': 'text', 'text': 'Built with modern technologies like Next.js, TypeScript, and Tailwind CSS, WriteFlow integrates seamlessly into your existing workflow. Export your work in multiple formats and collaborate with ease.' }
-      ]
-    },
-    {
-      'type': 'heading',
-      'attrs': { level: 3 },
-      'content': [{ 'type': 'text', 'text': 'Cloud Storage' }]
-    },
-    {
-      'type': 'paragraph',
-      'content': [
-        { 'type': 'text', 'text': 'Your work is automatically saved to the cloud, ensuring you can access it from anywhere, on any device. Never worry about losing your progress or managing multiple versions of your documents.' }
-      ]
-    },
-    {
-      'type': 'paragraph',
-      'content': [
-        { 'type': 'text', 'text': 'Join thousands of writers who have already discovered the WriteFlow difference. Start your journey today and experience writing the way it should be - intuitive, powerful, and enjoyable.' }
-      ]
-    }
-  ]
+  ],
 };
 
 export default function EditorDemo() {
@@ -118,13 +134,26 @@ export default function EditorDemo() {
     editable: false,
     editorProps: {
       attributes: {
-        class: 'max-w-[82ch] px-2 sm:px-5 m-auto lg:py-4 py-10 focus:outline-none focus:ring-0 min-h-[90vh] text-pretty',
+        class:
+          "max-w-[82ch] px-2 sm:px-5 m-auto lg:py-4 py-10 focus:outline-none focus:ring-0 min-h-[90vh] text-pretty",
       },
     },
   });
 
   return (
-    <div className="min-h-screen bg-base-100">
+    <div
+      className="min-h-screen bg-base-100"
+      style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+    >
+      <style jsx global>{`
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        * {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+      `}</style>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
     </div>
