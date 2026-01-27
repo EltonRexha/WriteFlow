@@ -1,12 +1,12 @@
-'use client';
-import { DraftSchema } from '@/schemas/draftSchema';
-import { useCreateDraft } from '@/hooks/queries/drafts';
-import { isActionError } from '@/types/ActionError';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useRouter } from 'next/navigation';
+"use client";
+import { DraftSchema } from "@/schemas/draftSchema";
+import { useCreateDraft } from "@/hooks/queries/drafts";
+import { isActionError } from "@/types/ActionError";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof DraftSchema>;
 
@@ -31,13 +31,13 @@ const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
         setError(mutation.data.error.message);
         return;
       }
-      router.push('/home');
+      router.push("/dashboard/drafts");
     }
   }, [mutation.isSuccess, mutation.data, router]);
 
   useEffect(() => {
     if (mutation.isError) {
-      setError('Something wrong happened');
+      setError("Something wrong happened");
     }
   }, [mutation.isError]);
 
@@ -46,7 +46,7 @@ const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
   }
 
   useEffect(() => {
-    setValue('content', blogContent);
+    setValue("content", blogContent);
   }, [blogContent, setValue]);
 
   return (
@@ -66,10 +66,13 @@ const CreateDraftDialog = ({ blogContent }: { blogContent: string }) => {
           <input
             className="input w-full"
             placeholder="Draft Name"
-            {...register('name')}
+            {...register("name")}
             required
           />
-          <button className="btn btn-primary btn-soft block w-full" disabled={mutation.isPending}>
+          <button
+            className="btn btn-primary btn-soft block w-full"
+            disabled={mutation.isPending}
+          >
             {mutation.isPending ? "Saving..." : "Save"}
           </button>
         </form>

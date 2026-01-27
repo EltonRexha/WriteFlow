@@ -1,9 +1,9 @@
-'use client';
-import Image from 'next/image';
-import { useSession } from 'next-auth/react';
-import { useState, useEffect, useRef } from 'react';
-import AvatarMenu from './AvatarMenu';
-import defaultProfile from '@/public/profile.svg';
+"use client";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { useState, useEffect, useRef } from "react";
+import AvatarMenu from "./AvatarMenu";
+import defaultProfile from "@/public/profile.svg";
 
 const Avatar = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -18,9 +18,9 @@ const Avatar = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -38,7 +38,9 @@ const Avatar = () => {
           )}
         </div>
       </div>
-      {showMenu && <AvatarMenu />}
+      <div className={showMenu ? "" : "hidden"}>
+        <AvatarMenu />
+      </div>
     </div>
   );
 };

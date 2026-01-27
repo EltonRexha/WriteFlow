@@ -7,6 +7,7 @@ import EditTextEditor from "./EditTextEditor";
 import { isResponseError } from "@/types/guards/isResponseError";
 import { Save, Loader2 } from "lucide-react";
 import { isApiErrorResponse } from "@/types/guards/isApiErrorResponse";
+import { PreventNavigation } from "@/components/PreventNavigation";
 
 interface EditBlogProps {
   blogId: string;
@@ -116,6 +117,11 @@ const EditBlog = ({ blogId }: EditBlogProps) => {
 
   return (
     <>
+      <PreventNavigation
+        isDirty={hasUnsavedChanges}
+        backHref={"/home"}
+        resetData={() => setHasUnsavedChanges(false)}
+      />
       {/* Save Button Fixed at Top */}
       <div className="sticky top-0 py-3 px-4 mb-4">
         <div className="max-w-[82ch] mx-auto flex items-center justify-between">
