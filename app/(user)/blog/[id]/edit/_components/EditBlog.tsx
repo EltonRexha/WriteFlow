@@ -6,6 +6,7 @@ import { useToast } from "@/components/ToastProvider";
 import EditTextEditor from "./EditTextEditor";
 import { isResponseError } from "@/types/guards/isResponseError";
 import { Save, Loader2 } from "lucide-react";
+import { isApiErrorResponse } from "@/types/guards/isApiErrorResponse";
 
 interface EditBlogProps {
   blogId: string;
@@ -52,13 +53,26 @@ const EditBlog = ({ blogId }: EditBlogProps) => {
         addToast("Failed to save blog content", "error");
       }
     }
-  }, [mutation.isSuccess, mutation.data, addToast, blogContent, router, blogId]);
+  }, [
+    mutation.isSuccess,
+    mutation.data,
+    addToast,
+    blogContent,
+    router,
+    blogId,
+  ]);
 
   useEffect(() => {
-    if (mutation.isError) {
+    if (isApiErrorResponse(mutation.error)) {
+      const errorData = mutation.error.response.data;
+      if (isResponseError(errorData)) {
+        addToast(errorData.error.message, "error");
+        return;
+      }
+
       addToast("An error occurred while saving", "error");
     }
-  }, [mutation.isError, addToast]);
+  }, [mutation.isError, mutation.error, addToast]);
 
   // Handle content updates
   function onUpdate(content: string) {
