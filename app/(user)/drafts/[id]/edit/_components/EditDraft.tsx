@@ -8,6 +8,7 @@ import { isResponseError } from "@/types/guards/isResponseError";
 import { Save, Loader2 } from "lucide-react";
 import PublishDraftDialog from "./PublishDraftDialog";
 import PublishDraftBtn from "./PublishDraftBtn";
+import { PreventNavigation } from "@/components/PreventNavigation";
 
 interface EditDraftProps {
   draftId: string;
@@ -76,7 +77,7 @@ const EditDraft = ({ draftId }: EditDraftProps) => {
       addToast("No changes to save", "info");
       return;
     }
-    
+
     // Reset mutation before making a new request
     mutation.reset();
     mutation.mutate({ draftId, content: draftContent });
@@ -117,6 +118,11 @@ const EditDraft = ({ draftId }: EditDraftProps) => {
 
   return (
     <>
+      <PreventNavigation
+        isDirty={hasUnsavedChanges}
+        backHref={"/dashboard/drafts"}
+        resetData={() => setHasUnsavedChanges(false)}
+      />
       {/* Action Buttons Fixed at Top */}
       <div className="sticky top-0 py-3 px-4 mb-4">
         <div className="max-w-[82ch] mx-auto flex items-center justify-between">
