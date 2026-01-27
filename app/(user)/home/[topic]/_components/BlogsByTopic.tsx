@@ -1,9 +1,9 @@
-'use client';
-import React from 'react';
-import BlogPreviewCard from './BlogPreviewCard';
-import { isActionError } from '@/types/ActionError';
-import recommendationApi from '@/libs/api/services/recommendation';
-import { useInfiniteQuery } from '@tanstack/react-query';
+"use client";
+import React from "react";
+import BlogPreviewCard from "./BlogPreviewCard";
+import { isActionError } from "@/types/ActionError";
+import recommendationApi from "@/libs/api/services/recommendation";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const BlogSkeleton = () => {
   return (
@@ -33,34 +33,29 @@ const BlogSkeleton = () => {
 };
 
 const BlogsByTopic = ({ topic }: { topic: string }) => {
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ['recommendation', topic],
-    queryFn: ({ pageParam }) => {
-      const page = pageParam as number;
-      if (topic.toLocaleLowerCase() === 'for-you') {
-        return recommendationApi.getForYouBlogs(page);
-      }
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["recommendation", topic],
+      queryFn: ({ pageParam }) => {
+        const page = pageParam as number;
+        if (topic.toLocaleLowerCase() === "for-you") {
+          return recommendationApi.getForYouBlogs(page);
+        }
 
-      if (topic.toLocaleLowerCase() === 'following') {
-        return recommendationApi.getFollowingBlogs(page);
-      }
+        if (topic.toLocaleLowerCase() === "following") {
+          return recommendationApi.getFollowingBlogs(page);
+        }
 
-      return recommendationApi.getBlogsByTopic(topic, page);
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage || isActionError(lastPage)) return undefined;
-      if (!lastPage.pagination.hasNextPage) return undefined;
-      return lastPage.pagination.currentPage + 1;
-    },
-    retry: false,
-  });
+        return recommendationApi.getBlogsByTopic(topic, page);
+      },
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        if (!lastPage || isActionError(lastPage)) return undefined;
+        if (!lastPage.pagination.hasNextPage) return undefined;
+        return lastPage.pagination.currentPage + 1;
+      },
+      retry: false,
+    });
 
   const blogs =
     data?.pages.flatMap((page) => (isActionError(page) ? [] : page.blogs)) ||
@@ -97,7 +92,7 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
             {isFetchingNextPage ? (
               <span className="loading loading-spinner"></span>
             ) : (
-              'View More'
+              "View More"
             )}
           </button>
         </div>
