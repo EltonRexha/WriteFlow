@@ -21,19 +21,46 @@ const TopicBar = ({ topic, initialTopics }: TopicBarProps) => {
     setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
   }, []);
 
+  const scrollToSelectedTopic = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    
+    const selectedTab = scrollContainerRef.current.querySelector('input[type="radio"].tab-active') as HTMLInputElement;
+    if (!selectedTab) return;
+    
+    const container = scrollContainerRef.current;
+    const containerWidth = container.clientWidth;
+    const tabLeft = selectedTab.offsetLeft;
+    const tabWidth = selectedTab.offsetWidth;
+    
+    // Center the selected tab in the container
+    const scrollPosition = tabLeft - (containerWidth / 2) + (tabWidth / 2);
+    
+    container.scrollTo({
+      left: scrollPosition,
+      behavior: 'smooth'
+    });
+  }, []);
+
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (scrollContainer) {
       checkScroll();
       scrollContainer.addEventListener("scroll", checkScroll);
       window.addEventListener("resize", checkScroll);
+      
+      // Scroll to selected topic after a short delay to ensure tabs are rendered
+      const timeoutId = setTimeout(() => {
+        scrollToSelectedTopic();
+        checkScroll();
+      }, 100);
 
       return () => {
         scrollContainer.removeEventListener("scroll", checkScroll);
         window.removeEventListener("resize", checkScroll);
+        clearTimeout(timeoutId);
       };
     }
-  }, [checkScroll]);
+  }, [checkScroll, scrollToSelectedTopic, topic]);
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollContainerRef.current) return;

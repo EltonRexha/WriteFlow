@@ -59,7 +59,7 @@ const PublishDraftDialog = ({ draftId }: PublishDraftDialogProps) => {
   const mounted = useMounted();
 
   const mutation = usePublishDraft();
-  
+
   useEffect(() => {
     if (mutation.isSuccess && mutation.data) {
       if (typeof mutation.data === "string") {
@@ -94,9 +94,13 @@ const PublishDraftDialog = ({ draftId }: PublishDraftDialogProps) => {
           return;
         }
         // Fallback: try to get message from error object directly
-        if (errorData && typeof errorData === 'object' && 'error' in errorData) {
+        if (
+          errorData &&
+          typeof errorData === "object" &&
+          "error" in errorData
+        ) {
           const err = errorData.error as { message?: string };
-          if (err && typeof err.message === 'string') {
+          if (err && typeof err.message === "string") {
             setError(err.message);
             return;
           }
