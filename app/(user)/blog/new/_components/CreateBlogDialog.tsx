@@ -213,7 +213,6 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                   categories={categories}
                   setValues={setValues}
                   errors={errors}
-                  modalId="createBlogModal"
                 />
               )}
             </div>
