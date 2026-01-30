@@ -1,8 +1,8 @@
-import prisma from './client';
+import prisma from "./client";
 
 const NUM_BLOGS = 100;
 const DEFAULT_IMG =
-  'https://res.cloudinary.com/dl0iowykd/image/upload/v1747237695/fqgzj2sijzkwcxvh7lww.webp';
+  "https://res.cloudinary.com/dl0iowykd/image/upload/v1747237695/fqgzj2sijzkwcxvh7lww.webp";
 
 function getRandomCategories(categories: { id: string }[], min = 1, max = 3) {
   const numCategories = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -11,16 +11,16 @@ function getRandomCategories(categories: { id: string }[], min = 1, max = 3) {
 }
 
 async function main() {
-  console.log('Seeding database...');
+  console.log("Seeding database...");
 
   // Create categories
   const categories = await prisma.category.createMany({
     data: [
-      { name: 'Coding' },
-      { name: 'Food' },
-      { name: 'Travel' },
-      { name: 'Fashion' },
-      { name: 'Sports' },
+      { name: "Coding" },
+      { name: "Food" },
+      { name: "Travel" },
+      { name: "Fashion" },
+      { name: "Sports" },
     ],
     skipDuplicates: true,
   });
@@ -33,18 +33,18 @@ async function main() {
   // Create a test user if it doesn't exist
   const testUser = await prisma.user.upsert({
     where: {
-      email: 'test@example.com',
+      email: "test@example.com",
     },
     update: {},
     create: {
-      email: 'test@example.com',
-      name: 'Test User',
-      password: 'hashed_password_here', // In real app, should be properly hashed
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=test',
+      email: "test@example.com",
+      name: "Test User",
+      password: "hashed_password_here", // In real app, should be properly hashed
+      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=test",
     },
   });
 
-  console.log('Created test user');
+  console.log("Created test user");
 
   // Create blog posts
   for (let i = 1; i <= NUM_BLOGS; i++) {
@@ -66,13 +66,13 @@ async function main() {
         BlogContent: {
           create: {
             content: JSON.stringify({
-              type: 'doc',
+              type: "doc",
               content: [
                 {
-                  type: 'paragraph',
+                  type: "paragraph",
                   content: [
                     {
-                      type: 'text',
+                      type: "text",
                       text: `This is the content for blog post ${i}. It includes some sample text to demonstrate how the blog post would look. This is generated during seeding to provide test data.`,
                     },
                   ],
@@ -90,12 +90,12 @@ async function main() {
   }
 
   console.log(`Created ${NUM_BLOGS} blog posts`);
-  console.log('Database seeding completed');
+  console.log("Database seeding completed");
 }
 
 main()
   .catch((e) => {
-    console.error('Error seeding database:', e);
+    console.error("Error seeding database:", e);
     process.exit(1);
   })
   .finally(async () => {

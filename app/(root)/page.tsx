@@ -46,7 +46,7 @@ export default async function Home() {
                 Sign Up
               </Link>
               <a
-                href="https://github.com"
+                href="https://github.com/EltonRexha/WriteFlow"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-ghost btn-sm hover:text-primary transition-all"

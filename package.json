@@ -12,10 +12,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "tsx prisma/seed.ts"
+    "seed:dev": "tsx prisma/seed-dev.ts",
+    "seed:prod": "tsx prisma/seed-prod.ts"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed-prod.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.0",
