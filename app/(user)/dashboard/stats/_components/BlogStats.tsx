@@ -23,56 +23,67 @@ const BlogStatsComponent = ({
 
   if (isError || isActionError(stats)) {
     return (
-      <h1 className="text-3xl m-auto my-4">
-        Something wrong happened fetching stats
-      </h1>
+      <div className="bg-error/10 border border-error/20 rounded-xl p-6 text-center">
+        <h2 className="text-xl font-semibold text-error">Something went wrong</h2>
+        <p className="text-error/70 mt-2">Unable to fetch blog statistics</p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-8 [&_.stat]:border-0 [&_.stat]:min-w-full [&_.stat]:max-w-min [&_.stat]:bg-base-200 [&_.stat]:hover:bg-base-300 [&_.stat]:rounded-md  ">
-      <div>
-        <h1 className="text-2xl text-base-content">
+    <div className="space-y-6">
+      <div className="bg-base-100 rounded-xl border border-base-300 p-6">
+        <h3 className="text-xl font-semibold text-base-content mb-6 flex items-center gap-2">
+          <div className="w-2 h-8 bg-primary rounded-full"></div>
           {title}
-        </h1>
-        <div className="mt-5 space-y-2 ">
-          <h1 className="text-2xl text-base-content/80">Blog stats</h1>
-          <div className="grid overflow-auto sm:grid-cols-2 xl:grid-cols-4 m-auto xl:m-0 w-max gap-4 py-8">
-            <div className="stat">
-              <div className="stat-figure text-secondary ">
-                <Eye />
+        </h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-blue-500 rounded-lg">
+                <Eye className="h-4 w-4 text-white" />
               </div>
-              <div className="stat-title">Total Blog Views</div>
-              <div className="stat-value text-secondary">
-                {stats._count.viewedBy}
-              </div>
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Views</span>
             </div>
-            <div className="stat ">
-              <div className="stat-figure text-secondary">
-                <ThumbsUp />
-              </div>
-              <div className="stat-title">Total Blog Likes</div>
-              <div className="stat-value text-secondary">
-                {stats._count.likedBy}
-              </div>
+            <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+              {stats._count.viewedBy.toLocaleString()}
             </div>
-            <div className="stat">
-              <div className="stat-figure text-secondary ">
-                <ThumbsDown />
+          </div>
+
+          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-green-500 rounded-lg">
+                <ThumbsUp className="h-4 w-4 text-white" />
               </div>
-              <div className="stat-title ">Total Blog Dislikes</div>
-              <div className="stat-value text-secondary">
-                {stats._count.dislikedBy}
-              </div>
+              <span className="text-sm font-medium text-green-700 dark:text-green-300">Likes</span>
             </div>
-            <div className="stat">
-              <div className="stat-figure text-secondary ">
-                <MessageSquare />
+            <div className="text-2xl font-bold text-green-900 dark:text-green-100">
+              {stats._count.likedBy.toLocaleString()}
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-red-500 rounded-lg">
+                <ThumbsDown className="h-4 w-4 text-white" />
               </div>
-              <div className="stat-title ">Total Blog Comments</div>
-              <div className="stat-value text-secondary">
-                {stats._count.BlogComment}
+              <span className="text-sm font-medium text-red-700 dark:text-red-300">Dislikes</span>
+            </div>
+            <div className="text-2xl font-bold text-red-900 dark:text-red-100">
+              {stats._count.dislikedBy.toLocaleString()}
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-purple-500 rounded-lg">
+                <MessageSquare className="h-4 w-4 text-white" />
               </div>
+              <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Comments</span>
+            </div>
+            <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+              {stats._count.BlogComment.toLocaleString()}
             </div>
           </div>
         </div>
