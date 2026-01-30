@@ -4,6 +4,8 @@ import Avatar from "@/components/Avatar";
 import Navbar from "@/components/Navbar";
 import { Pen } from "lucide-react";
 import { Limelight } from "next/font/google";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const limeLight = Limelight({
   weight: "400",
@@ -16,6 +18,9 @@ export default async function UserLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+  const isAuthenticated = !!session;
+
   return (
     <div className="flex flex-col">
       <Navbar>
@@ -32,17 +37,34 @@ export default async function UserLayout({
         </div>
         <div className="flex ml-auto sm:navbar-end">
           <ul className="flex gap-2 items-center px-1">
-            <li>
-              <Link href="/blog/new">
-                <button className="btn btn-sm btn-primary btn-soft">
-                  <Pen height={15} width={15} />
-                  Create
-                </button>
-              </Link>
-            </li>
-            <li>
-              <Avatar />
-            </li>
+            {isAuthenticated ? (
+              <>
+                <li>
+                  <Link href="/blog/new">
+                    <button className="btn btn-sm btn-primary btn-soft">
+                      <Pen height={15} width={15} />
+                      Create
+                    </button>
+                  </Link>
+                </li>
+                <li>
+                  <Avatar />
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link href="/auth/sign-in">
+                    <button className="btn btn-link text-sm">Sign in</button>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/auth/sign-up">
+                    <button className="btn btn-primary">Get started</button>
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </Navbar>

@@ -188,33 +188,31 @@ export default async function BlogContentWrapper({
               <BlogContent content={blog.BlogContent.content as string} />
             )}
           </div>
-          {user && (
-            <div id="likeSection" className="pt-2 mb-10">
-              <div className="flex space-x-2 items-center">
-                <div className="flex items-center">
-                  <ToggleLikeBlogBtn blogId={blogId} isLiked={isLiked} />
-                  <p className="text-sm text-base-content/70">
-                    {blog._count.likedBy}
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <ToggleDislikeBlogBtn
-                    blogId={blogId}
-                    isDisliked={isDisliked}
-                  />
-                  <p className="text-sm text-base-content/70">
-                    {blog._count.dislikedBy}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2 ml-auto">
-                  <Eye />
-                  <p className="text-sm text-base-content/70">
-                    {blog._count.viewedBy}
-                  </p>
-                </div>
+          <div id="likeSection" className="pt-2 mb-10">
+            <div className="flex space-x-2 items-center">
+              <div className="flex items-center">
+                <ToggleLikeBlogBtn blogId={blogId} isLiked={isLiked} />
+                <p className="text-sm text-base-content/70">
+                  {blog._count.likedBy}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <ToggleDislikeBlogBtn
+                  blogId={blogId}
+                  isDisliked={isDisliked}
+                />
+                <p className="text-sm text-base-content/70">
+                  {blog._count.dislikedBy}
+                </p>
+              </div>
+              <div className="flex items-center space-x-2 ml-auto">
+                <Eye />
+                <p className="text-sm text-base-content/70">
+                  {blog._count.viewedBy}
+                </p>
               </div>
             </div>
-          )}
+          </div>
         </div>
         <BlogComments blogId={blogId} renderId={renderId} />
       </div>
