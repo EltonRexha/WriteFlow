@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @plugin "daisyui" {
-  themes: emerald --default, forest --prefersdark;
+  themes: emerald --default, forest --prefersdark, lofi, corporate, synthwave, valentine, aqua, dracula;
 }
 
 /* Remove all border radius from DaisyUI components */
