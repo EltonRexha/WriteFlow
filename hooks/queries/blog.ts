@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import blogApi from '@/libs/api/services/blog';
 
 export const blogQueryKeys = {
@@ -13,6 +13,10 @@ export function useBlog({ id }: { id: string }) {
   return useQuery({
     queryKey: blogQueryKeys.detail(id),
     queryFn: () => blogApi.getBlog(id),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
     retry: false,
   });
 }
@@ -21,6 +25,10 @@ export function useUserBlogs({ email, page = 1 }: { email: string; page?: number
   return useQuery({
     queryKey: blogQueryKeys.user(email, page),
     queryFn: () => blogApi.getUserBlogs(email, page),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
     retry: false,
   });
 }
@@ -29,6 +37,10 @@ export function useBlogAutocomplete({ title }: { title: string }) {
   return useQuery({
     queryKey: blogQueryKeys.autocomplete(title),
     queryFn: () => blogApi.autocompleteBlogsByTitle(title),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
     retry: false,
   });
 }
@@ -57,12 +69,14 @@ export function useDeleteBlog() {
 
 export function useToggleLikeBlog() {
   return useMutation({
+    mutationKey: ['blogs', 'like'] as const,
     mutationFn: blogApi.toggleLikeBlog,
   });
 }
 
 export function useToggleDislikeBlog() {
   return useMutation({
+    mutationKey: ['blogs', 'dislike'] as const,
     mutationFn: blogApi.toggleDislikeBlog,
   });
 }

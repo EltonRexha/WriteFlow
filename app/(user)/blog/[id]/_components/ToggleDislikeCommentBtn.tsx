@@ -4,24 +4,37 @@ import React, { useEffect, useCallback } from 'react';
 import clsx from 'clsx';
 import { useToggleDislikeComment } from '@/hooks/queries/comments';
 import useClientUser from '@/hooks/useClientUser';
+import { useIsMutating } from '@tanstack/react-query';
 
 const ToggleDislikeComment = ({
   isDisliked,
   commentId,
   onDislike,
+  onClick,
+  disabled,
 }: {
   isDisliked: boolean;
   commentId: string;
   onDislike: () => void;
+  onClick?: () => void;
+  disabled?: boolean;
 }) => {
   const user = useClientUser();
   const isAuthenticated = !!user;
   const mutation = useToggleDislikeComment();
+  const isLikeMutating = useIsMutating({ mutationKey: ['comments', 'like'] }) > 0;
+  const isDislikeMutating =
+    useIsMutating({ mutationKey: ['comments', 'dislike'] }) > 0;
+  const isAnyCommentReactionMutating = isLikeMutating || isDislikeMutating;
 
   const handleDislike = useCallback(() => {
     if (!isAuthenticated) return;
+    if (onClick) {
+      onClick();
+      return;
+    }
     mutation.mutate(commentId);
-  }, [mutation, commentId, isAuthenticated]);
+  }, [mutation, commentId, isAuthenticated, onClick]);
 
   useEffect(() => {
     if (mutation.isSuccess) {
@@ -38,7 +51,12 @@ const ToggleDislikeComment = ({
         !isAuthenticated && 'cursor-not-allowed'
       )}
       onClick={handleDislike}
-      disabled={mutation.isPending || !isAuthenticated}
+      disabled={
+        !!disabled ||
+        mutation.isPending ||
+        isAnyCommentReactionMutating ||
+        !isAuthenticated
+      }
       title={!isAuthenticated ? 'Sign in to dislike comments' : ''}
       style={!isAuthenticated ? { color: 'inherit' } : {}}
     >

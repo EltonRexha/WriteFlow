@@ -2,7 +2,6 @@
 import { useCreateComment } from '@/hooks/queries/comments';
 import { isActionError } from '@/types/ActionError';
 import { useToast } from '../../../../../components/ToastProvider';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { BlogCommentSchema } from '@/schemas/blogCommentSchema';
@@ -21,7 +20,6 @@ const CreateBlogComment = ({ blogId }: { blogId: string }) => {
     resolver: zodResolver(BlogCommentSchema),
   });
   const { addToast } = useToast();
-  const router = useRouter();
 
   const mutation = useCreateComment();
 
@@ -31,9 +29,9 @@ const CreateBlogComment = ({ blogId }: { blogId: string }) => {
         addToast(mutation.data.error.message, 'error');
         return;
       }
-      router.refresh();
+      setValue('content', '');
     }
-  }, [mutation.isSuccess, mutation.data, addToast, router]);
+  }, [mutation.isSuccess, mutation.data, addToast, setValue]);
 
   useEffect(() => {
     if (mutation.isError) {
@@ -56,7 +54,11 @@ const CreateBlogComment = ({ blogId }: { blogId: string }) => {
           placeholder="What are your thoughts?"
           {...register('content')}
         />
-        <button className="btn btn-primary btn-sm absolute bottom-2 right-2" disabled={mutation.isPending}>
+        <button
+          type="submit"
+          className="btn btn-primary btn-sm absolute bottom-2 right-2"
+          disabled={mutation.isPending}
+        >
           {mutation.isPending ? "Posting..." : "Comment"}
         </button>
       </form>

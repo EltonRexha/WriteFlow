@@ -11,17 +11,13 @@ import { isActionError } from '@/types/ActionError';
 
 const BlogComments = ({
   blogId,
-  renderId,
 }: {
   blogId: string;
-  renderId: string;
 }) => {
   const { addToast } = useToast();
   const user = useClientUser();
 
-  const {
-    data: userComments,
-  } = useUserCommentsQuery({ blogId, renderId });
+  const { data: userComments } = useUserCommentsQuery({ blogId });
 
   const {
     data,
@@ -31,7 +27,7 @@ const BlogComments = ({
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: commentQueryKeys.list(blogId, renderId),
+    queryKey: commentQueryKeys.list(blogId),
     queryFn: ({ pageParam }) => commentApi.getComments(blogId, pageParam as number),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {

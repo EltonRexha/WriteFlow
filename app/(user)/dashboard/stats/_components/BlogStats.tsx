@@ -15,7 +15,7 @@ const BlogStatsComponent = ({
     data: stats,
     isError,
     isLoading,
-  } = useBlogStats({ blogId: blogId as string });
+  } = useBlogStats({ blogId });
 
   if (!blogId || isLoading || !stats) {
     return null;

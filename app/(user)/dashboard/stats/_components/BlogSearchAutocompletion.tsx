@@ -30,11 +30,6 @@ const BlogSearchAutocompletion = React.memo(function BlogSearchAutocompletion({
       return;
     }
 
-    if (!title) {
-      setBlogs([]);
-      return;
-    }
-
     if (!blogsByTitle) {
       return;
     }

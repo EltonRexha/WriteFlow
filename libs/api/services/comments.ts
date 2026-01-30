@@ -9,6 +9,7 @@ export interface Comment {
     id: string;
     content: string;
     Author: {
+        id: string;
         image: string | null;
         name: string | null;
         email: string | null;

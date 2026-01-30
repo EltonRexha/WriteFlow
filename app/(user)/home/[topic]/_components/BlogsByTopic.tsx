@@ -56,9 +56,9 @@ const getEmptyStateContent = (topic: string) => {
       title: "No Posts from Following",
       description: "Follow more users to see their latest posts here, or write your own blog.",
       action: {
-        text: "Find Users",
-        href: "/home",
-        icon: <Search className="w-4 h-4" />
+        text: "Write a Blog",
+        href: "/blog/new",
+        icon: <PenSquare className="w-4 h-4" />
       }
     };
   }

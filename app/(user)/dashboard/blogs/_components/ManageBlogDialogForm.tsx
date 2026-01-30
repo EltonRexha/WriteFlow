@@ -5,7 +5,6 @@ import {
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from "next-cloudinary";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -60,7 +59,6 @@ const ManageBlogDialogForm = ({
   }, [categoriesIsError, addToast]);
 
   const imgUrl = watch("imageUrl");
-  const router = useRouter();
 
   const mutateBlog = useUpdateBlogPreview();
 
@@ -68,7 +66,6 @@ const ManageBlogDialogForm = ({
     await mutateBlog.mutateAsync(data);
     modal.current?.close();
     queryClient.invalidateQueries({ queryKey: ["dashboardUserBlogs"] });
-    router.refresh();
   }
 
   return (
@@ -112,6 +109,7 @@ const ManageBlogDialogForm = ({
                     {({ open }) => (
                       <button
                         className="btn btn-primary"
+                        type="button"
                         onClick={() => {
                           //Close the modal so we can show the cloudinary widget
                           modal.current?.close();

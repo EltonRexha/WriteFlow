@@ -52,7 +52,7 @@ const itemVariants = {
     y: 0,
     opacity: 1,
     transition: {
-      type: "spring" as const,
+      type: 'spring' as const,
       stiffness: 100,
       damping: 10,
     },
@@ -75,7 +75,7 @@ export default function FeaturesSection() {
             Everything you need to create amazing content, all in one place
           </p>
         </motion.div>
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -83,15 +83,15 @@ export default function FeaturesSection() {
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {features.map((feature, index) => (
-            <motion.div 
-              key={index} 
-              variants={itemVariants} 
-              className="card bg-base-100 border border-base-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer aspect-[4/3] group"
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              className="card bg-base-100 border border-base-300 hover:border-primary/30 hover:shadow-xl transition-all duration-300 cursor-pointer aspect-[4/3] group"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <div className="card-body h-full flex flex-col p-6">
-                <div className="mb-4 text-primary group-hover:scale-110 transition-transform duration-300">
+                <div className="mb-4 text-primary">
                   {feature.icon}
                 </div>
                 <h3 className="card-title text-xl mb-2 group-hover:text-primary transition-colors duration-300">
