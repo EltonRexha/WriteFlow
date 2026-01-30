@@ -124,6 +124,7 @@ const blogApi = {
         title: string;
         imageUrl: string;
         description: string;
+        createdAt: string | Date;
       }[]
   > => {
     const res = await axios.get<
@@ -133,6 +134,7 @@ const blogApi = {
           title: string;
           imageUrl: string;
           description: string;
+          createdAt: string | Date;
         }[]
     >("/blog/autocomplete", {
       params: {

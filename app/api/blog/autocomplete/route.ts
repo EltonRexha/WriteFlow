@@ -28,6 +28,7 @@ export async function GET(req: Request) {
                 title: true,
                 imageUrl: true,
                 description: true,
+                createdAt: true,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -53,6 +54,7 @@ export async function GET(req: Request) {
             title: true,
             imageUrl: true,
             description: true,
+            createdAt: true,
         },
         take: 10,
     });

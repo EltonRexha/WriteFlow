@@ -17,11 +17,22 @@ const BlogStatsComponent = ({
     isLoading,
   } = useBlogStats({ blogId });
 
-  if (!blogId || isLoading || !stats) {
+  if (!blogId) {
     return null;
   }
 
-  if (isError || isActionError(stats)) {
+  if (isLoading) {
+    return (
+      <div className="bg-base-100 rounded-xl border border-base-300 p-6">
+        <div className="flex items-center gap-3">
+          <span className="loading loading-spinner loading-sm"></span>
+          <span className="font-medium text-base-content">Loading statistics...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !stats || isActionError(stats)) {
     return (
       <div className="bg-error/10 border border-error/20 rounded-xl p-6 text-center">
         <h2 className="text-xl font-semibold text-error">Something went wrong</h2>

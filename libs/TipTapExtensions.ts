@@ -1,8 +1,6 @@
-import { Extensions } from '@tiptap/core';
-import { mergeAttributes } from '@tiptap/core';
+import { Extensions, Extension } from '@tiptap/core';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import TextAlign from '@tiptap/extension-text-align';
-import hljs from 'highlight.js';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Highlight from '@tiptap/extension-highlight';
@@ -10,8 +8,55 @@ import { all, createLowlight } from 'lowlight';
 
 const lowlight = createLowlight(all);
 
+const PreventCodeBlockBackspaceTrap = Extension.create({
+  name: 'preventCodeBlockBackspaceTrap',
+  addKeyboardShortcuts() {
+    return {
+      Backspace: () => {
+        const { state, dispatch } = this.editor.view;
+        const { selection } = state;
+
+        if (!selection.empty) {
+          return false;
+        }
+
+        const { $from } = selection;
+
+        if ($from.parent.type.name !== 'paragraph' || $from.parentOffset !== 0) {
+          return false;
+        }
+
+        if ($from.depth < 1) {
+          return false;
+        }
+
+        const parent = $from.node($from.depth - 1);
+        const index = $from.index($from.depth - 1);
+
+        if (index <= 0) {
+          return false;
+        }
+
+        const prevNode = parent.child(index - 1);
+
+        if (prevNode.type.name !== 'codeBlock') {
+          return false;
+        }
+
+        const posBefore = $from.before($from.depth);
+        const from = posBefore - prevNode.nodeSize;
+        const to = posBefore;
+
+        dispatch(state.tr.delete(from, to).scrollIntoView());
+        return true;
+      },
+    };
+  },
+});
+
 export const TIP_TAP_EXTENSIONS: Extensions = [
   StarterKit.configure({
+    codeBlock: false,
     bulletList: {
       HTMLAttributes: {
         class: 'list-disc pl-4',
@@ -27,32 +72,8 @@ export const TIP_TAP_EXTENSIONS: Extensions = [
     lowlight,
     languageClassPrefix: 'language-',
     defaultLanguage: 'html',
-  }).extend({
-    renderHTML({ node, HTMLAttributes }) {
-      const gen = hljs.highlight(node.textContent, {
-        language: node.attrs.language,
-      }).value;
-      const doc = document;
-      const pre = doc.createElement('pre');
-      const preAttrs = mergeAttributes(
-        this.options.HTMLAttributes,
-        HTMLAttributes
-      );
-      for (const key in preAttrs) {
-        pre.setAttribute(key, preAttrs[key]);
-      }
-      const code = doc.createElement('code');
-      if (node.attrs.language) {
-        code.classList.add(
-          this.options.languageClassPrefix + node.attrs.language
-        );
-      }
-      // @ts-nocheck
-      pre.appendChild(code);
-      code.innerHTML = gen;
-      return pre as HTMLElement;
-    },
   }),
+  PreventCodeBlockBackspaceTrap,
   TextAlign.configure({
     types: ['heading', 'paragraph'],
   }),
