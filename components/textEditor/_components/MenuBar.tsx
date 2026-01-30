@@ -197,6 +197,10 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
 
         <CldUploadWidget
           uploadPreset="blog_images"
+          options={{
+            multiple: false,
+            maxFiles: 1,
+          }}
           onSuccess={(result) => {
             const info = result?.info as CloudinaryUploadWidgetInfo;
             const url = info.secure_url;
@@ -204,7 +208,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           }}
         >
           {({ open }) => (
-            <button className="btn btn-sm" onClick={() => open()}>
+            <button className="btn btn-sm" type="button" onClick={() => open()}>
               <Upload height={15} />
             </button>
           )}

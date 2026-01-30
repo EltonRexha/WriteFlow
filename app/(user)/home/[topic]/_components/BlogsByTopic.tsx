@@ -54,11 +54,11 @@ const getEmptyStateContent = (topic: string) => {
     return {
       icon: <Users className="w-12 h-12" />,
       title: "No Posts from Following",
-      description: "Follow more users to see their latest posts here, or write your own blog.",
+      description: "Follow more users to see their latest posts here, or see your for you page",
       action: {
-        text: "Write a Blog",
-        href: "/blog/new",
-        icon: <PenSquare className="w-4 h-4" />
+        text: "For You",
+        href: "/home/for-you",
+        icon: <Search className="w-4 h-4" />
       }
     };
   }

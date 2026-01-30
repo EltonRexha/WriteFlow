@@ -4,8 +4,6 @@ import SearchBlogStats from './_components/SearchBlogStats';
 import prisma from '@/prisma/client';
 import { getServerSession } from 'next-auth';
 
-export const revalidate = 30;
-
 const page = async () => {
   const session = await getServerSession();
   const user = session?.user;

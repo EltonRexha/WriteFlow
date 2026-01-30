@@ -97,6 +97,7 @@ const ManageBlogDialogForm = ({
                   ></CldImage>
                   <CldUploadWidget
                     uploadPreset="blog_thumbnails"
+                    options={{ multiple: false, maxFiles: 1 }}
                     onSuccess={(result) => {
                       const info = result?.info as CloudinaryUploadWidgetInfo;
                       const url = info.secure_url;
@@ -108,7 +109,7 @@ const ManageBlogDialogForm = ({
                   >
                     {({ open }) => (
                       <button
-                        className="btn btn-primary"
+                        className="btn btn-primary btn-wide"
                         type="button"
                         onClick={() => {
                           //Close the modal so we can show the cloudinary widget

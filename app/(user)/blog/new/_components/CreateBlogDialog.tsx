@@ -147,41 +147,45 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
           <div className="space-y-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="w-full md:w-1/3">
-                <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative">
-                  {imgUrl && showImage ? (
+                <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative overflow-hidden">
+                  {imgUrl && showImage && (
                     <CldImage
                       src={imgUrl}
                       alt="thumbnail"
-                      className="absolute z-50 object-cover"
+                      className="absolute inset-0 -z-10 object-cover"
                       fill
                     ></CldImage>
-                  ) : (
-                    <CldUploadWidget
-                      uploadPreset="blog_thumbnails"
-                      onSuccess={(result) => {
-                        const info = result?.info as CloudinaryUploadWidgetInfo;
-                        const url = info.secure_url;
-                        setValue("imageUrl", url);
-                      }}
-                      onClose={() => {
-                        setShowImg(true);
-                        modal.current?.showModal();
-                      }}
-                    >
-                      {({ open }) => (
-                        <button
-                          className="btn btn-dash border-neutral-content"
-                          onClick={() => {
-                            //Close the modal so we can show the cloudinary widget
-                            modal.current?.close();
-                            open();
-                          }}
-                        >
-                          Add Thumbnail
-                        </button>
-                      )}
-                    </CldUploadWidget>
                   )}
+
+                  <CldUploadWidget
+                    uploadPreset="blog_thumbnails"
+                    options={{
+                      multiple: false,
+                      maxFiles: 1,
+                    }}
+                    onSuccess={(result) => {
+                      const info = result?.info as CloudinaryUploadWidgetInfo;
+                      const url = info.secure_url;
+                      setValue("imageUrl", url);
+                    }}
+                    onClose={() => {
+                      setShowImg(true);
+                      modal.current?.showModal();
+                    }}
+                  >
+                    {({ open }) => (
+                      <button
+                        className="btn btn-primary"
+                        type="button"
+                        onClick={() => {
+                          modal.current?.close();
+                          open();
+                        }}
+                      >
+                        {imgUrl ? 'Change Thumbnail' : 'Add Thumbnail'}
+                      </button>
+                    )}
+                  </CldUploadWidget>
                 </div>
                 {!imgUrl && (
                   <p className="text-error">{errors["imageUrl"]?.message}</p>
