@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @plugin "daisyui" {
-  themes: emerald --default, forest --prefersdark;
+  themes: emerald --default, forest --prefersdark, lofi, corporate, synthwave, valentine, aqua, dracula, coffee, winter, autumn, business, acid, lemon, night, luxury, cupcake, bumblebee, cmyk, retro, cyberpunk, valentine, halloween, garden, forest, luxury, dracula, black, light, dark;
 }
 
 /* Remove all border radius from DaisyUI components */

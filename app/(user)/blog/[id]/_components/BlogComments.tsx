@@ -21,7 +21,6 @@ const BlogComments = ({
 
   const {
     data: userComments,
-    isError: userCommentsIsError,
   } = useUserCommentsQuery({ blogId, renderId });
 
   const {
@@ -44,10 +43,10 @@ const BlogComments = ({
   });
 
   useEffect(() => {
-    if (isError || userCommentsIsError) {
+    if (isError) {
       addToast('Error fetching comments:', 'error');
     }
-  }, [isError, userCommentsIsError, addToast]);
+  }, [isError, addToast]);
 
   const otherComments =
     data?.pages.flatMap((page) =>
