@@ -66,15 +66,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
-  const resetToSystemTheme = () => {
-    const autoTheme = systemTheme === 'dark' ? 'forest' : 'emerald';
-    setThemeState(autoTheme);
-    setIsSystemTheme(true);
-    localStorage.removeItem('theme');
-    // Remove data-theme to let DaisyUI handle automatic switching
-    document.documentElement.removeAttribute('data-theme');
-  };
-
   return (
     <ThemeContext.Provider value={{
       theme,
