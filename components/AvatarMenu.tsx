@@ -4,7 +4,7 @@ import SignOutBtn from "./SignOutBtn";
 import {
   ChartNoAxesColumnIncreasing,
   Newspaper,
-  Settings,
+  Palette,
   SquarePen,
   User,
 } from "lucide-react";
@@ -33,9 +33,9 @@ const AvatarMenu = () => {
         Stats
       </AvatarMenuBtn>
       <div className="border-t-[1px] border-base-content/10 my-2"></div>
-      <AvatarMenuBtn href="/settings">
-        <Settings height={20} />
-        Settings
+      <AvatarMenuBtn href="/themes">
+        <Palette height={20} />
+        Themes
       </AvatarMenuBtn>
       <SignOutBtn />
     </div>
