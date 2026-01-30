@@ -1,7 +1,7 @@
-'use client';
-import clsx from 'clsx';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+"use client";
+import clsx from "clsx";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface TopicBarProps {
   topic: string;
@@ -25,22 +25,22 @@ const TopicBar = ({ topic, initialTopics }: TopicBarProps) => {
     const scrollContainer = scrollContainerRef.current;
     if (scrollContainer) {
       checkScroll();
-      scrollContainer.addEventListener('scroll', checkScroll);
-      window.addEventListener('resize', checkScroll);
+      scrollContainer.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
 
       return () => {
-        scrollContainer.removeEventListener('scroll', checkScroll);
-        window.removeEventListener('resize', checkScroll);
+        scrollContainer.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
       };
     }
   }, [checkScroll]);
 
-  const scroll = (direction: 'left' | 'right') => {
+  const scroll = (direction: "left" | "right") => {
     if (!scrollContainerRef.current) return;
-    const scrollAmount = direction === 'left' ? -200 : 200;
+    const scrollAmount = direction === "left" ? -200 : 200;
     scrollContainerRef.current.scrollBy({
       left: scrollAmount,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -49,7 +49,7 @@ const TopicBar = ({ topic, initialTopics }: TopicBarProps) => {
       <div className="relative max-w-screen-xl mx-auto">
         {showLeftArrow && (
           <button
-            onClick={() => scroll('left')}
+            onClick={() => scroll("left")}
             className="btn btn-circle btn-sm btn-ghost absolute left-0 top-1 z-10 bg-base-100/80 backdrop-blur-sm"
           >
             <svg
@@ -79,7 +79,12 @@ const TopicBar = ({ topic, initialTopics }: TopicBarProps) => {
               <input
                 type="radio"
                 name="my_tabs_1"
-                className={clsx('tab', item.name === topic ? 'tab-active' : '')}
+                className={clsx(
+                  "tab",
+                  item.name.toLocaleLowerCase() === topic.toLocaleLowerCase()
+                    ? "tab-active"
+                    : "",
+                )}
                 aria-label={`${item.name}`}
                 key={item.name}
                 onClick={() => {
@@ -92,7 +97,7 @@ const TopicBar = ({ topic, initialTopics }: TopicBarProps) => {
 
         {showRightArrow && (
           <button
-            onClick={() => scroll('right')}
+            onClick={() => scroll("right")}
             className="btn btn-circle btn-sm btn-ghost absolute right-0 top-1 z-10 bg-base-100/80 backdrop-blur-sm"
           >
             <svg

@@ -1,8 +1,8 @@
-'use client';
-import React from 'react';
-import { generateHTML } from '@tiptap/core';
-import { useMounted } from '@/hooks/useMounted';
-import { TIP_TAP_EXTENSIONS } from '@/libs/TipTapExtensions';
+"use client";
+import React from "react";
+import { generateHTML } from "@tiptap/core";
+import { useMounted } from "@/hooks/useMounted";
+import { TIP_TAP_EXTENSIONS } from "@/libs/TipTapExtensions";
 
 const BlogContent = ({ content }: { content: string }) => {
   const mounted = useMounted();
@@ -12,7 +12,7 @@ const BlogContent = ({ content }: { content: string }) => {
 
   const html = generateHTML(JSON.parse(content), TIP_TAP_EXTENSIONS);
 
-  return <div dangerouslySetInnerHTML={{ __html: html }} className="tiptap" />;
+  return <div dangerouslySetInnerHTML={{ __html: html }} className="tiptap break-words overflow-wrap-anywhere" />;
 };
 
 const Skeleton = () => {

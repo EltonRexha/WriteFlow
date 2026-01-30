@@ -303,14 +303,14 @@
   }
 
   .tiptap p {
-    @apply text-[1.4rem];
+    @apply text-[1.4rem] break-words;
   }
 
   .tiptap pre {
-    @apply bg-[var(--black)] text-[var(--white)] font-['JetBrainsMono',_monospace] my-6 px-4 py-3;
-
+    @apply bg-[var(--black)] text-[var(--white)] font-['JetBrainsMono',_monospace] my-6 px-4 py-3 break-words;
+    
     code {
-      @apply bg-transparent text-inherit text-[0.8rem] p-0;
+      @apply bg-transparent text-inherit text-[0.8rem] p-0 break-words;
     } /* VS Code-like syntax highlighting */
     .hljs-comment,
     .hljs-quote {

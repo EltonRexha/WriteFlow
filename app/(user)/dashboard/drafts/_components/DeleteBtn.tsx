@@ -6,10 +6,14 @@ import { isActionError } from '@/types/ActionError';
 import React, { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-const DeleteBtn = ({ draftId }: { draftId: string }) => {
+const DeleteBtn = ({ draftId, onDeletingChange }: { draftId: string; onDeletingChange?: (isDeleting: boolean) => void }) => {
   const { addToast } = useToast();
   const queryClient = useQueryClient();
   const mutation = useDeleteDraft();
+
+  useEffect(() => {
+    onDeletingChange?.(mutation.isPending);
+  }, [mutation.isPending, onDeletingChange]);
 
   useEffect(() => {
     if (mutation.isSuccess && mutation.data) {
@@ -19,6 +23,12 @@ const DeleteBtn = ({ draftId }: { draftId: string }) => {
       }
       addToast(mutation.data.message, 'success');
       queryClient.invalidateQueries({ queryKey: ['dashboardDrafts'] });
+      
+      // Close the modal by finding and clicking the dialog's close button
+      const dialog = document.querySelector('dialog[open]') as HTMLDialogElement;
+      if (dialog) {
+        dialog.close();
+      }
     }
   }, [mutation.isSuccess, mutation.data, addToast, queryClient]);
 
@@ -34,8 +44,17 @@ const DeleteBtn = ({ draftId }: { draftId: string }) => {
       onClick={async () => {
         mutation.mutate(draftId);
       }}
+      type="button"
+      disabled={mutation.isPending}
     >
-      Delete
+      {mutation.isPending ? (
+        <>
+          <span className="loading loading-spinner loading-sm"></span>
+          Deleting...
+        </>
+      ) : (
+        "Delete"
+      )}
     </button>
   );
 };

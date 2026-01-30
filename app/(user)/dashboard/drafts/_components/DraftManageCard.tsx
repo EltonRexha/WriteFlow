@@ -1,16 +1,14 @@
-import type { DraftDto } from '@/libs/api/services/drafts';
-import { format } from 'date-fns';
-import { MoreVertical, Edit, Clock, Trash2 } from 'lucide-react';
-import DeleteBtn from './DeleteBtn';
-import ModalDeleteBtn from './ModalDeleteBtn';
-import Link from 'next/link';
+import type { DraftDto } from "@/libs/api/services/drafts";
+import { format } from "date-fns";
+import { MoreVertical, Edit, Clock, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import DeleteBtn from "./DeleteBtn";
+import ModalDeleteBtn from "./ModalDeleteBtn";
+import Link from "next/link";
 
-const DarkManageCard = ({
-  id,
-  name,
-  updatedAt,
-}: DraftDto) => {
+const DarkManageCard = ({ id, name, updatedAt }: DraftDto) => {
   const modalId = `delete-draft-modal-${id}`;
+  const [isDeleting, setIsDeleting] = useState(false);
 
   return (
     <>
@@ -20,17 +18,17 @@ const DarkManageCard = ({
             <div className="badge badge-warning badge-sm">Draft</div>
             <div className="flex items-center gap-1 text-xs text-base-content/60">
               <Clock className="h-3 w-3" />
-              <span>{format(new Date(updatedAt), 'MMM d, yyyy')}</span>
-            </div>
-            <div className="flex items-center gap-1 text-xs text-base-content/60">
-              <Clock className="h-3 w-3" />
-              <span>{format(new Date(updatedAt), 'h:mm a')}</span>
+              <span>{format(new Date(updatedAt), "MMM d, yyyy")}</span>
             </div>
           </div>
 
           <div className="mb-4">
-            <h2 className="text-xl font-bold mb-2 line-clamp-2 leading-tight break-words">{name}</h2>
-            <p className="text-base-content/60 text-sm italic">Draft in progress</p>
+            <h2 className="text-xl font-bold mb-2 line-clamp-2 leading-tight break-words">
+              {name}
+            </h2>
+            <p className="text-base-content/60 text-sm italic">
+              Draft in progress
+            </p>
           </div>
 
           <div className="flex gap-2">
@@ -78,8 +76,8 @@ const DarkManageCard = ({
           </p>
           <div className="modal-action">
             <form method="dialog" className="flex gap-2">
-              <button className="btn btn-ghost">Cancel</button>
-              <DeleteBtn draftId={id} />
+              {!isDeleting && <button className="btn btn-ghost">Cancel</button>}
+              <DeleteBtn draftId={id} onDeletingChange={setIsDeleting} />
             </form>
           </div>
         </div>

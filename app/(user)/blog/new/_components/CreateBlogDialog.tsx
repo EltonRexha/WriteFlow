@@ -30,7 +30,6 @@ type FormData = z.infer<typeof BlogSchemaForm>;
 const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   const [showImage, setShowImg] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const {
     register,
@@ -44,6 +43,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
 
   const { addToast } = useToast();
   const imgUrl = watch("imageUrl");
+  const modal = useRef<HTMLDialogElement | null>(null);
 
   const { data: categories = [], isError: categoriesIsError } = useCategories();
 
@@ -56,9 +56,6 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   const router = useRouter();
   const mounted = useMounted();
 
-  //Sometimes tiptap does not convert the Initial content to tiptap JSON because its mentally retarded library.
-  //Its the worst thing i have ever used
-  //it has ruined my life
   if (blogContent === INITIAL_CONTENT) {
     blogContent = JSON.stringify(generateJSON(blogContent, TIP_TAP_EXTENSIONS));
   }
@@ -98,9 +95,13 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
           return;
         }
         // Fallback: try to get message from error object directly
-        if (errorData && typeof errorData === 'object' && 'error' in errorData) {
+        if (
+          errorData &&
+          typeof errorData === "object" &&
+          "error" in errorData
+        ) {
           const err = errorData.error as { message?: string };
-          if (err && typeof err.message === 'string') {
+          if (err && typeof err.message === "string") {
             setError(err.message);
             return;
           }
@@ -126,13 +127,12 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
   }
 
   return (
-    <dialog id="createBlogModal" className="modal">
+    <dialog id="createBlogModal" className="modal" ref={modal}>
       <div className="modal-box flex flex-col space-y-4 min-w-[35%] ">
         <form method="dialog">
           <button
             className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
             id="closeBtn"
-            ref={closeBtnRef}
           >
             ✕
           </button>
@@ -164,20 +164,16 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                     }}
                     onClose={() => {
                       setShowImg(true);
-                      (document.getElementById(
-                        "createBlogModal",
-                      ) as HTMLDialogElement)!.showModal();
+                      modal.current?.showModal();
                     }}
                   >
                     {({ open }) => (
                       <button
                         className="btn btn-dash border-neutral-content"
                         onClick={() => {
+                          //Close the modal so we can show the cloudinary widget
+                          modal.current?.close();
                           open();
-                          const btn = closeBtnRef.current;
-                          if (btn) {
-                            btn.click();
-                          }
                         }}
                       >
                         Add Thumbnail

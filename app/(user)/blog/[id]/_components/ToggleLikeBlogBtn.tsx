@@ -1,12 +1,12 @@
-'use client';
-import { useToggleLikeBlog } from '@/hooks/queries/blog';
-import { ThumbsUp } from 'lucide-react';
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import clsx from 'clsx';
-import { isActionError } from '@/types/ActionError';
+"use client";
+import { useToggleLikeBlog } from "@/hooks/queries/blog";
+import { ThumbsUp } from "lucide-react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import clsx from "clsx";
+import { isActionError } from "@/types/ActionError";
 
-const ToggleLikeBlogBtn = ({
+const ToggleLikeBtn = ({
   blogId,
   isLiked,
 }: {
@@ -31,8 +31,8 @@ const ToggleLikeBlogBtn = ({
   return (
     <button
       className={clsx(
-        'btn btn-circle btn-ghost hover:text-green-500 transition-colors',
-        isLiked ? 'text-green-500' : ''
+        "btn btn-circle btn-ghost hover:text-green-500 transition-colors",
+        isLiked ? "text-green-500" : "",
       )}
       onClick={handleLike}
     >
@@ -41,4 +41,4 @@ const ToggleLikeBlogBtn = ({
   );
 };
 
-export default ToggleLikeBlogBtn;
+export default ToggleLikeBtn;

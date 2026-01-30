@@ -30,8 +30,8 @@ const ManageBlogDialogForm = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const modalId = `edit-modal-${blogId}`;
+  const modal = useRef<HTMLDialogElement>(null);
   const { data: categories = [], isError: categoriesIsError } = useCategories();
 
   const {
@@ -66,17 +66,14 @@ const ManageBlogDialogForm = ({
 
   async function onFormSubmit(data: FormData) {
     await mutateBlog.mutateAsync(data);
-    const modal = document.getElementById(modalId) as HTMLDialogElement;
-    if (modal) {
-      modal.close();
-    }
+    modal.current?.close();
     queryClient.invalidateQueries({ queryKey: ["dashboardUserBlogs"] });
     router.refresh();
   }
 
   return (
-    <dialog id={modalId} className="modal">
-      <div className="modal-box flex flex-col space-y-4 min-w-[35%] ">
+    <dialog id={modalId} className="modal" ref={modal}>
+      <div className="modal-box flex flex-col space-y-4 min-w-[35%]">
         <form method="dialog">
           <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
             ✕
@@ -108,20 +105,16 @@ const ManageBlogDialogForm = ({
                     setValue("imageUrl", url);
                   }}
                   onClose={() => {
-                    (document.getElementById(
-                      modalId,
-                    ) as HTMLDialogElement)!.showModal();
+                    modal.current?.showModal();
                   }}
                 >
                   {({ open }) => (
                     <button
                       className="btn btn-primary"
                       onClick={() => {
+                        //Close the modal so we can show the cloudinary widget
+                        modal.current?.close();
                         open();
-                        const btn = closeBtnRef.current;
-                        if (btn) {
-                          btn.click();
-                        }
                       }}
                     >
                       Change Thumbnail

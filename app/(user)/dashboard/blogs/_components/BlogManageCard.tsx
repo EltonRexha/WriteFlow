@@ -1,12 +1,13 @@
-import type { DisplayBlog } from '@/libs/api/services/blog';
-import { format } from 'date-fns';
-import { MoreVertical, ThumbsDown, ThumbsUp, Edit, Clock } from 'lucide-react';
-import Image from 'next/image';
-import ManageBlogDialog from './ManageBlogDialog';
-import DeleteBtn from './DeleteBtn';
-import ModalDeleteBtn from './ModalDeleteBtn';
-import ManageModalBtn from './ManageModalBtn';
-import Link from 'next/link';
+import type { DisplayBlog } from "@/libs/api/services/blog";
+import { format } from "date-fns";
+import { MoreVertical, ThumbsDown, ThumbsUp, Edit, Clock, Trash2 } from "lucide-react";
+import Image from "next/image";
+import React, { useState } from "react";
+import ManageBlogDialog from "./ManageBlogDialog";
+import DeleteBtn from "./DeleteBtn";
+import ModalDeleteBtn from "./ModalDeleteBtn";
+import ManageModalBtn from "./ManageModalBtn";
+import Link from "next/link";
 
 const BlogManageCard = ({
   id,
@@ -19,6 +20,7 @@ const BlogManageCard = ({
 }: DisplayBlog) => {
   const modalId = `delete-modal-${id}`;
   const manageModalId = `edit-modal-${id}`;
+  const [isDeleting, setIsDeleting] = useState(false);
 
   return (
     <>
@@ -28,8 +30,8 @@ const BlogManageCard = ({
             <div className="avatar">
               <div className="w-6 h-6 rounded-full">
                 <Image
-                  src={Author.image || '/profile.svg'}
-                  alt={Author.name || 'Author'}
+                  src={Author.image || "/profile.svg"}
+                  alt={Author.name || "Author"}
                   width={24}
                   height={24}
                 />
@@ -38,17 +40,15 @@ const BlogManageCard = ({
             <span className="text-sm">{Author.name}</span>
             <div className="flex items-center gap-1 text-xs text-base-content/60">
               <Clock className="h-3 w-3" />
-              <span>{format(new Date(createdAt), 'MMM d, yyyy')}</span>
-            </div>
-            <div className="flex items-center gap-1 text-xs text-base-content/60">
-              <Clock className="h-3 w-3" />
-              <span>{format(new Date(createdAt), 'h:mm a')}</span>
+              <span>{format(new Date(createdAt), "MMM d, yyyy")}</span>
             </div>
           </div>
 
           <div>
             <Link href={`/blog/${id}`}>
-              <h2 className="text-xl font-bold mb-1 line-clamp-2 leading-tight break-words hover:text-primary transition-colors cursor-pointer">{title}</h2>
+              <h2 className="text-xl font-bold mb-1 line-clamp-2 leading-tight break-words hover:text-primary transition-colors cursor-pointer">
+                {title}
+              </h2>
             </Link>
             <p className="text-base-content/70 line-clamp-1 sm:line-clamp-2 mb-4 break-words">
               {description}
@@ -78,14 +78,14 @@ const BlogManageCard = ({
         </div>
 
         <div className="relative">
-          {' '}
-          <div className="relative w-28 h-28 shrink-0">
+          {" "}
+          <div className="relative w-28 h-28 shrink-0 bg-black rounded-md">
             <Image
               src={imageUrl}
               alt={title}
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
               fill
-              sizes="(max-width: 768px) 112px, 112px"
-              className="object-cover rounded-md"
             />
           </div>
           <div className="absolute -top-2 -right-2 dropdown dropdown-end">
@@ -113,15 +113,20 @@ const BlogManageCard = ({
       {/* Delete Confirmation Modal */}
       <dialog id={modalId} className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
-          <h3 className="font-bold text-lg text-error">Delete Blog</h3>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-error/10 p-2 rounded-lg">
+              <Trash2 className="h-6 w-6 text-error" />
+            </div>
+            <h3 className="font-bold text-lg">Delete Blog</h3>
+          </div>
           <p className="py-4">
             Are you sure you want to delete &ldquo;{title}&rdquo;? This action
             cannot be undone and the blog cannot be retrieved.
           </p>
           <div className="modal-action">
             <form method="dialog" className="flex gap-2">
-              <button className="btn">Cancel</button>
-              <DeleteBtn blogId={id} />
+              {!isDeleting && <button className="btn">Cancel</button>}
+              <DeleteBtn blogId={id} onDeletingChange={setIsDeleting} />
             </form>
           </div>
         </div>

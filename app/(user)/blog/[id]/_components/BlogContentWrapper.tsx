@@ -1,31 +1,33 @@
-import prisma from '@/prisma/client';
-import React from 'react';
-import Image from 'next/image';
-import defaultProfile from '@/public/profile.svg';
-import { Dot, Eye } from 'lucide-react';
-import { format } from 'date-fns';
-import BlogContent from './BlogContent';
-import ToggleLikeBlogBtn from './ToggleLikeBlogBtn';
-import ToggleDislikeBlogBtn from './ToggleLikeBlogBtn';
-import BlogComments from './BlogComments';
-import FollowBtn from '@/components/ui/FollowBtn';
-import { v4 as uuid } from 'uuid';
-import Link from 'next/link';
-import { getServerSession } from 'next-auth';
-import { Limelight } from 'next/font/google';
-import clsx from 'clsx';
+import prisma from "@/prisma/client";
+import React from "react";
+import Image from "next/image";
+import defaultProfile from "@/public/profile.svg";
+import { Dot, Eye } from "lucide-react";
+import { format } from "date-fns";
+import BlogContent from "./BlogContent";
+import ToggleLikeBlogBtn from "./ToggleLikeBlogBtn";
+import ToggleDislikeBlogBtn from "./ToggleDislikeBlogBtn";
+import BlogComments from "./BlogComments";
+import FollowBtn from "@/components/ui/FollowBtn";
+import { v4 as uuid } from "uuid";
+import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { Limelight } from "next/font/google";
+import clsx from "clsx";
 
 const limeLight = Limelight({
-  weight: '400',
-  subsets: ['latin'],
-  preload: true
+  weight: "400",
+  subsets: ["latin"],
+  preload: true,
 });
 
 interface BlogContentWrapperProps {
   blogId: string;
 }
 
-export default async function BlogContentWrapper({ blogId }: BlogContentWrapperProps) {
+export default async function BlogContentWrapper({
+  blogId,
+}: BlogContentWrapperProps) {
   const session = await getServerSession();
   const user = session?.user;
 
@@ -68,7 +70,7 @@ export default async function BlogContentWrapper({ blogId }: BlogContentWrapperP
   });
 
   if (!blog) {
-    return 'not found';
+    return "not found";
   }
 
   const isLiked =
@@ -128,8 +130,8 @@ export default async function BlogContentWrapper({ blogId }: BlogContentWrapperP
         <div id="thumbnail" className="relative">
           <h1
             className={clsx(
-              'font-bold text-4xl break-words leading-tight',
-              limeLight.className
+              "font-bold text-4xl break-words leading-tight",
+              limeLight.className,
             )}
           >
             {blog.title}
@@ -166,7 +168,7 @@ export default async function BlogContentWrapper({ blogId }: BlogContentWrapperP
             <FollowBtn userId={author.id} />
             <Dot />
             <p className="text-base-content/60 text-sm">
-              {format(blog.createdAt, 'PPP')}
+              {format(blog.createdAt, "PPP")}
             </p>
           </div>
 
@@ -180,10 +182,7 @@ export default async function BlogContentWrapper({ blogId }: BlogContentWrapperP
             className="w-full pt-4"
           />
         </div>
-        <div
-          id="mainSection"
-          className=""
-        >
+        <div id="mainSection" className="">
           <div className="my-4">
             {blog.BlogContent.content && (
               <BlogContent content={blog.BlogContent.content as string} />
@@ -193,7 +192,7 @@ export default async function BlogContentWrapper({ blogId }: BlogContentWrapperP
             <div id="likeSection" className="pt-2 mb-10">
               <div className="flex space-x-2 items-center">
                 <div className="flex items-center">
-                  <ToggleLikeBlogBtn blogId={blogId} isLiked={!!isLiked} />
+                  <ToggleLikeBlogBtn blogId={blogId} isLiked={isLiked} />
                   <p className="text-sm text-base-content/70">
                     {blog._count.likedBy}
                   </p>
@@ -201,7 +200,7 @@ export default async function BlogContentWrapper({ blogId }: BlogContentWrapperP
                 <div className="flex items-center">
                   <ToggleDislikeBlogBtn
                     blogId={blogId}
-                    isLiked={!!isDisliked}
+                    isDisliked={isDisliked}
                   />
                   <p className="text-sm text-base-content/70">
                     {blog._count.dislikedBy}
