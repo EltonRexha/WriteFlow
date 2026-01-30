@@ -5,7 +5,6 @@ import {
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from "next-cloudinary";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -13,7 +12,7 @@ import { EditBlogPreviewSchema } from "@/schemas/editBlogSchema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateBlogPreview } from "@/hooks/queries/blog";
 import { useCategories } from "@/hooks/queries/categories";
-import Select from "react-select";
+import CategoriesSelect from "@/components/CategoriesSelect";
 import { useToast } from "@/components/ToastProvider";
 import type { GetBlogResponse } from "@/libs/api/services/blog";
 
@@ -60,7 +59,6 @@ const ManageBlogDialogForm = ({
   }, [categoriesIsError, addToast]);
 
   const imgUrl = watch("imageUrl");
-  const router = useRouter();
 
   const mutateBlog = useUpdateBlogPreview();
 
@@ -68,12 +66,11 @@ const ManageBlogDialogForm = ({
     await mutateBlog.mutateAsync(data);
     modal.current?.close();
     queryClient.invalidateQueries({ queryKey: ["dashboardUserBlogs"] });
-    router.refresh();
   }
 
   return (
     <dialog id={modalId} className="modal" ref={modal}>
-      <div className="modal-box flex flex-col space-y-4 min-w-[35%]">
+      <div className="modal-box flex flex-col space-y-4 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <form method="dialog">
           <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
             ✕
@@ -84,141 +81,87 @@ const ManageBlogDialogForm = ({
         <form
           onSubmit={handleSubmit(onFormSubmit)}
           noValidate
-          className="space-y-2"
+          className="space-y-4"
         >
-          <div className="space-x-2 space-y-4 lg:flex lg:space-y-0">
-            <div className="flex-1">
-              <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative">
-                {" "}
-                <CldImage
-                  src={imgUrl}
-                  alt="thumbnail"
-                  className="absolute -z-10 object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  fill
-                ></CldImage>
-                <CldUploadWidget
-                  uploadPreset="blog_thumbnails"
-                  onSuccess={(result) => {
-                    const info = result?.info as CloudinaryUploadWidgetInfo;
-                    const url = info.secure_url;
-                    setValue("imageUrl", url);
-                  }}
-                  onClose={() => {
-                    modal.current?.showModal();
-                  }}
-                >
-                  {({ open }) => (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        //Close the modal so we can show the cloudinary widget
-                        modal.current?.close();
-                        open();
-                      }}
-                    >
-                      Change Thumbnail
-                    </button>
-                  )}
-                </CldUploadWidget>
-              </div>
-              {!imgUrl && (
-                <p className="text-error">{errors["imageUrl"]?.message}</p>
-              )}
-            </div>
-
-            <div className="flex-1/3 space-y-2">
-              <div>
-                <input
-                  className="input w-full"
-                  placeholder="Title"
-                  {...register("title")}
-                  required
-                />
-                <p className="text-error">{errors["title"]?.message}</p>
-              </div>
-
-              <div>
-                <textarea
-                  className="textarea w-full h-30 resize-none "
-                  placeholder="Description"
-                  {...register("description")}
-                  required
-                />
-                <p className="text-error">{errors["description"]?.message}</p>
-              </div>
-
-              {Array.isArray(categories) && (
-                <div>
-                  <Select<{ value: string; label: string }, true>
-                    placeholder="Categories"
-                    isMulti
-                    menuPlacement="top"
-                    options={categories.map(({ name }) => ({
-                      value: name,
-                      label: name,
-                    }))}
-                    menuPortalTarget={document.getElementById(modalId)}
-                    menuPosition={"fixed"}
-                    value={watch("categories").map((category) => ({
-                      label: category,
-                      value: category,
-                    }))}
-                    styles={{
-                      control: (baseStyles) => ({
-                        ...baseStyles,
-                        backgroundColor: "var(--fallback-b1,oklch(var(--b1)))",
-                        borderColor:
-                          "var(--fallback-border-color,oklch(var(--bc)/0.2))",
-                      }),
-                      menuList: (baseStyles) => ({
-                        ...baseStyles,
-                        backgroundColor: "var(--color-base-100)",
-                        padding: 0,
-                      }),
-                      menuPortal: (baseStyles) => ({
-                        ...baseStyles,
-                      }),
-                      option: (baseStyles, { isFocused }) => ({
-                        ...baseStyles,
-                        backgroundColor: isFocused
-                          ? "var(--color-base-200)"
-                          : "var(--color-base-100)",
-                        cursor: "pointer",
-                      }),
-                      multiValue: (baseStyles) => ({
-                        ...baseStyles,
-                        backgroundColor: "var(--color-base-200)",
-                      }),
-                      multiValueLabel: (baseStyles) => ({
-                        ...baseStyles,
-                        color: "var(--color-base-foreground)",
-                      }),
-                      multiValueRemove: (baseStyles) => ({
-                        ...baseStyles,
-                        color: "var(--color-base-foreground)",
-                        ":hover": {
-                          backgroundColor:
-                            "var(--fallback-error,oklch(var(--er)))",
-                          color: "white",
-                        },
-                      }),
-                      input: (baseStyles) => ({
-                        ...baseStyles,
-                        color: "var(--color-base-foreground)",
-                      }),
+          <div className="space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="w-full md:w-1/3">
+                <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative">
+                  {" "}
+                  <CldImage
+                    src={imgUrl}
+                    alt="thumbnail"
+                    className="absolute -z-10 object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    fill
+                  ></CldImage>
+                  <CldUploadWidget
+                    uploadPreset="blog_thumbnails"
+                    options={{ multiple: false, maxFiles: 1 }}
+                    onSuccess={(result) => {
+                      const info = result?.info as CloudinaryUploadWidgetInfo;
+                      const url = info.secure_url;
+                      setValue("imageUrl", url);
                     }}
-                    className="text-base-content"
-                    onChange={(values) => {
-                      setValue(
-                        "categories",
-                        values.map((value) => value.value),
-                      );
+                    onClose={() => {
+                      modal.current?.showModal();
                     }}
-                  />
-                  <p className="text-error">{errors["categories"]?.message}</p>
+                  >
+                    {({ open }) => (
+                      <button
+                        className="btn btn-primary btn-wide"
+                        type="button"
+                        onClick={() => {
+                          //Close the modal so we can show the cloudinary widget
+                          modal.current?.close();
+                          open();
+                        }}
+                      >
+                        Change Thumbnail
+                      </button>
+                    )}
+                  </CldUploadWidget>
                 </div>
-              )}
+                {!imgUrl && (
+                  <p className="text-error">{errors["imageUrl"]?.message}</p>
+                )}
+              </div>
+
+              <div className="w-full md:w-2/3 space-y-3">
+                <div>
+                  <input
+                    className="input input-md w-full"
+                    placeholder="Title"
+                    {...register("title")}
+                    required
+                  />
+                  <p className="text-error">{errors["title"]?.message}</p>
+                </div>
+
+                <div>
+                  <textarea
+                    className="textarea textarea-md w-full h-40 resize-none"
+                    placeholder="Description"
+                    {...register("description")}
+                    required
+                  />
+                  <p className="text-error">{errors["description"]?.message}</p>
+                </div>
+
+                {Array.isArray(categories) && (
+                  <div>
+                    <CategoriesSelect
+                      categories={categories}
+                      value={watch("categories")}
+                      setValues={(values) => setValue("categories", values)}
+                      errors={errors}
+                    />
+                    <p className="text-error">
+                      {errors["categories"]?.message}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

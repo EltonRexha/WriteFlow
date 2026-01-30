@@ -19,23 +19,40 @@ const page = async () => {
     );
   }
 
-  const statsPerBlog = await prisma.blog.findMany({
-    where: {
-      Author: {
-        email: user.email,
-      },
-    },
-    select: {
-      _count: {
-        select: {
-          viewedBy: true,
-          BlogComment: true,
-          dislikedBy: true,
-          likedBy: true,
+  const [statsPerBlog, statsPerComment] = await Promise.all([
+    prisma.blog.findMany({
+      where: {
+        Author: {
+          email: user.email,
         },
       },
-    },
-  });
+      select: {
+        _count: {
+          select: {
+            viewedBy: true,
+            BlogComment: true,
+            dislikedBy: true,
+            likedBy: true,
+          },
+        },
+      },
+    }),
+    prisma.blogComment.findMany({
+      where: {
+        Author: {
+          email: user.email,
+        },
+      },
+      select: {
+        _count: {
+          select: {
+            dislikedBy: true,
+            likedBy: true,
+          },
+        },
+      },
+    }),
+  ]);
 
   const totalBlogStats = statsPerBlog.reduce(
     (prev, curr) => {
@@ -57,22 +74,6 @@ const page = async () => {
       },
     }
   );
-
-  const statsPerComment = await prisma.blogComment.findMany({
-    where: {
-      Author: {
-        email: user.email,
-      },
-    },
-    select: {
-      _count: {
-        select: {
-          dislikedBy: true,
-          likedBy: true,
-        },
-      },
-    },
-  });
 
   const totalCommentStats = statsPerComment.reduce(
     (prev, curr) => {

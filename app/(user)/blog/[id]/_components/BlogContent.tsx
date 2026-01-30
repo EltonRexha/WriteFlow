@@ -1,18 +1,46 @@
 "use client";
-import React from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { generateHTML } from "@tiptap/core";
 import { useMounted } from "@/hooks/useMounted";
 import { TIP_TAP_EXTENSIONS } from "@/libs/TipTapExtensions";
+import hljs from "highlight.js";
 
 const BlogContent = ({ content }: { content: string }) => {
   const mounted = useMounted();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const html = useMemo(() => {
+    if (!mounted) {
+      return '';
+    }
+
+    return generateHTML(JSON.parse(content), TIP_TAP_EXTENSIONS);
+  }, [content, mounted]);
+
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+
+    const root = containerRef.current;
+    if (!root) return;
+
+    const nodes = root.querySelectorAll("pre code");
+    nodes.forEach((node) => {
+      hljs.highlightElement(node as HTMLElement);
+    });
+  }, [html, mounted]);
+
   if (!mounted) {
     return <Skeleton />;
   }
 
-  const html = generateHTML(JSON.parse(content), TIP_TAP_EXTENSIONS);
-
-  return <div dangerouslySetInnerHTML={{ __html: html }} className="tiptap break-words overflow-wrap-anywhere" />;
+  return (
+    <div
+      ref={containerRef}
+      dangerouslySetInnerHTML={{ __html: html }}
+      className="tiptap break-words overflow-wrap-anywhere"
+    />
+  );
 };
 
 const Skeleton = () => {

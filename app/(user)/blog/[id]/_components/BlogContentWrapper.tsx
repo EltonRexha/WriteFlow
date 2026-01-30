@@ -5,11 +5,9 @@ import defaultProfile from "@/public/profile.svg";
 import { Dot, Eye, FileQuestion, Home, Search } from "lucide-react";
 import { format } from "date-fns";
 import BlogContent from "./BlogContent";
-import ToggleLikeBlogBtn from "./ToggleLikeBlogBtn";
-import ToggleDislikeBlogBtn from "./ToggleDislikeBlogBtn";
+import BlogReactions from "./BlogReactions";
 import BlogComments from "./BlogComments";
 import FollowBtn from "@/components/ui/FollowBtn";
-import { v4 as uuid } from "uuid";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { Limelight } from "next/font/google";
@@ -44,6 +42,26 @@ export default async function BlogContentWrapper({
           name: true,
         },
       },
+      likedBy: user?.email
+        ? {
+            where: {
+              email: user.email,
+            },
+            select: {
+              email: true,
+            },
+          }
+        : false,
+      dislikedBy: user?.email
+        ? {
+            where: {
+              email: user.email,
+            },
+            select: {
+              email: true,
+            },
+          }
+        : false,
       BlogContent: {
         select: {
           content: true,
@@ -95,55 +113,28 @@ export default async function BlogContentWrapper({
     );
   }
 
-  const isLiked =
-    !!user?.email &&
-    !!(await prisma.blog.findFirst({
-      where: {
-        id: blogId,
-        likedBy: {
-          some: {
-            email: user.email,
-          },
-        },
-      },
-      select: {
-        id: true,
-      },
-    }));
-
+  const isLiked = !!user?.email && Array.isArray(blog.likedBy) && blog.likedBy.length > 0;
   const isDisliked =
-    !!user?.email &&
-    !!(await prisma.blog.findFirst({
-      where: {
-        id: blogId,
-        dislikedBy: {
-          some: {
-            email: user.email,
-          },
-        },
-      },
-      select: {
-        id: true,
-      },
-    }));
+    !!user?.email && Array.isArray(blog.dislikedBy) && blog.dislikedBy.length > 0;
 
   if (user?.email) {
-    await prisma.blog.update({
-      where: {
-        id: blogId,
-      },
-      data: {
-        viewedBy: {
-          connect: {
-            email: user.email,
+    prisma.blog
+      .update({
+        where: {
+          id: blogId,
+        },
+        data: {
+          viewedBy: {
+            connect: {
+              email: user.email,
+            },
           },
         },
-      },
-    });
+      })
+      .catch(() => {});
   }
 
   const author = blog.Author;
-  const renderId = uuid();
   const authorImage = blog.Author.image;
 
   return (
@@ -212,21 +203,13 @@ export default async function BlogContentWrapper({
           </div>
           <div id="likeSection" className="pt-2 mb-10">
             <div className="flex space-x-2 items-center">
-              <div className="flex items-center gap-1">
-                <ToggleLikeBlogBtn blogId={blogId} isLiked={isLiked} />
-                <p className="text-sm text-base-content/70">
-                  {blog._count.likedBy}
-                </p>
-              </div>
-              <div className="flex items-center gap-1">
-                <ToggleDislikeBlogBtn
-                  blogId={blogId}
-                  isDisliked={isDisliked}
-                />
-                <p className="text-sm text-base-content/70">
-                  {blog._count.dislikedBy}
-                </p>
-              </div>
+              <BlogReactions
+                blogId={blogId}
+                initialIsLiked={isLiked}
+                initialIsDisliked={isDisliked}
+                initialLikedCount={blog._count.likedBy}
+                initialDislikedCount={blog._count.dislikedBy}
+              />
               <div className="flex items-center space-x-2 ml-auto">
                 <Eye />
                 <p className="text-sm text-base-content/70">
@@ -236,7 +219,7 @@ export default async function BlogContentWrapper({
             </div>
           </div>
         </div>
-        <BlogComments blogId={blogId} renderId={renderId} />
+        <BlogComments blogId={blogId} />
       </div>
     </div>
   );

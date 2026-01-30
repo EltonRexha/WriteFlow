@@ -70,9 +70,6 @@ const BlogList = ({ user }: { user: User }) => {
             <PenSquare className="w-4 h-4 mr-2" />
             Write Your First Blog
           </Link>
-          <Link href="/drafts" className="btn btn-ghost">
-            View Drafts
-          </Link>
         </div>
       </div>
     );

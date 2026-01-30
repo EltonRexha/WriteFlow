@@ -17,7 +17,26 @@ export async function GET(req: Request) {
     const title = searchParams.get('title') || '';
 
     if (!title) {
-        return NextResponse.json([], { status: 200 });
+        const latestBlogs = await prisma.blog.findMany({
+            where: {
+                Author: {
+                    email: user.email,
+                },
+            },
+            select: {
+                id: true,
+                title: true,
+                imageUrl: true,
+                description: true,
+                createdAt: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: 3,
+        });
+
+        return NextResponse.json(latestBlogs, { status: 200 });
     }
 
     const blogs = await prisma.blog.findMany({
@@ -35,6 +54,7 @@ export async function GET(req: Request) {
             title: true,
             imageUrl: true,
             description: true,
+            createdAt: true,
         },
         take: 10,
     });

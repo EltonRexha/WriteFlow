@@ -128,7 +128,7 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
 
   return (
     <dialog id="createBlogModal" className="modal" ref={modal}>
-      <div className="modal-box flex flex-col space-y-4 min-w-[35%] ">
+      <div className="modal-box flex flex-col space-y-4 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <form method="dialog">
           <button
             className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
@@ -142,21 +142,27 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="space-y-2"
+          className="space-y-4"
         >
-          <div className="space-x-2 space-y-4 lg:flex lg:space-y-0">
-            <div className="flex-1">
-              <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative">
-                {imgUrl && showImage ? (
-                  <CldImage
-                    src={imgUrl}
-                    alt="thumbnail"
-                    className="absolute z-50 object-cover"
-                    fill
-                  ></CldImage>
-                ) : (
+          <div className="space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="w-full md:w-1/3">
+                <div className="border-dashed border-neutral-content border-2 flex items-center justify-center aspect-square relative overflow-hidden">
+                  {imgUrl && showImage && (
+                    <CldImage
+                      src={imgUrl}
+                      alt="thumbnail"
+                      className="absolute inset-0 -z-10 object-cover"
+                      fill
+                    ></CldImage>
+                  )}
+
                   <CldUploadWidget
                     uploadPreset="blog_thumbnails"
+                    options={{
+                      multiple: false,
+                      maxFiles: 1,
+                    }}
                     onSuccess={(result) => {
                       const info = result?.info as CloudinaryUploadWidgetInfo;
                       const url = info.secure_url;
@@ -169,53 +175,52 @@ const CreateBlogDialog = ({ blogContent }: { blogContent: string }) => {
                   >
                     {({ open }) => (
                       <button
-                        className="btn btn-dash border-neutral-content"
+                        className="btn btn-primary"
+                        type="button"
                         onClick={() => {
-                          //Close the modal so we can show the cloudinary widget
                           modal.current?.close();
                           open();
                         }}
                       >
-                        Add Thumbnail
+                        {imgUrl ? 'Change Thumbnail' : 'Add Thumbnail'}
                       </button>
                     )}
                   </CldUploadWidget>
+                </div>
+                {!imgUrl && (
+                  <p className="text-error">{errors["imageUrl"]?.message}</p>
                 )}
               </div>
-              {!imgUrl && (
-                <p className="text-error">{errors["imageUrl"]?.message}</p>
-              )}
-            </div>
 
-            <div className="flex-1/3 space-y-2">
-              <div>
-                <input
-                  className="input w-full"
-                  placeholder="Title"
-                  {...register("title")}
-                  required
-                />
-                <p className="text-error">{errors["title"]?.message}</p>
+              <div className="w-full md:w-2/3 space-y-3">
+                <div>
+                  <input
+                    className="input input-md w-full"
+                    placeholder="Title"
+                    {...register("title")}
+                    required
+                  />
+                  <p className="text-error">{errors["title"]?.message}</p>
+                </div>
+
+                <div>
+                  <textarea
+                    className="textarea textarea-md w-full h-40 resize-none"
+                    placeholder="Description"
+                    {...register("description")}
+                    required
+                  />
+                  <p className="text-error">{errors["description"]?.message}</p>
+                </div>
+
+                {Array.isArray(categories) && (
+                  <CategoriesSelect
+                    categories={categories}
+                    setValues={setValues}
+                    errors={errors}
+                  />
+                )}
               </div>
-
-              <div>
-                <textarea
-                  className="textarea w-full h-30 resize-none "
-                  placeholder="Description"
-                  {...register("description")}
-                  required
-                />
-                <p className="text-error">{errors["description"]?.message}</p>
-              </div>
-
-              {Array.isArray(categories) && (
-                <CategoriesSelect
-                  categories={categories}
-                  setValues={setValues}
-                  errors={errors}
-                  modalId="createBlogModal"
-                />
-              )}
             </div>
           </div>
 

@@ -37,6 +37,7 @@ export async function GET(req: Request) {
             content: true,
             Author: {
                 select: {
+                    id: true,
                     image: true,
                     name: true,
                     email: true,
@@ -49,47 +50,42 @@ export async function GET(req: Request) {
                     dislikedBy: true,
                 },
             },
+            likedBy: {
+                where: {
+                    email: user.email,
+                },
+                select: {
+                    email: true,
+                },
+            },
+            dislikedBy: {
+                where: {
+                    email: user.email,
+                },
+                select: {
+                    email: true,
+                },
+            },
         },
         orderBy: {
             createdAt: 'desc',
         },
     });
 
-    const commentsWithLikes = await Promise.all(
-        comments.map(async (comment) => {
-            const isLiked =
-                !!(await prisma.blogComment.findFirst({
-                    where: {
-                        id: comment.id,
-                        likedBy: {
-                            some: {
-                                email: user.email as string,
-                            },
-                        },
-                    },
-                    select: { id: true },
-                }));
+    const commentsWithLikes = comments.map((comment) => {
+        const isLiked = Array.isArray(comment.likedBy) && comment.likedBy.length > 0;
+        const isDisliked = Array.isArray(comment.dislikedBy) && comment.dislikedBy.length > 0;
 
-            const isDisliked =
-                !!(await prisma.blogComment.findFirst({
-                    where: {
-                        id: comment.id,
-                        dislikedBy: {
-                            some: {
-                                email: user.email as string,
-                            },
-                        },
-                    },
-                    select: { id: true },
-                }));
-
-            return {
-                ...comment,
-                isLiked,
-                isDisliked,
-            };
-        })
-    );
+        return {
+            id: comment.id,
+            content: comment.content,
+            Author: comment.Author,
+            createdAt: comment.createdAt,
+            _count: comment._count,
+            isLiked,
+            isDisliked,
+        };
+    });
 
     return NextResponse.json({ comments: commentsWithLikes }, { status: 200 });
 }

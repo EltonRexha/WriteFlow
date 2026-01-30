@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Palette, Check, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 
@@ -285,27 +285,9 @@ const themes: Theme[] = [
 
 const SettingsPage = () => {
   const { theme, setTheme } = useTheme();
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("");
 
   const handleThemeChange = (themeValue: string) => {
     setTheme(themeValue);
-  };
-
-  const handleSaveTheme = async () => {
-    setIsSaving(true);
-    setSaveMessage("");
-
-    try {
-      // Theme is already saved in localStorage via setTheme
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSaveMessage("Theme saved successfully!");
-      setTimeout(() => setSaveMessage(""), 3000);
-    } catch {
-      setSaveMessage("Failed to save theme");
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   return (
@@ -393,29 +375,7 @@ const SettingsPage = () => {
                     {themes.find((t) => t.value === theme)?.name}
                   </span>
                 </p>
-                {saveMessage && (
-                  <p
-                    className={`text-sm mt-1 ${saveMessage.includes("success") ? "text-success" : "text-error"}`}
-                  >
-                    {saveMessage}
-                  </p>
-                )}
               </div>
-
-              <button
-                className="btn btn-primary"
-                onClick={handleSaveTheme}
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <>
-                    <span className="loading loading-spinner loading-sm"></span>
-                    Saving...
-                  </>
-                ) : (
-                  "Save Theme"
-                )}
-              </button>
             </div>
           </div>
 

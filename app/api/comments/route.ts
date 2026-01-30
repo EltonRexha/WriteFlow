@@ -57,6 +57,7 @@ export async function GET(req: Request) {
             content: true,
             Author: {
                 select: {
+                    id: true,
                     image: true,
                     name: true,
                     email: true,
@@ -69,6 +70,26 @@ export async function GET(req: Request) {
                     dislikedBy: true,
                 },
             },
+            likedBy: user?.email
+                ? {
+                      where: {
+                          email: user.email,
+                      },
+                      select: {
+                          email: true,
+                      },
+                  }
+                : false,
+            dislikedBy: user?.email
+                ? {
+                      where: {
+                          email: user.email,
+                      },
+                      select: {
+                          email: true,
+                      },
+                  }
+                : false,
         },
         orderBy: {
             likedBy: {
@@ -81,60 +102,22 @@ export async function GET(req: Request) {
 
     const totalPages = Math.ceil(totalComments / COMMENTS_PER_PAGE);
 
-    if (!user?.email) {
-        return NextResponse.json(
-            {
-                comments: comments.map((comment) => ({
-                    ...comment,
-                    isLiked: false,
-                    isDisliked: false,
-                })),
-                pagination: {
-                    currentPage: safePage,
-                    totalPages,
-                    hasNextPage: safePage < totalPages,
-                    hasPreviousPage: safePage > 1,
-                },
-            },
-            { status: 200 }
-        );
-    }
+    const commentsWithLikes = comments.map((comment) => {
+        const isLiked =
+            user?.email && Array.isArray(comment.likedBy) && comment.likedBy.length > 0;
+        const isDisliked =
+            user?.email && Array.isArray(comment.dislikedBy) && comment.dislikedBy.length > 0;
 
-    const commentsWithLikes = await Promise.all(
-        comments.map(async (comment) => {
-            const isLiked =
-                !!(await prisma.blogComment.findFirst({
-                    where: {
-                        id: comment.id,
-                        likedBy: {
-                            some: {
-                                email: user.email as string,
-                            },
-                        },
-                    },
-                    select: { id: true },
-                }));
-
-            const isDisliked =
-                !!(await prisma.blogComment.findFirst({
-                    where: {
-                        id: comment.id,
-                        dislikedBy: {
-                            some: {
-                                email: user.email as string,
-                            },
-                        },
-                    },
-                    select: { id: true },
-                }));
-
-            return {
-                ...comment,
-                isLiked,
-                isDisliked,
-            };
-        })
-    );
+        return {
+            id: comment.id,
+            content: comment.content,
+            Author: comment.Author,
+            createdAt: comment.createdAt,
+            _count: comment._count,
+            isLiked: !!isLiked,
+            isDisliked: !!isDisliked,
+        };
+    });
 
     return NextResponse.json(
         {

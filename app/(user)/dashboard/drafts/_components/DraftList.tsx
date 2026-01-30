@@ -4,7 +4,7 @@ import React from "react";
 import DarkManageCard from "./DraftManageCard";
 import draftApi from "@/libs/api/services/drafts";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Edit3, Loader2, PenSquare, FileText } from "lucide-react";
+import { Edit3, Loader2, PenSquare } from "lucide-react";
 import Link from "next/link";
 
 interface User {
@@ -65,10 +65,6 @@ const DraftList = ({ user }: { user: User }) => {
           <Link href="/blog/new" className="btn btn-primary btn-lg">
             <PenSquare className="w-4 h-4 mr-2" />
             Start Writing
-          </Link>
-          <Link href="/dashboard/blogs" className="btn btn-ghost btn-lg">
-            <FileText className="w-4 h-4 mr-2" />
-            View Published Blogs
           </Link>
         </div>
       </div>
