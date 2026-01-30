@@ -4,7 +4,8 @@ import React from 'react';
 import BlogManageCard from './BlogManageCard';
 import blogApi from '@/libs/api/services/blog';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { FileText, Loader2 } from 'lucide-react';
+import { FileText, Loader2, PenSquare } from 'lucide-react';
+import Link from 'next/link';
 
 interface User {
   name?: string | null;
@@ -57,13 +58,22 @@ const BlogList = ({ user }: { user: User }) => {
   if (blogs.length === 0 && !isLoading) {
     return (
       <div className="text-center py-16">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-base-300 rounded-full mb-6">
-          <FileText className="h-10 w-10 text-base-content/40" />
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-6">
+          <FileText className="h-10 w-10 text-primary" />
         </div>
-        <h3 className="text-xl font-semibold mb-2">No published blogs yet</h3>
-        <p className="text-base-content/60 max-w-md mx-auto">
-          Your published articles will appear here. Start by publishing your first blog post to see it in this list.
+        <h3 className="text-2xl font-bold mb-3">No Published Blogs Yet</h3>
+        <p className="text-base-content/70 max-w-md mx-auto mb-8">
+          Your published articles will appear here. Start sharing your thoughts with the world by publishing your first blog post.
         </p>
+        <div className="space-y-3">
+          <Link href="/blog/new" className="btn btn-primary btn-lg">
+            <PenSquare className="w-4 h-4 mr-2" />
+            Write Your First Blog
+          </Link>
+          <Link href="/drafts" className="btn btn-ghost">
+            View Drafts
+          </Link>
+        </div>
       </div>
     );
   }

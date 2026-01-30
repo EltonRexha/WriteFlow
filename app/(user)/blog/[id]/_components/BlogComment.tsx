@@ -93,7 +93,7 @@ const BlogComment = ({
         <p className="text-base-content/80 break-words whitespace-pre-wrap">{content}</p>
       </div>
       <div className="flex space-x-2 items-center">
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
           <ToggleLikeComment
             isLiked={commentLikeStatus === 'liked'}
             commentId={id}
@@ -101,7 +101,7 @@ const BlogComment = ({
           />
           <p className="text-sm text-base-content/70">{_count.likedBy}</p>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
           <ToggleDislikeComment
             isDisliked={commentLikeStatus === 'disliked'}
             commentId={id}

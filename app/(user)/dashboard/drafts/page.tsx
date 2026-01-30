@@ -1,7 +1,8 @@
 import { getServerSession } from 'next-auth';
 import DraftList from './_components/DraftList';
-import { Edit3, Clock, ShieldCheck } from 'lucide-react';
+import { Edit3, Clock, ShieldCheck, AlertCircle, Home } from 'lucide-react';
 import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
+import Link from 'next/link';
 
 const DraftsPage = async () => {
   const session = await getServerSession(authOptions);
@@ -47,13 +48,22 @@ const DraftsPage = async () => {
             <DraftList user={session.user} />
           ) : (
             <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-base-300 rounded-full mb-6">
-                <Edit3 className="h-10 w-10 text-base-content/40" />
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-warning/10 rounded-full mb-6">
+                <AlertCircle className="h-10 w-10 text-warning" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Authentication Required</h3>
-              <p className="text-base-content/60 max-w-md mx-auto">
-                Please sign in to view and manage your draft articles.
+              <h3 className="text-2xl font-bold mb-3">Authentication Required</h3>
+              <p className="text-base-content/70 max-w-md mx-auto mb-8">
+                Please sign in to view and manage your draft articles. Your drafts are private and only accessible to you.
               </p>
+              <div className="space-y-3">
+                <Link href="/auth/sign-in" className="btn btn-primary">
+                  Sign In
+                </Link>
+                <Link href="/home" className="btn btn-ghost">
+                  <Home className="w-4 h-4 mr-2" />
+                  Go to Home
+                </Link>
+              </div>
             </div>
           )}
         </div>

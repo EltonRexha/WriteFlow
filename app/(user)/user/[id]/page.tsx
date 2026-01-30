@@ -1,17 +1,17 @@
-import prisma from '@/prisma/client';
-import Image from 'next/image';
-import Link from 'next/link';
-import defaultProfile from '@/public/profile.svg';
-import { Calendar, Mail, User as UserIcon } from 'lucide-react';
-import { Limelight } from 'next/font/google';
-import clsx from 'clsx';
-import { format } from 'date-fns';
-import UserBlogsList from './_components/UserBlogsList';
-import FollowBtn from '@/components/ui/FollowBtn';
+import prisma from "@/prisma/client";
+import Image from "next/image";
+import Link from "next/link";
+import defaultProfile from "@/public/profile.svg";
+import { Calendar, Mail, User as UserIcon, Search } from "lucide-react";
+import { Limelight } from "next/font/google";
+import clsx from "clsx";
+import { format } from "date-fns";
+import UserBlogsList from "./_components/UserBlogsList";
+import FollowBtn from "@/components/ui/FollowBtn";
 
 const limeLight = Limelight({
-  weight: '400',
-  subsets: ['latin'],
+  weight: "400",
+  subsets: ["latin"],
 });
 
 interface Props {
@@ -22,7 +22,25 @@ const page = async ({ params }: Props) => {
   const id = (await params).id;
   const user = await getUser(id);
 
-  if (!user) return <div>User not found</div>;
+  if (!user)
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-8">
+        <div className="text-center max-w-md">
+          <div className="mb-6">
+            <Search className="w-16 h-16 mx-auto text-base-content/50" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4">User Not Found</h1>
+          <p className="text-base-content/70 mb-6">
+            We couldn&apos;t find the user you&apos;re looking for.
+          </p>
+          <div className="space-y-3">
+            <Link href="/home" className="btn btn-ghost w-full">
+              Go Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="flex flex-col items-center min-h-screen">
@@ -34,18 +52,18 @@ const page = async ({ params }: Props) => {
               <div className="w-24 h-24 rounded-full">
                 <Image
                   src={user.image || defaultProfile}
-                  alt={user.name || 'User'}
+                  alt={user.name || "User"}
                   width={96}
                   height={96}
                   className="rounded-full"
                 />
               </div>
             </div>
-            <h1 className={clsx('text-3xl font-bold', limeLight.className)}>
+            <h1 className={clsx("text-3xl font-bold", limeLight.className)}>
               {user.name}
             </h1>
             <div className="text-base-content/70 text-lg">
-              {user._count.FollowedBy} followers · {user._count.Follows}{' '}
+              {user._count.FollowedBy} followers · {user._count.Follows}{" "}
               following
             </div>
             <FollowBtn userId={id} />
@@ -57,7 +75,7 @@ const page = async ({ params }: Props) => {
       <div className="w-full max-w-screen-xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8">
         {/* Blog Posts Column */}
         <div className="flex-1 max-w-3xl mx-auto lg:mx-0">
-          {' '}
+          {" "}
           <h2 className="text-2xl font-bold mb-6">Recent Posts</h2>
           <UserBlogsList userEmail={user.email as string} />
         </div>
@@ -80,10 +98,10 @@ const page = async ({ params }: Props) => {
                   <span>
                     {user.createdAt
                       ? `Joined ${format(
-                        new Date(user.createdAt),
-                        'MMMM yyyy'
-                      )}`
-                      : 'Join date not available'}
+                          new Date(user.createdAt),
+                          "MMMM yyyy",
+                        )}`
+                      : "Join date not available"}
                   </span>
                 </div>
 
@@ -109,7 +127,7 @@ const page = async ({ params }: Props) => {
                         <div className="w-10 h-10 rounded-full">
                           <Image
                             src={following.image || defaultProfile}
-                            alt={following.name || 'User'}
+                            alt={following.name || "User"}
                             width={40}
                             height={40}
                           />
@@ -120,7 +138,7 @@ const page = async ({ params }: Props) => {
                           {following.name}
                         </h4>
                         <p className="text-sm text-base-content/70">
-                          {following._count.FollowedBy} followers ·{' '}
+                          {following._count.FollowedBy} followers ·{" "}
                           {following._count.Blogs} blogs
                         </p>
                       </div>

@@ -4,6 +4,8 @@ import BlogPreviewCard from "./BlogPreviewCard";
 import { isActionError } from "@/types/ActionError";
 import recommendationApi from "@/libs/api/services/recommendation";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { FileText, Search, PenSquare, Users } from "lucide-react";
+import Link from "next/link";
 
 const BlogSkeleton = () => {
   return (
@@ -30,6 +32,47 @@ const BlogSkeleton = () => {
       <div className="skeleton w-28 h-28"></div>
     </article>
   );
+};
+
+const getEmptyStateContent = (topic: string) => {
+  const topicLower = topic.toLowerCase();
+  
+  if (topicLower === "for-you") {
+    return {
+      icon: <Search className="w-12 h-12" />,
+      title: "No Recommendations Yet",
+      description: "Start following users and reading blogs to get personalized recommendations.",
+      action: {
+        text: "Explore Topics",
+        href: "/home",
+        icon: <FileText className="w-4 h-4" />
+      }
+    };
+  }
+  
+  if (topicLower === "following") {
+    return {
+      icon: <Users className="w-12 h-12" />,
+      title: "No Posts from Following",
+      description: "Follow more users to see their latest posts here, or write your own blog.",
+      action: {
+        text: "Find Users",
+        href: "/home",
+        icon: <Search className="w-4 h-4" />
+      }
+    };
+  }
+  
+  return {
+    icon: <FileText className="w-12 h-12" />,
+    title: `No ${topic} Blogs Yet`,
+    description: `Be the first to write about ${topic} or check back later for new content.`,
+    action: {
+      text: "Write a Blog",
+      href: "/blog/new",
+      icon: <PenSquare className="w-4 h-4" />
+    }
+  };
 };
 
 const BlogsByTopic = ({ topic }: { topic: string }) => {
@@ -77,9 +120,24 @@ const BlogsByTopic = ({ topic }: { topic: string }) => {
         {blogs.length > 0 ? (
           blogs.map((data) => <BlogPreviewCard key={data.id} {...data} />)
         ) : (
-          <h2 className="mx-auto w-max py-10 text-3xl font-semibold">
-            Nothing to show
-          </h2>
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="text-base-content/50 mb-6">
+              {getEmptyStateContent(topic).icon}
+            </div>
+            <h2 className="text-2xl font-bold mb-3">
+              {getEmptyStateContent(topic).title}
+            </h2>
+            <p className="text-base-content/70 mb-8 max-w-md">
+              {getEmptyStateContent(topic).description}
+            </p>
+            <Link 
+              href={getEmptyStateContent(topic).action.href}
+              className="btn btn-primary"
+            >
+              {getEmptyStateContent(topic).action.icon}
+              {getEmptyStateContent(topic).action.text}
+            </Link>
+          </div>
         )}
       </div>
       {hasNextPage && (

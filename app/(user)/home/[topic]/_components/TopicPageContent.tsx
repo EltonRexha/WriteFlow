@@ -1,19 +1,23 @@
-import prisma from '@/prisma/client';
-import { redirect } from 'next/navigation';
-import TopicBar from './TopicBar';
-import BlogsByTopic from './BlogsByTopic';
+import prisma from "@/prisma/client";
+import { redirect } from "next/navigation";
+import TopicBar from "./TopicBar";
+import BlogsByTopic from "./BlogsByTopic";
 
 interface TopicPageContentProps {
   topic: string;
 }
 
-export default async function TopicPageContent({ topic }: TopicPageContentProps) {
+export default async function TopicPageContent({
+  topic,
+}: TopicPageContentProps) {
   const categories = await prisma.category.findMany({
     select: {
       name: true,
     },
   });
   const topics = [{ name: "For-You" }, { name: "Following" }, ...categories];
+
+  topic = decodeURIComponent(topic);
 
   if (!topics.find((item) => item.name.toLowerCase() === topic.toLowerCase())) {
     redirect("/home/for-you");

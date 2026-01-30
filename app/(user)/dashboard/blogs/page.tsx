@@ -1,14 +1,36 @@
 import React from 'react';
 import BlogList from './_components/BlogList';
 import { getServerSession } from 'next-auth';
-import { FileText, TrendingUp, Eye } from 'lucide-react';
+import { FileText, TrendingUp, Eye, AlertCircle, Home } from 'lucide-react';
 import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
+import Link from 'next/link';
 
 const page = async () => {
   const user = await getServerSession(authOptions);
 
   if (!user?.user) {
-    return 'something went wrong';
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-8">
+        <div className="text-center max-w-md">
+          <div className="mb-6">
+            <AlertCircle className="w-16 h-16 mx-auto text-warning" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
+          <p className="text-base-content/70 mb-6">
+            Please sign in to access your blog dashboard and manage your published articles.
+          </p>
+          <div className="space-y-3">
+            <Link href="/auth/sign-in" className="btn btn-primary w-full">
+              Sign In
+            </Link>
+            <Link href="/home" className="btn btn-ghost w-full">
+              <Home className="w-4 h-4 mr-2" />
+              Go to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

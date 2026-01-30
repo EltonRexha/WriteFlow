@@ -1,10 +1,11 @@
-'use client';
-import { isActionError } from '@/types/ActionError';
-import React from 'react';
-import DarkManageCard from './DraftManageCard';
-import draftApi from '@/libs/api/services/drafts';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { Edit3, Loader2 } from 'lucide-react';
+"use client";
+import { isActionError } from "@/types/ActionError";
+import React from "react";
+import DarkManageCard from "./DraftManageCard";
+import draftApi from "@/libs/api/services/drafts";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { Edit3, Loader2, PenSquare, FileText } from "lucide-react";
+import Link from "next/link";
 
 interface User {
   name?: string | null;
@@ -13,24 +14,19 @@ interface User {
 }
 
 const DraftList = ({ user }: { user: User }) => {
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ['dashboardDrafts', user.email],
-    queryFn: ({ pageParam }) => draftApi.getDrafts(pageParam as number, 10),
-    initialPageParam: 1,
-    enabled: !!user.email,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage || isActionError(lastPage)) return undefined;
-      if (!lastPage.pagination.hasNextPage) return undefined;
-      return lastPage.pagination.currentPage + 1;
-    },
-    retry: false,
-  });
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["dashboardDrafts", user.email],
+      queryFn: ({ pageParam }) => draftApi.getDrafts(pageParam as number, 10),
+      initialPageParam: 1,
+      enabled: !!user.email,
+      getNextPageParam: (lastPage) => {
+        if (!lastPage || isActionError(lastPage)) return undefined;
+        if (!lastPage.pagination.hasNextPage) return undefined;
+        return lastPage.pagination.currentPage + 1;
+      },
+      retry: false,
+    });
 
   const drafts =
     data?.pages.flatMap((page) => (isActionError(page) ? [] : page.drafts)) ||
@@ -57,13 +53,24 @@ const DraftList = ({ user }: { user: User }) => {
   if (drafts.length === 0 && !isLoading) {
     return (
       <div className="text-center py-16">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-base-300 rounded-full mb-6">
-          <Edit3 className="h-10 w-10 text-base-content/40" />
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-warning/10 rounded-full mb-6">
+          <Edit3 className="h-10 w-10 text-warning" />
         </div>
-        <h3 className="text-xl font-semibold mb-2">No drafts yet</h3>
-        <p className="text-base-content/60 max-w-md mx-auto">
-          Your draft articles will appear here. Start writing and save your first draft to see it in this list.
+        <h3 className="text-2xl font-bold mb-3">No Drafts Yet</h3>
+        <p className="text-base-content/70 max-w-md mx-auto mb-8">
+          Your draft articles will appear here. Start writing your ideas and
+          save them as drafts to work on them later.
         </p>
+        <div className="space-y-3 flex flex-col items-center">
+          <Link href="/blog/new" className="btn btn-primary btn-lg">
+            <PenSquare className="w-4 h-4 mr-2" />
+            Start Writing
+          </Link>
+          <Link href="/dashboard/blogs" className="btn btn-ghost btn-lg">
+            <FileText className="w-4 h-4 mr-2" />
+            View Published Blogs
+          </Link>
+        </div>
       </div>
     );
   }
@@ -74,11 +81,12 @@ const DraftList = ({ user }: { user: User }) => {
         <div>
           <h2 className="text-2xl font-semibold">Draft Articles</h2>
           <p className="text-base-content/60 text-sm mt-1">
-            {drafts.length} {drafts.length === 1 ? 'draft' : 'drafts'} in progress
+            {drafts.length} {drafts.length === 1 ? "draft" : "drafts"} in
+            progress
           </p>
         </div>
         <div className="badge badge-warning badge-lg">
-          {drafts.length} {drafts.length === 1 ? 'Draft' : 'Drafts'}
+          {drafts.length} {drafts.length === 1 ? "Draft" : "Drafts"}
         </div>
       </div>
 
@@ -113,7 +121,7 @@ const DraftList = ({ user }: { user: User }) => {
                 Loading...
               </>
             ) : (
-              'Load More Drafts'
+              "Load More Drafts"
             )}
           </button>
         </div>

@@ -2,7 +2,7 @@ import prisma from "@/prisma/client";
 import React from "react";
 import Image from "next/image";
 import defaultProfile from "@/public/profile.svg";
-import { Dot, Eye } from "lucide-react";
+import { Dot, Eye, FileQuestion, Home, Search } from "lucide-react";
 import { format } from "date-fns";
 import BlogContent from "./BlogContent";
 import ToggleLikeBlogBtn from "./ToggleLikeBlogBtn";
@@ -70,7 +70,29 @@ export default async function BlogContentWrapper({
   });
 
   if (!blog) {
-    return "not found";
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-8">
+        <div className="text-center max-w-md">
+          <div className="mb-6">
+            <FileQuestion className="w-16 h-16 mx-auto text-base-content/50" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4">Blog Post Not Found</h1>
+          <p className="text-base-content/70 mb-6">
+            We couldn&apos;t find the blog post you&apos;re looking for. It might have been deleted or the URL is incorrect.
+          </p>
+          <div className="space-y-3">
+            <Link href="/home" className="btn btn-primary w-full">
+              <Search className="w-4 h-4 mr-2" />
+              Browse Blogs
+            </Link>
+            <Link href="/dashboard" className="btn btn-ghost w-full">
+              <Home className="w-4 h-4 mr-2" />
+              Go to Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const isLiked =
@@ -190,13 +212,13 @@ export default async function BlogContentWrapper({
           </div>
           <div id="likeSection" className="pt-2 mb-10">
             <div className="flex space-x-2 items-center">
-              <div className="flex items-center">
+              <div className="flex items-center gap-1">
                 <ToggleLikeBlogBtn blogId={blogId} isLiked={isLiked} />
                 <p className="text-sm text-base-content/70">
                   {blog._count.likedBy}
                 </p>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center gap-1">
                 <ToggleDislikeBlogBtn
                   blogId={blogId}
                   isDisliked={isDisliked}
