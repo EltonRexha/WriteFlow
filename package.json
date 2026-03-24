@@ -54,12 +54,13 @@
     "react-select": "^5.10.1",
     "redux": "^5.0.1",
     "uuid": "^11.1.0",
-    "zod": "^3.24.3"
+    "zod": "^3.24.3",
+    "@tailwindcss/postcss": "^4.2.2",
+    "tailwindcss": "^4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@faker-js/faker": "^9.7.0",
-    "@tailwindcss/postcss": "^4",
     "@types/axios": "^0.9.36",
     "@types/bcrypt": "^5.0.2",
     "@types/next-auth": "^3.13.0",
@@ -70,7 +71,6 @@
     "daisyui": "^5.0.28",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
-    "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "typescript": "^5"
