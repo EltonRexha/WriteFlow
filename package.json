@@ -56,7 +56,8 @@
     "uuid": "^11.1.0",
     "zod": "^3.24.3",
     "@tailwindcss/postcss": "^4.2.2",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "daisyui": "^5.0.28"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -68,7 +69,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-redux": "^7.1.34",
-    "daisyui": "^5.0.28",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "ts-node": "^10.9.2",
