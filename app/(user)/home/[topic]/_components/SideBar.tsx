@@ -1,14 +1,19 @@
-import prisma from '@/prisma/client';
-import { format, startOfMonth, startOfToday } from 'date-fns';
+"use client";
+import { format } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import SideBarSkeleton from './SideBarSkeleton';
+import { useSidebarContent } from '@/hooks/queries/sidebar';
 
-const SideBar = async () => {
-  const [popularBlogs, popularWriters] = await Promise.all([
-    getPopularBlogs(),
-    getPopularWriters(),
-  ]);
+const SideBar = () => {
+  const { data, isLoading } = useSidebarContent();
+  const popularBlogs = data?.popularBlogs || [];
+  const popularWriters = data?.popularWriters || [];
+
+  if (isLoading) {
+    return <SideBarSkeleton />;
+  }
 
   return (
     <div className="w-96 p-10 border-l min-h-[90vh] fixed border-base-content/10 space-y-10">
@@ -104,119 +109,5 @@ const SideBar = async () => {
     </div>
   );
 };
-
-async function getPopularBlogs(take: number = 3, monthsBack: number = 0) {
-  const monthStart = startOfMonth(startOfToday());
-  // Subtract months from the start date
-  const searchStart = new Date(monthStart);
-  searchStart.setMonth(searchStart.getMonth() - monthsBack);
-
-  const blogs = await prisma.blog.findMany({
-    where: {
-      createdAt: {
-        gte: searchStart,
-      },
-    },
-    orderBy: [
-      {
-        likedBy: {
-          _count: 'desc',
-        },
-      },
-      {
-        viewedBy: {
-          _count: 'desc',
-        },
-      },
-    ],
-    include: {
-      Author: true,
-    },
-    take,
-  });
-
-  // If no blogs found and we haven't gone back more than 6 months, try with an additional month
-  if (blogs.length === 0 && monthsBack < 6) {
-    return getPopularBlogs(take, monthsBack + 1);
-  }
-
-  return blogs;
-}
-
-async function getPopularWriters(take: number = 3, monthsBack: number = 0) {
-  const monthStart = startOfMonth(startOfToday());
-  // Subtract months from the start date
-  const searchStart = new Date(monthStart);
-  searchStart.setMonth(searchStart.getMonth() - monthsBack);
-
-  const writers = await prisma.user.findMany({
-    where: {
-      Blogs: {
-        some: {
-          createdAt: {
-            gte: searchStart,
-          },
-        },
-      },
-    },
-    include: {
-      // Get their recent blogs to calculate engagement
-      Blogs: {
-        where: {
-          createdAt: {
-            gte: searchStart,
-          },
-        },
-        orderBy: [
-          {
-            likedBy: {
-              _count: 'desc',
-            },
-          },
-          {
-            viewedBy: {
-              _count: 'desc',
-            },
-          },
-        ],
-        take: 2, // Get their top 2 blogs from this period
-        include: {
-          _count: {
-            select: {
-              likedBy: true,
-              viewedBy: true,
-            },
-          },
-        },
-      },
-      _count: {
-        select: {
-          Blogs: true,
-          FollowedBy: true,
-        },
-      },
-    },
-    orderBy: [
-      {
-        Blogs: {
-          _count: 'desc',
-        },
-      },
-      {
-        FollowedBy: {
-          _count: 'desc',
-        },
-      },
-    ],
-    take,
-  });
-
-  // If no writers found and we haven't gone back more than 6 months, try with an additional month
-  if (writers.length === 0 && monthsBack < 6) {
-    return getPopularWriters(take, monthsBack + 1);
-  }
-
-  return writers;
-}
 
 export default SideBar;

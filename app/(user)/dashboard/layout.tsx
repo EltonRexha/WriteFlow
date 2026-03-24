@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import Avatar from '../../../components/Avatar';
 import Navbar from '@/components/Navbar';
 import { Pen } from 'lucide-react';
-import MenuBar from './_components/MenuBar';
 import { Limelight } from 'next/font/google';
 
 const limeLight = Limelight({
@@ -48,7 +47,6 @@ export default function UserLayout({
         </div>
       </Navbar>
       <div className="px-5 sm:px-12 lg:px-36 space-y-10">
-        <MenuBar />
 
         {children}
       </div>

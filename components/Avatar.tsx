@@ -26,17 +26,30 @@ const Avatar = () => {
 
   return (
     <div className="relative" ref={menuRef}>
-      <div className="avatar relative">
-        <div
-          className="w-8 rounded-full relative cursor-pointer"
-          onClick={() => setShowMenu(!showMenu)}
-        >
-          {!image ? (
-            <Image src={defaultProfile} alt="user picture" fill quality={50} />
-          ) : (
-            <Image src={image} alt="user picture" fill quality={50} />
-          )}
-        </div>
+      <div
+        className="w-8 h-8 rounded-full overflow-hidden cursor-pointer"
+        style={{
+          borderRadius: "100%",
+        }}
+        onClick={() => setShowMenu(!showMenu)}
+      >
+        {!image ? (
+          <Image
+            src={defaultProfile}
+            alt="user picture"
+            fill
+            className="object-cover rounded-full"
+            quality={50}
+          />
+        ) : (
+          <Image
+            src={image}
+            alt="user picture"
+            fill
+            className="object-cover rounded-full"
+            quality={50}
+          />
+        )}
       </div>
       <div className={showMenu ? "" : "hidden"}>
         <AvatarMenu />
