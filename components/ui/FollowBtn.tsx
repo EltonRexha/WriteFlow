@@ -1,9 +1,13 @@
-'use client';
-import { isActionError } from '@/types/ActionError';
-import React, { useEffect } from 'react';
-import { useToast } from '../ToastProvider';
-import useClientUser from '@/hooks/useClientUser';
-import { useIsFollowed, useFollowUser, useUnfollowUser } from '@/hooks/queries/user';
+"use client";
+import { isActionError } from "@/types/ActionError";
+import React, { useEffect } from "react";
+import { useToast } from "../ToastProvider";
+import useClientUser from "@/hooks/useClientUser";
+import {
+  useIsFollowed,
+  useFollowUser,
+  useUnfollowUser,
+} from "@/hooks/queries/user";
 
 const FollowBtn = ({ userId }: { userId?: string | null }) => {
   const { addToast } = useToast();
@@ -17,7 +21,7 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
 
   useEffect(() => {
     if (isFollowedRes && isActionError(isFollowedRes)) {
-      addToast('something went wrong', 'error');
+      addToast("something went wrong", "error");
     }
   }, [addToast, isFollowedRes]);
 
@@ -27,7 +31,7 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
   useEffect(() => {
     if (followMutation.isSuccess && followMutation.data) {
       if (isActionError(followMutation.data)) {
-        addToast('Something went wrong following user', 'error');
+        addToast("Something went wrong following user", "error");
         return;
       }
     }
@@ -35,14 +39,14 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
 
   useEffect(() => {
     if (followMutation.isError) {
-      addToast('Something went wrong following user', 'error');
+      addToast("Something went wrong following user", "error");
     }
   }, [followMutation.isError, addToast]);
 
   useEffect(() => {
     if (unfollowMutation.isSuccess && unfollowMutation.data) {
       if (isActionError(unfollowMutation.data)) {
-        addToast('Something went wrong un-following user', 'error');
+        addToast("Something went wrong un-following user", "error");
         return;
       }
     }
@@ -50,7 +54,7 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
 
   useEffect(() => {
     if (unfollowMutation.isError) {
-      addToast('Something went wrong un-following user', 'error');
+      addToast("Something went wrong un-following user", "error");
     }
   }, [unfollowMutation.isError, addToast]);
 
@@ -59,7 +63,8 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
   }
 
   const handleToggleFollow = async () => {
-    const isFollowed = typeof isFollowedRes === 'boolean' ? isFollowedRes : false;
+    const isFollowed =
+      typeof isFollowedRes === "boolean" ? isFollowedRes : false;
     if (isFollowed) {
       unfollowMutation.mutate(userId as string);
       return;
@@ -67,7 +72,7 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
     followMutation.mutate(userId as string);
   };
 
-  const isFollowed = typeof isFollowedRes === 'boolean' ? isFollowedRes : false;
+  const isFollowed = typeof isFollowedRes === "boolean" ? isFollowedRes : false;
   const isProcessing = followMutation.isPending || unfollowMutation.isPending;
 
   return (
@@ -76,7 +81,7 @@ const FollowBtn = ({ userId }: { userId?: string | null }) => {
       onClick={handleToggleFollow}
       disabled={isLoading || isProcessing}
     >
-      {isProcessing ? 'processing...' : (isFollowed ? 'unfollow' : 'follow')}
+      {isFollowed ? "unfollow" : "follow"}
     </button>
   );
 };
