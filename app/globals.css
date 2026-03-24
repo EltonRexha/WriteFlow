@@ -6,10 +6,6 @@
 
 /* Remove all border radius from DaisyUI components */
 @layer base {
-  * {
-    border-radius: 0 !important;
-  }
-  
   /* Specific DaisyUI component overrides */
   .btn {
     border-radius: 0 !important;
@@ -201,19 +197,6 @@
   
   /* Avatar and image overrides */
   .avatar {
-    border-radius: 0 !important;
-  }
-  
-  .avatar > div {
-    border-radius: 0 !important;
-  }
-  
-  .rounded-full {
-    border-radius: 0 !important;
-  }
-  
-  /* Override any remaining rounded elements */
-  [class*="rounded"] {
     border-radius: 0 !important;
   }
 }
