@@ -74,7 +74,7 @@ const page = async ({ params }: Props) => {
       {/* Main Content */}
       <div className="w-full max-w-screen-xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8">
         {/* Blog Posts Column */}
-        <div className="flex-1 max-w-3xl mx-auto lg:mx-0">
+        <div className="flex-1 sm:w-5/6 mx-auto lg:mx-0">
           {" "}
           <h2 className="text-2xl font-bold mb-6">Recent Posts</h2>
           <UserBlogsList userEmail={user.email as string} />
