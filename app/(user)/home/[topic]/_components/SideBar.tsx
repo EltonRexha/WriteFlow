@@ -28,7 +28,7 @@ const SideBar = () => {
             {popularBlogs.map(({ id, Author, createdAt, title }) => (
               <div key={id}>
                 <article className="flex gap-6 py-6 cursor-pointer border-base-content/10 group">
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 min-w-0 space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="avatar">
                         <div className="w-6 h-6 rounded-full">
@@ -52,7 +52,7 @@ const SideBar = () => {
                       href={`/blog/${id}`}
                       className="block group-hover:text-primary transition-colors"
                     >
-                      <h2 className="text-base font-bold line-clamp-2">
+                      <h2 className="text-base font-bold line-clamp-2 [overflow-wrap:anywhere]">
                         {title}
                       </h2>
                     </Link>

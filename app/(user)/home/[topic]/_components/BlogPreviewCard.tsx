@@ -17,7 +17,7 @@ const BlogPreviewCard = ({
   _count,
 }: DisplayBlog) => {
   return (
-    <article className="flex gap-6 py-6 cursor-pointer border-b border-base-content/10 group">
+    <article className="flex w-[90vw] md:w-auto gap-6 py-6 cursor-pointer border-b border-base-content/10 group">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
           <div className="avatar">
@@ -38,7 +38,7 @@ const BlogPreviewCard = ({
         </div>
 
         <Link href={`/blog/${id}`} className="block group">
-          <h2 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors line-clamp-2 leading-tight break-words">
+          <h2 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors line-clamp-2 leading-tight break-words [overflow-wrap:anywhere]">
             {title}
           </h2>
           <p className="text-base-content/70 line-clamp-2 mb-2 break-words">
