@@ -77,8 +77,8 @@ const BlogList = ({ user }: { user: User }) => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="sm:flex items-center justify-between">
+        <div className="mb-4 sm:mb-0">
           <h2 className="text-2xl font-semibold">Published Articles</h2>
           <p className="text-base-content/60 text-sm mt-1">
             {blogs.length} {blogs.length === 1 ? 'article' : 'articles'} published

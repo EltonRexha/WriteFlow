@@ -99,7 +99,7 @@ const page = async () => {
       {/* Hero Section */}
       <div className="bg-base-100 border-b border-base-content/10">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between">
+          <div className="sm:flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="bg-primary/10 p-3 rounded-xl">
                 <Activity className="h-8 w-8 text-primary" />
@@ -111,7 +111,7 @@ const page = async () => {
                 </p>
               </div>
             </div>
-            <div className="text-right">
+            <div className="sm:text-right">
               <div className="text-sm text-base-content/60">Total Blogs</div>
               <div className="text-2xl font-bold text-primary">{totalBlogs}</div>
             </div>
@@ -223,7 +223,7 @@ const page = async () => {
             <h2 className="text-2xl font-semibold text-base-content">Individual Blog Analysis</h2>
           </div>
           
-          <div className="bg-base-200/50 p-6 rounded-xl border border-base-300">
+          <div className="bg-base-200/50 rounded-xl border border-base-300">
             <SearchBlogStats />
           </div>
         </div>

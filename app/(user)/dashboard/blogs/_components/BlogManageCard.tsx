@@ -38,7 +38,7 @@ const BlogManageCard = ({
               </div>
             </div>
             <span className="text-sm">{Author.name}</span>
-            <div className="flex items-center gap-1 text-xs text-base-content/60">
+            <div className="hidden sm:flex items-center gap-1 text-xs text-base-content/60">
               <Clock className="h-3 w-3" />
               <span>{format(new Date(createdAt), "MMM d, yyyy")}</span>
             </div>
